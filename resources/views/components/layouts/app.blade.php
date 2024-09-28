@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{{ $title ?? 'Page Title' }}</title>
+    @livewireStyles
     @vite(['resources/js/app.js','resources/css/app.css'])
     @googlefonts
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
     <script src='https://www.unpkg.com/nostr-login@latest/dist/unpkg.js' data-perms="sign_event:1,sign_event:0"
             data-theme="default" data-dark-mode="true"></script>
+    @wireUiScripts
     @stack('scripts')
 </head>
 <body
     class="font-sans antialiased bg-gray-100 dark:bg-[#222222] text-gray-600 dark:text-gray-400"
     :class="{ 'sidebar-expanded': sidebarExpanded }"
-    x-data="{ sidebarOpen: false, sidebarExpanded: localStorage.getItem('sidebar-expanded') == 'true' }"
+    x-data="{ sidebarOpen: false, sidebarExpanded: localStorage.getItem('sidebar-expanded') == 'true', inboxSidebarOpen: false }"
     x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebar-expanded', value))"
 >
 <script>
@@ -25,9 +27,11 @@
         document.querySelector('body').classList.remove('sidebar-expanded');
     }
 </script>
-<div class="flex h-[100dvh] overflow-hidden">
-    @include('components.layouts.sidebar')
-    <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+<div x-data="nostrLogin"
+    class="flex h-[100dvh] overflow-hidden">
+    <livewire:layout.sidebar/>
+    <div
+        class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         <!-- Site header -->
         <header
             class="sticky top-0 before:absolute before:inset-0 before:backdrop-blur-md before:bg-white/90 dark:before:bg-[#222222]/90 lg:before:bg-[#222222]/90 dark:lg:before:bg-[#222222]/90 before:-z-10 max-lg:shadow-sm z-30">
@@ -125,11 +129,10 @@
             </div>
         </header>
         <main class="grow">
-            <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-                {{ $slot }}
-            </div>
+            {{ $slot }}
         </main>
     </div>
 </div>
+@livewireScriptConfig
 </body>
 </html>

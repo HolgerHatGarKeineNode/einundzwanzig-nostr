@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+
+const colors = require('tailwindcss/colors');
+
 export default {
     presets: [
+        require("./vendor/wireui/wireui/tailwind.config.js"),
         require("./vendor/power-components/livewire-powergrid/tailwind.config.js"),
     ],
     content: [
@@ -9,12 +13,36 @@ export default {
 
         './app/Livewire/**/*Table.php',
         './vendor/power-components/livewire-powergrid/resources/views/**/*.php',
-        './vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php'
+        './vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php',
+
+        './vendor/wireui/wireui/src/*.php',
+        './vendor/wireui/wireui/ts/**/*.ts',
+        './vendor/wireui/wireui/src/WireUi/**/*.php',
+        './vendor/wireui/wireui/src/Components/**/*.php',
     ],
     darkMode: 'class',
     theme: {
         extend: {
             colors: {
+                primary: {
+                    '50': '#fffbea',
+                    '100': '#fff2c5',
+                    '200': '#ffe685',
+                    '300': '#ffd246',
+                    '400': '#ffbd1b',
+                    '500': '#ff9900',
+                    '600': '#e27200',
+                    '700': '#bb4d02',
+                    '800': '#983b08',
+                    '900': '#7c310b',
+                    '950': '#481700',
+                },
+                secondary: colors.gray,
+                positive: colors.emerald,
+                negative: colors.red,
+                warning: colors.amber,
+                info: colors.blue,
+
                 "pg-primary": {
                     50: "#F0F0F0",
                     100: "#E3E3E3",
@@ -157,7 +185,9 @@ export default {
             },
         },
     },
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/forms'),
+    ],
     safelist: [
         'w-96',
         'group',

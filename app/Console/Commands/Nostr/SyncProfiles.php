@@ -5,7 +5,6 @@ namespace App\Console\Commands\Nostr;
 use App\Models\EinundzwanzigPleb;
 use App\Traits\NostrFetcherTrait;
 use Illuminate\Console\Command;
-use swentel\nostr\Subscription\Subscription;
 
 class SyncProfiles extends Command
 {

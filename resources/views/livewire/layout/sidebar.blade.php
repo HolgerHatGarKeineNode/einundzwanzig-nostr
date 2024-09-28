@@ -1,12 +1,26 @@
+<?php
+
+use function Livewire\Volt\state;
+use function Livewire\Volt\mount;
+
+state(['currentRoute' => '']);
+
+mount(function() {
+    $currentLivewireRouteName = request()->route()->getName();
+    $this->currentRoute = $currentLivewireRouteName;
+});
+
+?>
+
 <div class="min-w-fit">
     @php
-        $isCurrentRouteClass = 'pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]';
+        $isCurrentRouteClass = 'pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] from-orange-500/[0.12] dark:from-orange-500/[0.24] to-orange-500/[0.04]';
         $isNotCurrentRouteClass = 'pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0';
-        $isCurrentSubItem = 'block text-violet-500 transition truncate';
+        $isCurrentSubItem = 'block text-orange-500 transition truncate';
         $isNotCurrentSubItem = 'block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate';
     @endphp
 
-    <!-- Sidebar backdrop (mobile only) -->
+        <!-- Sidebar backdrop (mobile only) -->
     <div
         class="fixed inset-0 bg-gray-900 bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200"
         :class="sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'"
@@ -45,8 +59,8 @@
 
             <!-- Links -->
         <div class="space-y-8">
-            @include('components.layouts.navigation.meetups', ['isCurrentRouteClass' => $isCurrentRouteClass, 'isNotCurrentRouteClass' => $isNotCurrentRouteClass])
-            @include('components.layouts.navigation.association', ['isCurrentRouteClass' => $isCurrentRouteClass, 'isNotCurrentRouteClass' => $isNotCurrentRouteClass])
+            @include('components.layouts.navigation.meetups')
+            @include('components.layouts.navigation.association')
             {{--@include('components.layouts.navigation.events')
             @include('components.layouts.navigation.courses')
             @include('components.layouts.navigation.nostr')

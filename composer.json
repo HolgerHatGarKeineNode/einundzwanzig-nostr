@@ -7,12 +7,14 @@
     "require": {
         "php": "^8.2",
         "akuechler/laravel-geoly": "^1.0",
+        "archtechx/enums": "^1.1",
         "calebporzio/sushi": "^2.5",
         "laravel/folio": "^1.1",
         "laravel/framework": "^11.9",
         "laravel/pulse": "^1.2",
         "laravel/reverb": "^1.0",
         "laravel/sail": "^1.31",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
         "livewire/volt": "^1.6",
@@ -24,7 +26,8 @@
         "spatie/laravel-sluggable": "^3.6",
         "spatie/laravel-tags": "^4.6",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
-        "swentel/nostr-php": "^1.4"
+        "swentel/nostr-php": "^1.4",
+        "wireui/wireui": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -17,6 +17,14 @@ trait NostrFetcherTrait
     {
         $hex = collect([]);
         foreach ($npubs as $item) {
+            // check if $item is already a hex string
+            if (preg_match('/^[0-9a-fA-F]+$/', $item)) {
+                $hex->push([
+                    'hex' => $item,
+                    'npub' => (new Key)->convertPublicKeyToBech32($item),
+                ]);
+                continue;
+            }
             $hex->push([
                 'hex' => (new Key)->convertToHex($item),
                 'npub' => $item,
