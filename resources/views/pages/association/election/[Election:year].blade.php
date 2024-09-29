@@ -435,7 +435,7 @@ $signEvent = function ($event) {
                                                     </div>
                                                 </div>
                                                 <footer class="mt-5">
-                                                    <div class="grid grid-cols-3 gap-y-2">
+                                                    <div class="grid grid-cols-2 gap-y-2">
                                                         @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
                                                             <div
                                                                 @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
