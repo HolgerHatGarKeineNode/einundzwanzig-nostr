@@ -65,10 +65,13 @@ updated([
             ->with([
                 'profile',
             ])
-            ->where('pubkey', 'like', "%$value%")
-            ->orWhereHas('profile', function ($query) use ($value) {
-                $query->where('name', 'ilike', "%$value%");
-            })
+            ->whereIn('association_status', [3, 4])
+            ->where(fn($query)
+                => $query
+                ->where('pubkey', 'like', "%$value%")
+                ->orWhereHas('profile', function ($query) use ($value) {
+                    $query->where('name', 'ilike', "%$value%");
+                }))
             ->orderBy('association_status', 'desc')
             ->get()
             ->toArray();
@@ -359,7 +362,8 @@ $signEvent = function ($event) {
                 <div class="sticky top-16">
                     <div
                         class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
-                        <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
+                        <div
+                            class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
                             <div>
                                 @if($isNotClosed)
                                     <x-badge success
