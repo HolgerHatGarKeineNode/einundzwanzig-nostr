@@ -86,7 +86,7 @@ $loadEvents = function () {
     $requestMessage = new RequestMessage($subscriptionId, $filters);
 
     $relays = [
-        new Relay('ws://relay:7000'),
+        new Relay(config('services.relay')),
     ];
     $relaySet = new RelaySet();
     $relaySet->setRelays($relays);
@@ -94,7 +94,7 @@ $loadEvents = function () {
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
 
-    $this->events = collect($response['ws://relay:7000'])
+    $this->events = collect($response[config('services.relay')])
         ->map(fn($event)
             => [
             'id' => $event->event->id,
@@ -133,7 +133,7 @@ $signEvent = function ($event) {
     $note->setTags($event['tags']);
     $note->setCreatedAt($event['created_at']);
     $eventMessage = new EventMessage($note);
-    $relayUrl = 'ws://relay:7000';
+    $relayUrl = config('services.relay');
     $relay = new Relay($relayUrl);
     $relay->setMessage($eventMessage);
     $result = $relay->send();
@@ -429,20 +429,21 @@ $signEvent = function ($event) {
                                                 </div>
                                                 <footer class="mt-5">
                                                     <div class="grid grid-cols-3 gap-y-2">
-                                                            @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
-                                                                <div
-                                                                    @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"@endif
-                                                                    class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
-                                                                    <div class="flex items-center">
-                                                                        <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                                             src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
-                                                                             onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
-                                                                             width="24" height="24"
-                                                                             alt="{{ $c['name'] }}"/>
-                                                                        {{ $c['name'] }}
-                                                                    </div>
+                                                        @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
+                                                            <div
+                                                                @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
+                                                                @endif
+                                                                class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                                <div class="flex items-center">
+                                                                    <img class="w-6 h-6 rounded-full mr-2 bg-black"
+                                                                         src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                         onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
+                                                                         width="24" height="24"
+                                                                         alt="{{ $c['name'] }}"/>
+                                                                    {{ $c['name'] }}
                                                                 </div>
-                                                            @endforeach
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 </footer>
                                             </div>

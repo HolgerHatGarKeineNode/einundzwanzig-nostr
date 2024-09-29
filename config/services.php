@@ -14,6 +14,8 @@ return [
     |
     */
 
+    'relay' => env('NOSTR_RELAY'),
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

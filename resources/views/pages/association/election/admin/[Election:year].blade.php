@@ -126,7 +126,7 @@ $loadEvents = function () {
     $requestMessage = new RequestMessage($subscriptionId, $filters);
 
     $relays = [
-        new Relay('ws://relay:7000'),
+        new Relay(config('services.relay')),
     ];
     $relaySet = new RelaySet();
     $relaySet->setRelays($relays);
@@ -134,7 +134,7 @@ $loadEvents = function () {
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
 
-    $this->events = collect($response['ws://relay:7000'])
+    $this->events = collect($response[config('services.relay')])
         ->map(fn($event)
             => [
             'id' => $event->event->id,
