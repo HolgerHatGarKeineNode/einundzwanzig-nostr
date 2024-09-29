@@ -59,7 +59,7 @@ mount(function() {
 
             <!-- Links -->
         <div class="space-y-8">
-            @include('components.layouts.navigation.meetups')
+            {{--@include('components.layouts.navigation.meetups')--}}
             @include('components.layouts.navigation.association')
             {{--@include('components.layouts.navigation.events')
             @include('components.layouts.navigation.courses')

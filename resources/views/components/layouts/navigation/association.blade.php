@@ -30,5 +30,13 @@
                 </div>
             </a>
         </li>
+        <li class="{{ $currentRoute === 'association.members.admin' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
+            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.members.admin') }}">
+                <div class="flex items-center">
+                    <i class="fa-sharp-duotone fa-solid fa-users h-6 w-6"></i>
+                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Mitglieder</span>
+                </div>
+            </a>
+        </li>
     </ul>
 </div>

@@ -278,8 +278,8 @@ $signEvent = function ($event) {
                                     <li class="-mx-2">
                                         <div class="flex w-full p-2 rounded text-left">
                                             <img class="w-8 h-8 rounded-full mr-2 bg-black"
-                                                 src="{{ $pleb['profile']['picture'] ?? 'https://robohash.org/' . $pleb['pubkey'] }}"
-                                                 onerror="this.onerror=null; this.src='https://robohash.org/{{ $pleb['pubkey'] }}';"
+                                                 src="{{ $pleb['profile']['picture'] ?? 'https://robohash.org/test' }}"
+                                                 onerror="this.onerror=null; this.src='https://robohash.org/test';"
                                                  width="32"
                                                  height="32"
                                                  alt="{{ $pleb['pubkey'] }}"/>
