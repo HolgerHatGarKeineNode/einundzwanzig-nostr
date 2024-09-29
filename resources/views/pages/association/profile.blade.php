@@ -179,7 +179,7 @@ $save = function ($type) {
                                 <div class="text-sm">
                                     <x-textarea
                                         corner="Woher kennen wir dich? Was möchtest du einbringen?"
-                                        description="Wir bitten dich mindestens von mind. 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
+                                        description="Wir bitten dich mindestens von 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
                                         label="Warum möchtest du aktives Mitglied werden?" wire:model="form.reason"/>
                                 </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
