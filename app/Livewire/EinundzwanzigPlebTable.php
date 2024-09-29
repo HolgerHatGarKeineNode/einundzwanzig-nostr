@@ -158,7 +158,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return [
             // Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($row) => false)
+                ->when(fn($row) => $row->application_for === null)
                 ->hide(),
         ];
     }
