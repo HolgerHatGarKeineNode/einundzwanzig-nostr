@@ -124,6 +124,14 @@
                                             <span>Github</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
+                                           href="https://einundzwanzig.space/kontakt/" target="_blank" @click="open = false" @focus="open = true"
+                                           @focusout="open = false">
+                                            <i class="fa-brands fa-github w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
+                                            <span>Impressum</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
