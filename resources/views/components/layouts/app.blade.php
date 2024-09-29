@@ -100,18 +100,22 @@
                                     Information
                                 </div>
                                 <ul>
-                                    {{--<li>
+                                    <li>
                                         <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="#0" @click="open = false" @focus="open = true"
+                                           href="{{ route('changelog') }}" @click="open = false" @focus="open = true"
                                            @focusout="open = false">
-                                            <svg class="w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"
-                                                 viewBox="0 0 12 12">
-                                                <rect y="3" width="12" height="9" rx="1"/>
-                                                <path d="M2 0h8v2H2z"/>
-                                            </svg>
-                                            <span>Documentation</span>
+                                            <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
+                                            <span>Changelog</span>
                                         </a>
-                                    </li>--}}
+                                    </li>
+                                    <li>
+                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
+                                           href="https://github.com/HolgerHatGarKeineNode/einundzwanzig-nostr" target="_blank" @click="open = false" @focus="open = true"
+                                           @focusout="open = false">
+                                            <i class="fa-brands fa-github w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
+                                            <span>Github</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
