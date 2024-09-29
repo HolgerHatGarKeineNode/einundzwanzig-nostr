@@ -159,7 +159,7 @@ $signEvent = function ($event) {
                 'presidency' => ['icon' => 'fa-crown', 'title' => 'Präsidium'],
                 'vice_president' => ['icon' => 'fa-user-group-crown', 'title' => 'Vizepräsidium'],
                 'finances' => ['icon' => 'fa-bitcoin-sign', 'title' => 'Finanzen'],
-                'secretary' => ['icon' => 'fa-stapler', 'title' => 'Sekretär (Akurat)'],
+                'secretary' => ['icon' => 'fa-stapler', 'title' => 'Revisionsstelle'],
                 'press_officer' => ['icon' => 'fa-newspaper', 'title' => 'Pressewart'],
                 'it_manager' => ['icon' => 'fa-server', 'title' => 'Technikwart'],
             ];
