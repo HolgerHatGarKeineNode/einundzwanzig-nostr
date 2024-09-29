@@ -102,6 +102,14 @@
                                 <ul>
                                     <li>
                                         <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
+                                           target="_blank" href="https://gitworkshop.dev/r/naddr1qvzqqqrhnypzqzklvar4enzu53t06vpzu3h465nwkzhk9p9ls4y5crwhs3lnu5pnqy88wumn8ghj7mn0wvhxcmmv9uqpxetfde6kuer6wasku7nfvukkummnw3eqdgsn8w/issues" @click="open = false" @focus="open = true"
+                                           @focusout="open = false">
+                                            <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
+                                            <span>Issues/Feedback</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
                                            href="{{ route('changelog') }}" @click="open = false" @focus="open = true"
                                            @focusout="open = false">
                                             <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
