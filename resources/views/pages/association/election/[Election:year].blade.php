@@ -94,6 +94,11 @@ $loadEvents = function () {
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
 
+    // Check for errors in the response
+    if (isset($response[config('services.relay')][0][0]) && $response[config('services.relay')][0][0] === 'ERROR') {
+        abort(500, 'Kann keine Events laden. Nostr Relay antwortet nicht.');
+    }
+
     $this->events = collect($response[config('services.relay')])
         ->map(fn($event)
             => [
