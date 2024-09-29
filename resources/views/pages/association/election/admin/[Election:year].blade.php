@@ -28,8 +28,6 @@ state(['currentPubkey' => null]);
 state(['votes' => null]);
 state(['events' => null]);
 state(['election' => fn() => $election]);
-state(['ehrenMitgliederCount' => 0]);
-state(['aktiveMitgliederCount' => 0]);
 state(['signThisEvent' => '']);
 state([
     'plebs' => fn()
@@ -66,15 +64,6 @@ state([
 ]);
 
 mount(function () {
-    $plebsCollection = collect($this->plebs);
-    $this->ehrenMitgliederCount = $plebsCollection->where(
-        'association_status',
-        \App\Enums\AssociationStatus::HONORARY(),
-    )->count();
-    $this->aktiveMitgliederCount = $plebsCollection->where(
-        'association_status',
-        \App\Enums\AssociationStatus::ACTIVE(),
-    )->count();
     $this->loadEvents();
     $this->loadVotes();
 });
@@ -198,27 +187,6 @@ $loadEvents = function () {
                                 class="fa-sharp-duotone fa-solid {{ $position['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $position['title'] }}
                         </h2>
                     </header>
-                    <div x-ref="chart_{{ $key }}-legend" class="px-5 py-3">
-                        <ul class="flex flex-wrap gap-x-4">
-                            <li>
-                                <button style="display: inline-flex; align-items: center;"><span
-                                        class="text-gray-800 dark:text-gray-100"
-                                        style="font-size: 1.88rem; line-height: 1.33; font-weight: 700; margin-right: 8px; pointer-events: none;">0 / {{ $ehrenMitgliederCount }}</span><span
-                                        class="text-gray-500 dark:text-gray-400"
-                                        style="font-size: 0.875rem; line-height: 1.5715;">Ehrenmitglieder</span>
-                                </button>
-                            </li>
-                            <li>
-                                <button style="display: inline-flex; align-items: center;"><span
-                                        style="display: flex; align-items: center;"><span
-                                            class="text-gray-800 dark:text-gray-100"
-                                            style="font-size: 1.88rem; line-height: 1.33; font-weight: 700; margin-right: 8px; pointer-events: none;">0 / {{ $aktiveMitgliederCount }}</span><span
-                                            class="text-gray-500 dark:text-gray-400"
-                                            style="font-size: 0.875rem; line-height: 1.5715;">Aktive Mitglieder</span></span>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
                     <div class="grow">
                         <!-- Change the height attribute to adjust the chart height -->
                         <canvas x-ref="chart_{{ $key }}" width="724" height="288"

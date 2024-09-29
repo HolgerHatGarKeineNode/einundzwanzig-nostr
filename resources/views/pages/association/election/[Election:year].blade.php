@@ -345,8 +345,13 @@ $signEvent = function ($event) {
                 <div class="sticky top-16">
                     <div
                         class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
-                        <div class="flex justify-between items-center">
-                            <x-badge success label="Die Wahl ist geöffnet bis zum 31.12.2024 um 22:00 Uhr"/>
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <x-badge success label="Die Wahl ist geöffnet bis zum 31.12.2024 um 22:00 Uhr"/>
+                            </div>
+                            <div>
+                                <x-button secondary :href="route('association.election.admin', ['election' => $election])" label="Wahl-Admin"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -399,7 +404,7 @@ $signEvent = function ($event) {
                                                     </div>
                                                 </div>
                                                 <footer class="mt-5">
-                                                    <div class="flex justify-between items-center">
+                                                    <div class="grid grid-cols-3 gap-y-2">
                                                         @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
                                                             <div wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
                                                                  class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
