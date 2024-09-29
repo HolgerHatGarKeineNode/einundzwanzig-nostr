@@ -177,7 +177,7 @@ $loadEvents = function () {
         </div>
 
         <!-- Cards -->
-        <div class="grid grid-cols-12 gap-6">
+        <div class="grid grid-cols-3 gap-6">
 
             @foreach($positions as $key => $position)
                 <div wire:key="pos_{{ $key }}" wire:ignore

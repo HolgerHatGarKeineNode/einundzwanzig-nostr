@@ -109,11 +109,11 @@ $save = function ($type) {
 
                     <!-- Panel body -->
                     <div class="p-6 space-y-6">
-                        <h2 class="text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
+                        <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
 
                         <!-- Picture -->
                         <section>
-                            <div class="flex items-center justify-between">
+                            <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
                                           x-show="!$store.nostr.user"/>
                                 <template x-if="$store.nostr.user">
@@ -122,10 +122,11 @@ $save = function ($type) {
                                              x-bind:src="$store.nostr.user.picture"
                                              alt="">
                                         <div class="ml-4">
-                                            <h3 class="text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
+                                            <h3 class="w-48 sm:w-full truncate text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
                                                 x-text="$store.nostr.user.nip05"></h3>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400"
-                                                 x-text="$store.nostr.user.nip05"></div>
+                                            <div
+                                                class="tw-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
+                                                x-text="$store.nostr.user.nip05"></div>
                                         </div>
                                     </div>
                                 </template>
@@ -194,14 +195,19 @@ $save = function ($type) {
 
                         <section>
                             @if($currentPubkey && $currentPleb->application_for)
-                                <div class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                <div
+                                    class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                     <div class="flex w-full justify-between items-start">
                                         <div class="flex">
-                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
+                                                 height="16" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
-                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Du hast dich erfolgreich mit folgendem Grund beworben:</div>
+                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Du hast
+                                                    dich erfolgreich mit folgendem Grund beworben:
+                                                </div>
                                                 <div>{{ $currentPleb->application_text }}</div>
                                             </div>
                                         </div>
@@ -212,14 +218,19 @@ $save = function ($type) {
 
                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
-                                <div class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                <div
+                                    class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                     <div class="flex w-full justify-between items-start">
                                         <div class="flex">
-                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
+                                                 height="16" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
-                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Dein aktueller Status: {{ $currentPleb->association_status->label() }}</div>
+                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Dein
+                                                    aktueller
+                                                    Status: {{ $currentPleb->association_status->label() }}</div>
                                             </div>
                                         </div>
                                     </div>

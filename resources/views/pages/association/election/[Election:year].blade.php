@@ -163,11 +163,11 @@ $signEvent = function ($event) {
                     $profile = \App\Models\Profile::query()
                         ->where('pubkey', $event['pubkey'])
                         ->first()
-                        ->toArray();
+                        ?->toArray();
                     $votedFor = \App\Models\Profile::query()
                         ->where('pubkey', str($event['content'])->before(',')->toString())
                         ->first()
-                        ->toArray();
+                        ?->toArray();
 
                     return [
                         'id' => $event['id'],
@@ -182,9 +182,7 @@ $signEvent = function ($event) {
                     ];
                 })
                 ->sortByDesc('created_at')
-                ->unique(function ($event) {
-                    return $event['pubkey'] . $event['type'];
-                })
+                ->unique(fn ($event) => $event['pubkey'] . $event['type'])
                 ->values();
         @endphp
 
@@ -361,7 +359,7 @@ $signEvent = function ($event) {
                 <div class="sticky top-16">
                     <div
                         class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
-                        <div class="flex justify-between items-center w-full">
+                        <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
                             <div>
                                 @if($isNotClosed)
                                     <x-badge success
@@ -421,14 +419,14 @@ $signEvent = function ($event) {
                                                             $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', $type);
                                                         @endphp
                                                         @if($votedResult)
-                                                            <span>Du hast "{{ $votedResult['votedFor']['name'] }}" gewählt</span>
+                                                            <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
                                                         @else
                                                             <span>Klicke auf den Kandidaten, den du wählen möchtest.</span>
                                                         @endif
                                                     </div>
                                                 </div>
                                                 <footer class="mt-5">
-                                                    <div class="grid grid-cols-2 gap-y-2">
+                                                    <div class="grid sm:grid-cols-2 gap-y-2">
                                                         @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
                                                             <div
                                                                 @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
@@ -511,7 +509,7 @@ $signEvent = function ($event) {
                                                     <div>{{ $event['created_at'] }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                    <div>{{ $event['votedFor']['name'] }}</div>
+                                                    <div>{{ $event['votedFor']['name'] ?? 'error' }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div>{{ $event['type'] }}</div>

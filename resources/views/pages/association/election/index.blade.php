@@ -37,7 +37,7 @@ $saveElection = function ($index) {
     @volt
     <div class="relative flex h-full">
         @foreach($elections as $election)
-            <div class="w-1/3 p-4">
+            <div class="w-full sm:w-1/3 p-4">
                 <div class="shadow-lg rounded-lg overflow-hidden">
                     {{ $election['year'] }}
                 </div>
