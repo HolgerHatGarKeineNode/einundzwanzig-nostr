@@ -30,6 +30,7 @@ state(['election' => fn() => $election]);
 state(['plebs' => []]);
 state(['search' => '']);
 state(['signThisEvent' => '']);
+state(['isNotClosed' => true]);
 
 mount(function () {
     $this->plebs = \App\Models\EinundzwanzigPleb::query()
@@ -41,6 +42,9 @@ mount(function () {
         ->get()
         ->toArray();
     $this->loadEvents();
+    if ($this->election->end_time->isPast()) {
+        $this->isNotClosed = false;
+    }
 });
 
 on([
@@ -49,9 +53,11 @@ on([
     },
 ]);
 
-on(['echo:votes,.newVote' => function () {
-    $this->loadEvents();
-}]);
+on([
+    'echo:votes,.newVote' => function () {
+        $this->loadEvents();
+    }
+]);
 
 updated([
     'search' => function ($value) {
@@ -101,10 +107,20 @@ $loadEvents = function () {
 };
 
 $vote = function ($pubkey, $type) {
+    if ($this->election->end_time->isPast()) {
+        $this->isNotClosed = false;
+        return;
+    }
     $note = new NostrEvent();
     $note->setContent($pubkey . ',' . $type);
     $note->setKind(2121);
     $this->signThisEvent = $note->toJson();
+};
+
+$checkElection = function () {
+    if ($this->election->end_time->isPast()) {
+        $this->isNotClosed = false;
+    }
 };
 
 $signEvent = function ($event) {
@@ -131,7 +147,7 @@ $signEvent = function ($event) {
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div class="relative flex h-full" x-data="nostrApp(@this)">
+    <div class="relative flex h-full" x-data="nostrApp(@this)" wire:poll.600000ms="checkElection">
 
         @php
             $positions = [
@@ -347,10 +363,17 @@ $signEvent = function ($event) {
                         class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
                         <div class="flex justify-between items-center w-full">
                             <div>
-                                <x-badge success label="Die Wahl ist geöffnet bis zum 31.12.2024 um 22:00 Uhr"/>
+                                @if($isNotClosed)
+                                    <x-badge success
+                                             label="Die Wahl ist geöffnet bis zum {{ $election->end_time->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
+                                @else
+                                    <x-badge negative label="Die Wahl ist geschlossen"/>
+                                @endif
                             </div>
                             <div>
-                                <x-button secondary :href="route('association.election.admin', ['election' => $election])" label="Wahl-Admin"/>
+                                <x-button secondary
+                                          :href="route('association.election.admin', ['election' => $election])"
+                                          label="Wahl-Admin"/>
                             </div>
                         </div>
                     </div>
@@ -389,7 +412,8 @@ $signEvent = function ($event) {
                                                     </div>
                                                 </header>
                                                 <div class="grow mt-2">
-                                                    <div class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
+                                                    <div
+                                                        class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
                                                         <h2 class="text-xl leading-snug font-semibold">{{ $position['title'] }}</h2>
                                                     </div>
                                                     <div class="text-sm">
@@ -405,18 +429,20 @@ $signEvent = function ($event) {
                                                 </div>
                                                 <footer class="mt-5">
                                                     <div class="grid grid-cols-3 gap-y-2">
-                                                        @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
-                                                            <div wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
-                                                                 class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
-                                                                <div class="flex items-center">
-                                                                    <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                                         src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
-                                                                         onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
-                                                                         width="24" height="24" alt="{{ $c['name'] }}"/>
-                                                                    {{ $c['name'] }}
+                                                            @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
+                                                                <div
+                                                                    @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"@endif
+                                                                    class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                                    <div class="flex items-center">
+                                                                        <img class="w-6 h-6 rounded-full mr-2 bg-black"
+                                                                             src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                             onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
+                                                                             width="24" height="24"
+                                                                             alt="{{ $c['name'] }}"/>
+                                                                        {{ $c['name'] }}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        @endforeach
+                                                            @endforeach
                                                     </div>
                                                 </footer>
                                             </div>
@@ -471,7 +497,8 @@ $signEvent = function ($event) {
                                         @foreach($loadedEvents as $event)
                                             <tr>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                    <div class="font-medium">{{ \Illuminate\Support\Str::limit($event['id'], 10) }}</div>
+                                                    <div
+                                                        class="font-medium">{{ \Illuminate\Support\Str::limit($event['id'], 10) }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div>{{ $event['kind'] }}</div>
