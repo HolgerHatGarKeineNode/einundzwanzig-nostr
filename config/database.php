@@ -99,12 +99,12 @@ return [
 
         'einundzwanzig' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
+            'url' => env('DB_URL_EINUNDZANZIG'),
+            'host' => env('DB_HOST_EINUNDZANZIG', '127.0.0.1'),
+            'port' => env('DB_PORT_EINUNDZANZIG', '5432'),
             'database' => 'einundzwanzig',
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'username' => env('DB_USERNAME_EINUNDZANZIG', 'root'),
+            'password' => env('DB_PASSWORD_EINUNDZANZIG', ''),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
