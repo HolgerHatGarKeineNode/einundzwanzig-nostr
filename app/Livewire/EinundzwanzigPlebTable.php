@@ -9,16 +9,18 @@ use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Detail;
 use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
 use PowerComponents\LivewirePowerGrid\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 
 final class EinundzwanzigPlebTable extends PowerGridComponent
 {
+    use WithExport;
+
     public string $sortField = 'application_for';
 
     public string $sortDirection = 'asc';
@@ -96,34 +98,32 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Avatar', 'avatar'),
+            Column::make('Avatar', 'avatar')
+                ->visibleInExport( visible: false),
 
             Column::make('Npub', 'npub')
-                ->searchable()
+                ->visibleInExport(visible: false)
                 ->sortable(),
 
             Column::make('Name', 'name_lower')
-                ->searchable()
                 ->sortable(),
 
             Column::make('Aktueller Status', 'association_status_formatted', 'association_status')
-                ->searchable()
+                ->visibleInExport( visible: true)
                 ->sortable(),
 
             Column::make('Bewirbt sich für', 'for', 'application_for')
-                ->searchable()
+                ->visibleInExport( visible: false)
                 ->sortable(),
 
-            Column::action('Action'),
+            Column::action('Action')
+                ->visibleInExport( visible: false),
         ];
     }
 
     public function filters(): array
     {
-        return [
-            Filter::inputText('name'),
-            Filter::datepicker('created_at_formatted', 'created_at'),
-        ];
+        return [];
     }
 
     #[\Livewire\Attributes\On('edit')]
