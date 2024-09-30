@@ -67,7 +67,7 @@ services:
             timeout: 5s
     relay:
         ports:
-            - "7000"
+            - "7000:7000"
         volumes:
             - ./relay:/usr/src/app/db
             - ./relay/config.toml:/usr/src/app/config.toml

@@ -507,13 +507,13 @@ $signEvent = function ($event) {
                                                     <div>{{ $event['kind'] }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                    <div>{{ $event['profile']['name'] }}</div>
+                                                    <div>{{ $event['profile']['name'] ?? '' }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div>{{ $event['created_at'] }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                    <div>{{ $event['votedFor']['name'] ?? 'error' }}</div>
+                                                    <div>{{ $event['votedFor']['name'] ?? '' }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div>{{ $event['type'] }}</div>

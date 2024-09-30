@@ -2,6 +2,7 @@ import {Alpine, Livewire} from '../../vendor/livewire/livewire/dist/livewire.esm
 
 import nostrApp from "./nostrApp.js";
 import nostrLogin from "./nostrLogin.js";
+import nostrZap from "./nostrZap.js";
 import electionAdminCharts from "./electionAdminCharts.js";
 
 import './bootstrap';
@@ -19,6 +20,7 @@ Alpine.store('nostr', {
 
 Alpine.data('nostrApp', nostrApp);
 Alpine.data('nostrLogin', nostrLogin);
+Alpine.data('nostrZap', nostrZap);
 Alpine.data('electionAdminCharts', electionAdminCharts);
 
 Livewire.start();

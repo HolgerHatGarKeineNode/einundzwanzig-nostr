@@ -2,27 +2,124 @@
 
 use Livewire\Volt\Component;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use swentel\nostr\Filter\Filter;
+use swentel\nostr\Key\Key;
+use swentel\nostr\Message\EventMessage;
+use swentel\nostr\Message\RequestMessage;
+use swentel\nostr\Relay\Relay;
+use swentel\nostr\Relay\RelaySet;
+use swentel\nostr\Request\Request;
+use swentel\nostr\Subscription\Subscription;
+use swentel\nostr\Event\Event as NostrEvent;
+use swentel\nostr\Sign\Sign;
+
 use function Livewire\Volt\computed;
 use function Livewire\Volt\mount;
 use function Livewire\Volt\state;
 use function Livewire\Volt\with;
 use function Laravel\Folio\{middleware};
 use function Laravel\Folio\name;
-use function Livewire\Volt\{on, form};
+use function Livewire\Volt\{on, form, updated};
 
 name('association.profile');
 
+state(['yearsPaid' => []]);
+state(['events' => []]);
+state(['payments' => []]);
+state(['invoice' => null]);
+state(['qrCode' => null]);
+state(['paid' => false]);
+state(['amountToPay' => 1]);
+state(['currentYearIsPaid' => false]);
 state(['currentPubkey' => null]);
 state(['currentPleb' => null]);
 
 form(\App\Livewire\Forms\ApplicationForm::class);
 
+updated([
+    'invoice' => function () {
+        $this->qrCode = base64_encode(
+            QrCode::format('png')
+                ->size(300)
+                ->merge('/public/android-chrome-192x192.png', .3)
+                ->errorCorrection('H')
+                ->generate($this->invoice),
+        );
+    },
+]);
+
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
+        if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
+            $this->amountToPay = 21;
+        }
+        if (!$this->currentPleb->payment_event) {
+            $this->createPaymentEvent();
+        }
+        $this->loadEvents();
+        $this->searchPaymentEvent();
     },
 ]);
+
+$listenForPayment = function () {
+    if (!$this->paid) {
+        $this->searchPaymentEvent();
+    }
+};
+
+$searchPaymentEvent = function () {
+    $subscription = new Subscription();
+    $subscriptionId = $subscription->setId();
+
+    $filter1 = new Filter();
+    $filter1->setKinds([9735]);
+    $filters = [$filter1];
+
+    $requestMessage = new RequestMessage($subscriptionId, $filters);
+
+    $relays = [
+        new Relay(config('services.relay')),
+    ];
+    $relaySet = new RelaySet();
+    $relaySet->setRelays($relays);
+
+    $request = new Request($relaySet, $requestMessage);
+    $response = $request->send();
+
+    if (count($response[config('services.relay')]) > 0) {
+        $this->payments = collect($response[config('services.relay')])->map(fn($event)
+            => [
+            'id' => $event->event->id,
+            'kind' => $event->event->kind,
+            'content' => $event->event->content,
+            'pubkey' => $event->event->pubkey,
+            'tags' => $event->event->tags,
+            'created_at' => $event->event->created_at,
+        ])->toArray();
+
+        $this->yearsPaid = collect($this->payments)->map(fn($payment)
+            => [
+            'year' => $payment['content'],
+            'amount' => collect(
+                    json_decode(
+                        collect($payment['tags'])->firstWhere('0', 'description')[1],
+                        true,
+                        512,
+                        JSON_THROW_ON_ERROR
+                    )['tags']
+                )->firstWhere('0', 'amount')[1] / 1000,
+        ]);
+
+        $this->currentYearIsPaid = collect($this->yearsPaid)->contains(
+            fn($yearPaid) => $yearPaid['year'] == date('Y') && $yearPaid['amount'] == $this->amountToPay
+        );
+
+        $this->paid = true;
+    }
+};
 
 $save = function ($type) {
     $this->form->validate();
@@ -33,11 +130,90 @@ $save = function ($type) {
         ]);
 };
 
+$createKind0 = function () {
+    $note = new NostrEvent();
+    $note->setKind(0);
+    $note->setContent('');
+    $note->setTags([
+        ['display_name', 'Einundzwanzig Portal'],
+        ['lud16', 'portaleinundzwanzig@getalby.com'],
+        ['pubkey', 'daf83d92768b5d0005373f83e30d4203c0b747c170449e02fea611a0da125ee6'],
+    ]);
+    $signer = new Sign();
+    $signer->signEvent($note, config('services.nostr'));
+    $eventMessage = new EventMessage($note);
+    $relayUrl = config('services.relay');
+    $relay = new Relay($relayUrl);
+    $relay->setMessage($eventMessage);
+    $result = $relay->send();
+};
+
+$createPaymentEvent = function () {
+    $note = new NostrEvent();
+    $note->setKind(32121);
+    $note->setContent(
+        'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr ' . date(
+            'Y',
+        ) . '. Bitte zappe den Betrag von 1 Satoshi.',
+    );
+    $note->setTags([
+        ['d', $this->currentPleb->pubkey . ',' . date('Y')],
+        ['zap', 'daf83d92768b5d0005373f83e30d4203c0b747c170449e02fea611a0da125ee6', config('services.relay'), '1'],
+    ]);
+    $signer = new Sign();
+    $signer->signEvent($note, config('services.nostr'));
+
+    $eventMessage = new EventMessage($note);
+
+    $relayUrl = config('services.relay');
+    $relay = new Relay($relayUrl);
+    $relay->setMessage($eventMessage);
+    $result = $relay->send();
+
+    $this->currentPleb->update([
+        'payment_event' => $result->eventId,
+    ]);
+};
+
+$loadEvents = function () {
+    $subscription = new Subscription();
+    $subscriptionId = $subscription->setId();
+
+    $filter1 = new Filter();
+    $filter1->setKinds([32121]);
+    $filter1->setAuthors(['daf83d92768b5d0005373f83e30d4203c0b747c170449e02fea611a0da125ee6']);
+    $filters = [$filter1];
+
+    $requestMessage = new RequestMessage($subscriptionId, $filters);
+
+    $relays = [
+        new Relay(config('services.relay')),
+    ];
+    $relaySet = new RelaySet();
+    $relaySet->setRelays($relays);
+
+    $request = new Request($relaySet, $requestMessage);
+    $response = $request->send();
+
+    $this->events = collect($response[config('services.relay')])
+        ->map(fn($event)
+            => [
+            'id' => $event->event->id,
+            'kind' => $event->event->kind,
+            'content' => $event->event->content,
+            'pubkey' => $event->event->pubkey,
+            'tags' => $event->event->tags,
+            'created_at' => $event->event->created_at,
+        ])
+        ->unique('id')
+        ->toArray();
+};
+
 ?>
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrZap(@this)">
 
         <!-- Page header -->
         <div class="mb-8">
@@ -157,7 +333,8 @@ $save = function ($type) {
                                 <div class="text-sm">
                                     <x-textarea
                                         corner="Beschreibe deine Motivation, passives Mitglied zu werden."
-                                        label="Warum möchtest du passives Mitglied werden?" wire:model="form.reason"/>
+                                        label="Warum möchtest du passives Mitglied werden?"
+                                        wire:model="form.reason"/>
                                 </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/3 flex flex-col space-y-2">
@@ -180,7 +357,8 @@ $save = function ($type) {
                                     <x-textarea
                                         corner="Woher kennen wir dich? Was möchtest du einbringen?"
                                         description="Wir bitten dich mindestens von 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
-                                        label="Warum möchtest du aktives Mitglied werden?" wire:model="form.reason"/>
+                                        label="Warum möchtest du aktives Mitglied werden?"
+                                        wire:model="form.reason"/>
                                 </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/3 flex flex-col space-y-2">
@@ -205,8 +383,8 @@ $save = function ($type) {
                                                     d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
-                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Du hast
-                                                    dich erfolgreich mit folgendem Grund beworben:
+                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                    Du hast dich erfolgreich mit folgendem Grund beworben:
                                                 </div>
                                                 <div>{{ $currentPleb->application_text }}</div>
                                             </div>
@@ -228,9 +406,117 @@ $save = function ($type) {
                                                     d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
-                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">Dein
-                                                    aktueller
-                                                    Status: {{ $currentPleb->association_status->label() }}</div>
+                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                    Dein aktueller
+                                                    Status: {{ $currentPleb->association_status->label() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </section>
+
+                        <section>
+                            @if($currentPleb && $currentPleb->association_status->value > 1)
+                                <div
+                                    class="inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                    <div class="flex w-full justify-between items-start">
+                                        <div class="flex">
+                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
+                                                 height="16" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                            </svg>
+                                            <div>
+                                                <div
+                                                    class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
+                                                    <p>Nostr Event für die Zahlung des
+                                                        Mitgliedsbeitrags: {{ $currentPleb->payment_event }}</p>
+                                                    <div>
+                                                        @if(isset($events[0]))
+                                                            <p>{{ $events[0]['content'] }}</p>
+                                                            <div class="mt-8">
+                                                                @if(!$invoice && !$currentYearIsPaid)
+                                                                    <div class="flex justify-center">
+                                                                        <button
+                                                                            @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }})"
+                                                                            class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                        >
+                                                                            <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
+                                                                            Zap
+                                                                        </button>
+                                                                    </div>
+                                                                @else
+                                                                    @if(!$currentYearIsPaid && $qrCode)
+                                                                        <div class="flex justify-center"
+                                                                             wire:key="qrcode"
+                                                                             wire:poll="listenForPayment">
+                                                                            <a href="lightning:{{ $invoice }}">
+                                                                                <img
+                                                                                    class="p-12 bg-white"
+                                                                                    src="{{ 'data:image/png;base64, '. $qrCode }}"
+                                                                                    alt="qrcode">
+                                                                            </a>
+                                                                        </div>
+                                                                    @else
+                                                                        @if($currentYearIsPaid)
+                                                                            <div class="flex justify-center">
+                                                                                <button
+                                                                                    class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                                >
+                                                                                    <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
+                                                                                    aktuelles Jahr bezahlt
+                                                                                </button>
+                                                                            </div>
+                                                                        @endif
+                                                                    @endif
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <section>
+                                                        <h3 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1">
+                                                            bisherige Zahlungen</h3>
+                                                        <!-- Table -->
+                                                        <table class="table-auto w-full dark:text-gray-400">
+                                                            <!-- Table header -->
+                                                            <thead
+                                                                class="text-xs uppercase text-gray-400 dark:text-gray-500">
+                                                            <tr class="flex flex-wrap md:table-row md:flex-no-wrap">
+                                                                <th class="w-full block md:w-auto md:table-cell py-2">
+                                                                    <div class="font-semibold text-left">Satoshis</div>
+                                                                </th>
+                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                                    <div class="font-semibold text-left">Jahr</div>
+                                                                </th>
+                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                                    <div class="font-semibold text-left">Event-ID</div>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <!-- Table body -->
+                                                            <tbody class="text-sm">
+                                                            @foreach($payments as $payment)
+                                                                <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
+                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                        <div
+                                                                            class="text-left font-medium text-gray-800 dark:text-gray-100">{{ collect(json_decode(collect($payment['tags'])->firstWhere('0', 'description')[1], true, 512, JSON_THROW_ON_ERROR)['tags'])->firstWhere('0', 'amount')[1] / 1000 }}</div>
+                                                                    </td>
+                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                        <div
+                                                                            class="text-left">{{ $payment['content'] }}</div>
+                                                                    </td>
+                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                        <div
+                                                                            class="text-left font-medium">{{ $payment['id'] }}</div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </section>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -239,22 +525,6 @@ $save = function ($type) {
                         </section>
 
                     </div>
-
-                    <!-- Panel footer -->
-                    {{--<footer>
-                        <div class="flex flex-col px-6 py-5 border-t border-gray-200 dark:border-gray-700/60">
-                            <div class="flex self-end">
-                                <button
-                                    class="btn dark:bg-[#1B1B1B] border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-[#1B1B1B] dark:text-gray-300">
-                                    Cancel
-                                </button>
-                                <button
-                                    class="btn bg-gray-900 text-gray-100 hover:bg-[#1B1B1B] dark:bg-gray-100 dark:text-[#1B1B1B] dark:hover:bg-white ml-3">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </footer>--}}
 
                 </div>
 

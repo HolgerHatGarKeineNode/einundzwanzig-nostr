@@ -28,7 +28,7 @@
     }
 </script>
 <div x-data="nostrLogin"
-    class="flex h-[100dvh] overflow-hidden">
+     class="flex h-[100dvh] overflow-hidden">
     <livewire:layout.sidebar/>
     <div
         class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
@@ -102,7 +102,9 @@
                                 <ul>
                                     <li>
                                         <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           target="_blank" href="https://gitworkshop.dev/r/naddr1qvzqqqrhnypzqzklvar4enzu53t06vpzu3h465nwkzhk9p9ls4y5crwhs3lnu5pnqy88wumn8ghj7mn0wvhxcmmv9uqpxetfde6kuer6wasku7nfvukkummnw3eqdgsn8w/issues" @click="open = false" @focus="open = true"
+                                           target="_blank"
+                                           href="https://gitworkshop.dev/r/naddr1qvzqqqrhnypzqzklvar4enzu53t06vpzu3h465nwkzhk9p9ls4y5crwhs3lnu5pnqy88wumn8ghj7mn0wvhxcmmv9uqpxetfde6kuer6wasku7nfvukkummnw3eqdgsn8w/issues"
+                                           @click="open = false" @focus="open = true"
                                            @focusout="open = false">
                                             <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
                                             <span>Issues/Feedback</span>
@@ -118,7 +120,8 @@
                                     </li>
                                     <li>
                                         <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="https://github.com/HolgerHatGarKeineNode/einundzwanzig-nostr" target="_blank" @click="open = false" @focus="open = true"
+                                           href="https://github.com/HolgerHatGarKeineNode/einundzwanzig-nostr"
+                                           target="_blank" @click="open = false" @focus="open = true"
                                            @focusout="open = false">
                                             <i class="fa-brands fa-github w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
                                             <span>Github</span>
@@ -126,7 +129,8 @@
                                     </li>
                                     <li>
                                         <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="https://einundzwanzig.space/kontakt/" target="_blank" @click="open = false" @focus="open = true"
+                                           href="https://einundzwanzig.space/kontakt/" target="_blank"
+                                           @click="open = false" @focus="open = true"
                                            @focusout="open = false">
                                             <i class="fa-sharp-duotone fa-solid fa-info w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
                                             <span>Impressum</span>
