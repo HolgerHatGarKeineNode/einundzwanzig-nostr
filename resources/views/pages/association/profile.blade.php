@@ -173,7 +173,7 @@ $createPaymentEvent = function () {
     $note->setContent(
         'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr ' . date(
             'Y',
-        ) . '. Bitte zappe den Betrag von 1 Satoshi.',
+        ) . '. Bitte zappe den Betrag von ' . $this->amountToPay . ' Satoshi.',
     );
     $note->setTags([
         ['d', $this->currentPleb->pubkey . ',' . date('Y')],
@@ -251,7 +251,7 @@ $loadEvents = function () {
 
                 <!-- Sidebar -->
                 <div
-                    class="flex flex-nowrap overflow-x-scroll no-scrollbar md:block md:overflow-auto px-3 py-6 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700/60 min-w-60 md:space-y-3">
+                        class="flex flex-nowrap overflow-x-scroll no-scrollbar md:block md:overflow-auto px-3 py-6 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700/60 min-w-60 md:space-y-3">
                     <!-- Group 1 -->
                     <div>
                         <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-3">
@@ -263,7 +263,7 @@ $loadEvents = function () {
                                    href="#0">
                                     <i class="fa-sharp-duotone fa-solid fa-id-card-clip shrink-0 fill-current text-orange-400 mr-2"></i>
                                     <span
-                                        class="text-sm font-medium text-orange-500 dark:text-orange-400">Status</span>
+                                            class="text-sm font-medium text-orange-500 dark:text-orange-400">Status</span>
                                 </a>
                             </li>
                             {{--<li class="mr-0.5 md:mr-0 md:mb-0.5">
@@ -322,20 +322,20 @@ $loadEvents = function () {
                                             <h3 class="w-48 sm:w-full truncate text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
                                                 x-text="$store.nostr.user.display_name"></h3>
                                             <div
-                                                class="w-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
-                                                x-text="$store.nostr.user.name"></div>
+                                                    class="w-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
+                                                    x-text="$store.nostr.user.name"></div>
                                         </div>
                                     </div>
                                 </template>
                                 @if($currentPubkey && $currentPleb->association_status->value < 2)
                                     <div
-                                        class="inline-flex min-w-80 px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-100">
+                                            class="inline-flex min-w-80 px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-100">
                                         <div class="flex w-full justify-between items-start">
                                             <div class="flex">
                                                 <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
                                                      width="16" height="16" viewBox="0 0 16 16">
                                                     <path
-                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
+                                                            d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
                                                 </svg>
                                                 <div>Profil in der Datenbank vorhanden. Bewerbung kann erfolgen.</div>
                                             </div>
@@ -353,9 +353,9 @@ $loadEvents = function () {
                                 </h3>
                                 <div class="text-sm">
                                     <x-textarea
-                                        corner="Beschreibe deine Motivation, passives Mitglied zu werden."
-                                        label="Warum möchtest du passives Mitglied werden?"
-                                        wire:model="form.reason"/>
+                                            corner="Beschreibe deine Motivation, passives Mitglied zu werden."
+                                            label="Warum möchtest du passives Mitglied werden?"
+                                            wire:model="form.reason"/>
                                 </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/3 flex flex-col space-y-2">
@@ -376,10 +376,10 @@ $loadEvents = function () {
                                 </h3>
                                 <div class="text-sm">
                                     <x-textarea
-                                        corner="Woher kennen wir dich? Was möchtest du einbringen?"
-                                        description="Wir bitten dich mindestens von 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
-                                        label="Warum möchtest du aktives Mitglied werden?"
-                                        wire:model="form.reason"/>
+                                            corner="Woher kennen wir dich? Was möchtest du einbringen?"
+                                            description="Wir bitten dich mindestens von 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
+                                            label="Warum möchtest du aktives Mitglied werden?"
+                                            wire:model="form.reason"/>
                                 </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/3 flex flex-col space-y-2">
@@ -395,13 +395,13 @@ $loadEvents = function () {
                         <section>
                             @if($currentPubkey && $currentPleb->application_for)
                                 <div
-                                    class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                        class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                     <div class="flex w-full justify-between items-start">
                                         <div class="flex">
                                             <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
                                                  height="16" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
                                                 <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
@@ -418,13 +418,13 @@ $loadEvents = function () {
                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
                                 <div
-                                    class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                        class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                     <div class="flex w-full justify-between items-start">
                                         <div class="flex">
                                             <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
                                                  height="16" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
                                                 <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
@@ -441,19 +441,21 @@ $loadEvents = function () {
                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
                                 <div
-                                    class="inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                        class="inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                     <div class="flex w-full justify-between items-start">
                                         <div class="flex">
                                             <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
                                                  height="16" viewBox="0 0 16 16">
                                                 <path
-                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                                             </svg>
                                             <div>
                                                 <div
-                                                    class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
+                                                        class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
                                                     <p>Nostr Event für die Zahlung des
-                                                        Mitgliedsbeitrags: <span class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span></p>
+                                                        Mitgliedsbeitrags: <span
+                                                                class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
+                                                    </p>
                                                     <div>
                                                         @if(isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
@@ -461,8 +463,8 @@ $loadEvents = function () {
                                                                 @if(!$invoice && !$currentYearIsPaid)
                                                                     <div class="flex justify-center">
                                                                         <button
-                                                                            @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }})"
-                                                                            class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                                @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }})"
+                                                                                class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                         >
                                                                             <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
                                                                             Zap
@@ -475,16 +477,16 @@ $loadEvents = function () {
                                                                              wire:poll="listenForPayment">
                                                                             <a href="lightning:{{ $invoice }}">
                                                                                 <img
-                                                                                    class="p-4 sm:p-12 bg-white"
-                                                                                    src="{{ 'data:image/png;base64, '. $qrCode }}"
-                                                                                    alt="qrcode">
+                                                                                        class="p-4 sm:p-12 bg-white"
+                                                                                        src="{{ 'data:image/png;base64, '. $qrCode }}"
+                                                                                        alt="qrcode">
                                                                             </a>
                                                                         </div>
                                                                     @else
                                                                         @if($currentYearIsPaid)
                                                                             <div class="flex sm:justify-center">
                                                                                 <button
-                                                                                    class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                                        class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                                 >
                                                                                     <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
                                                                                     aktuelles Jahr bezahlt
@@ -503,7 +505,7 @@ $loadEvents = function () {
                                                         <table class="table-auto w-full dark:text-gray-400">
                                                             <!-- Table header -->
                                                             <thead
-                                                                class="text-xs uppercase text-gray-400 dark:text-gray-500">
+                                                                    class="text-xs uppercase text-gray-400 dark:text-gray-500">
                                                             <tr class="flex flex-wrap md:table-row md:flex-no-wrap">
                                                                 <th class="w-full hidden md:w-auto md:table-cell py-2">
                                                                     <div class="font-semibold text-left">Satoshis</div>
@@ -522,18 +524,20 @@ $loadEvents = function () {
                                                                 <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left font-medium text-gray-800 dark:text-gray-100">
+                                                                                class="text-left font-medium text-gray-800 dark:text-gray-100">
                                                                             <span class="sm:hidden">Sats:</span>
                                                                             {{ collect(json_decode(collect($payment['tags'])->firstWhere('0', 'description')[1], true, 512, JSON_THROW_ON_ERROR)['tags'])->firstWhere('0', 'amount')[1] / 1000 }}
                                                                         </div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left"><span class="sm:hidden">Jahr:</span>{{ $payment['content'] }}</div>
+                                                                                class="text-left"><span
+                                                                                    class="sm:hidden">Jahr:</span>{{ $payment['content'] }}
+                                                                        </div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left font-medium break-all">{{ $payment['id'] }}</div>
+                                                                                class="text-left font-medium break-all">{{ $payment['id'] }}</div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
