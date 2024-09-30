@@ -24,6 +24,7 @@ use function Livewire\Volt\{on};
 
 name('association.election.admin');
 
+state(['isAllowed' => false]);
 state(['currentPubkey' => null]);
 state(['votes' => null]);
 state(['events' => null]);
@@ -71,6 +72,10 @@ mount(function () {
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
+        if ($this->currentPubkey !== '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033') {
+            return redirect()->route('association.profile');
+        }
+        $this->isAllowed = true;
     },
 ]);
 
@@ -86,8 +91,16 @@ $loadVotes = function () {
         ->map(function ($event) {
             $votedFor = \App\Models\Profile::query()
                 ->where('pubkey', str($event['content'])->before(',')->toString())
-                ->first()
-                ->toArray();
+                ->first();
+            if (!$votedFor) {
+                Artisan::call(\App\Console\Commands\Nostr\FetchProfile::class, [
+                    '--pubkey' => str($event['content'])->before(',')->toString(),
+                ]);
+                $votedFor = \App\Models\Profile::query()
+                    ->where('pubkey', str($event['content'])->before(',')->toString())
+                    ->first();
+            }
+            $votedFor = $votedFor->toArray();
 
             return [
                 'created_at' => $event['created_at'],
