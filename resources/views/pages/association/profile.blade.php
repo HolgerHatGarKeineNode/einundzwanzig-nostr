@@ -475,7 +475,7 @@ $loadEvents = function () {
                                                                              wire:poll="listenForPayment">
                                                                             <a href="lightning:{{ $invoice }}">
                                                                                 <img
-                                                                                    class="p-12 bg-white"
+                                                                                    class="p-4 sm:p-12 bg-white"
                                                                                     src="{{ 'data:image/png;base64, '. $qrCode }}"
                                                                                     alt="qrcode">
                                                                             </a>
