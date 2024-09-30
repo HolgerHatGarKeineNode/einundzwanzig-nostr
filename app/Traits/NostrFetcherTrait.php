@@ -46,6 +46,7 @@ trait NostrFetcherTrait
             'wss://purplepag.es',
             'wss://nostr.wine',
             'wss://relay.damus.io',
+            'wss://nostr.einundzwanzig.space',
         ];
 
         $data = null;
