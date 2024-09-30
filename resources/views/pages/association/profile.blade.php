@@ -62,7 +62,7 @@ on([
         }
         if ($this->currentPleb->paymentEvents->count() < 1) {
             $this->createPaymentEvent();
-            $this->currentPleb->refresh();
+            $this->currentPleb->load('paymentEvents');
         }
         $this->loadEvents();
         $this->searchPaymentEvent();
@@ -446,7 +446,7 @@ $loadEvents = function () {
                                                 <div
                                                         class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
                                                     <p>Nostr Event für die Zahlung des
-                                                        Mitgliedsbeitrags: {{ $currentPleb->payment_event }}</p>
+                                                        Mitgliedsbeitrags: {{ $currentPleb->paymentEvents->first()->event_id }}</p>
                                                     <div>
                                                         @if(isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
