@@ -327,7 +327,7 @@ $loadEvents = function () {
                                         </div>
                                     </div>
                                 </template>
-                                @if($currentPubkey)
+                                @if($currentPubkey && $currentPleb->association_status->value < 2)
                                     <div
                                         class="inline-flex min-w-80 px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-100">
                                         <div class="flex w-full justify-between items-start">
