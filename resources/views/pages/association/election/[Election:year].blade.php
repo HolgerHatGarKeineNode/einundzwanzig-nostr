@@ -467,7 +467,7 @@ $signEvent = function ($event) {
                     </div>
 
                     <!-- Log events -->
-                    <div class="mt-6 hidden sm:block">
+                    {{--<div class="mt-6 hidden sm:block">
                         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                             <header class="px-5 py-4">
                                 <h2 class="font-semibold text-gray-800 dark:text-gray-100">Logged Votes on Nostr <span
@@ -533,7 +533,7 @@ $signEvent = function ($event) {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>--}}
 
                 </div>
 
