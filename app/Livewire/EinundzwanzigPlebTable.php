@@ -78,7 +78,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->add(
                 'payment',
                 fn(EinundzwanzigPleb $model)
-                    => $model->paymentEvents->count() > 0 ? $model->paymentEvents->first()->amount : 'keine Zahlung vorhanden',
+                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first()->paid ? $model->paymentEvents->first()->amount : 'keine Zahlung vorhanden',
             )
             ->add(
                 'npub',
