@@ -41,14 +41,34 @@ trait NostrFetcherTrait
 
         $requestMessage = new RequestMessage($subscriptionId, $filters);
 
-        $relayUrl = 'wss://relay.nostr.band/';
-        $relay = new Relay($relayUrl);
-        $relay->setMessage($requestMessage);
+        $relayUrls = [
+            'wss://relay.nostr.band',
+            'wss://purplepag.es',
+            'wss://nostr.wine',
+            'wss://relay.damus.io',
+        ];
 
-        $request = new Request($relay, $requestMessage);
-        $response = $request->send();
+        $data = null;
+        foreach ($relayUrls as $relayUrl) {
+            $relay = new Relay($relayUrl);
+            $relay->setMessage($requestMessage);
+            $request = new Request($relay, $requestMessage);
+            try {
+                $response = $request->send();
+                $data = $response[$relayUrl];
+                if (!empty($data)) {
+                    break; // Exit the loop if data is not empty
+                }
+            } catch (\Exception $e) {
+                // Log the exception or handle it if needed
+            }
+        }
 
-        foreach ($response['wss://relay.nostr.band/'] as $item) {
+        if (empty($data)) {
+            throw new \RuntimeException('No data received from any relay.');
+        }
+
+        foreach ($data as $item) {
             try {
                 $result = json_decode($item->event->content, true, 512, JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
