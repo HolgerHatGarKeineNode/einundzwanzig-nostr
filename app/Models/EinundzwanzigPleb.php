@@ -22,4 +22,9 @@ class EinundzwanzigPleb extends Model
         return $this->hasOne(Profile::class, 'pubkey', 'pubkey');
     }
 
+    public function paymentEvents()
+    {
+        return $this->hasMany(PaymentEvent::class);
+    }
+
 }
