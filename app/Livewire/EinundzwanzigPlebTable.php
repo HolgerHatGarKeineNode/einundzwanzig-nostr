@@ -49,6 +49,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return EinundzwanzigPleb::query()
             ->with([
                 'profile',
+                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
             ])
             ->where('association_status', '>', 1)
             ->orWhereNotNull('application_for');
@@ -73,6 +74,11 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                     => $model->application_for ? '<div class="m-1.5"><div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">' . AssociationStatus::from(
                         $model->application_for,
                     )->label() . '</div></div>' : '',
+            )
+            ->add(
+                'payment',
+                fn(EinundzwanzigPleb $model)
+                    => $model->paymentEvents->count() > 0 ? $model->paymentEvents->first()->amount : 'keine Zahlung vorhanden',
             )
             ->add(
                 'npub',
@@ -111,6 +117,9 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             Column::make('Aktueller Status', 'association_status_formatted', 'association_status')
                 ->visibleInExport( visible: true)
                 ->sortable(),
+
+            Column::make('Beitrag ' . date('Y'), 'payment')
+                ->visibleInExport( visible: true),
 
             Column::make('Bewirbt sich für', 'for', 'application_for')
                 ->visibleInExport( visible: false)

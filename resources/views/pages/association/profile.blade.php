@@ -126,6 +126,10 @@ $searchPaymentEvent = function () {
             fn($yearPaid) => $yearPaid['year'] == date('Y') && $yearPaid['amount'] == $this->amountToPay,
         );
 
+        if ($this->currentYearIsPaid) {
+            $this->currentPleb->paymentEvents->first()->update(['paid' => true]);
+        }
+
         $this->paid = true;
     }
 };
