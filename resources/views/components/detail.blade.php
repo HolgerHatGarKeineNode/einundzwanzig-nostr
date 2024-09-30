@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <section class="mt-4">
+    <section>
         <h3 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1">
             bisherige Zahlungen</h3>
         <!-- Table -->
