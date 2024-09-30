@@ -320,10 +320,10 @@ $loadEvents = function () {
                                              alt="">
                                         <div class="ml-4">
                                             <h3 class="w-48 sm:w-full truncate text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
-                                                x-text="$store.nostr.user.nip05"></h3>
+                                                x-text="$store.nostr.user.display_name"></h3>
                                             <div
-                                                class="tw-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
-                                                x-text="$store.nostr.user.nip05"></div>
+                                                class="w-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
+                                                x-text="$store.nostr.user.name"></div>
                                         </div>
                                     </div>
                                 </template>
@@ -453,7 +453,7 @@ $loadEvents = function () {
                                                 <div
                                                     class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
                                                     <p>Nostr Event für die Zahlung des
-                                                        Mitgliedsbeitrags: {{ $currentPleb->paymentEvents->first()->event_id }}</p>
+                                                        Mitgliedsbeitrags: <span class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span></p>
                                                     <div>
                                                         @if(isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
@@ -482,9 +482,9 @@ $loadEvents = function () {
                                                                         </div>
                                                                     @else
                                                                         @if($currentYearIsPaid)
-                                                                            <div class="flex justify-center">
+                                                                            <div class="flex sm:justify-center">
                                                                                 <button
-                                                                                    class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                                    class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                                 >
                                                                                     <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
                                                                                     aktuelles Jahr bezahlt
@@ -505,7 +505,7 @@ $loadEvents = function () {
                                                             <thead
                                                                 class="text-xs uppercase text-gray-400 dark:text-gray-500">
                                                             <tr class="flex flex-wrap md:table-row md:flex-no-wrap">
-                                                                <th class="w-full block md:w-auto md:table-cell py-2">
+                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
                                                                     <div class="font-semibold text-left">Satoshis</div>
                                                                 </th>
                                                                 <th class="w-full hidden md:w-auto md:table-cell py-2">
@@ -522,15 +522,18 @@ $loadEvents = function () {
                                                                 <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left font-medium text-gray-800 dark:text-gray-100">{{ collect(json_decode(collect($payment['tags'])->firstWhere('0', 'description')[1], true, 512, JSON_THROW_ON_ERROR)['tags'])->firstWhere('0', 'amount')[1] / 1000 }}</div>
+                                                                            class="text-left font-medium text-gray-800 dark:text-gray-100">
+                                                                            <span class="sm:hidden">Sats:</span>
+                                                                            {{ collect(json_decode(collect($payment['tags'])->firstWhere('0', 'description')[1], true, 512, JSON_THROW_ON_ERROR)['tags'])->firstWhere('0', 'amount')[1] / 1000 }}
+                                                                        </div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left">{{ $payment['content'] }}</div>
+                                                                            class="text-left"><span class="sm:hidden">Jahr:</span>{{ $payment['content'] }}</div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left font-medium">{{ $payment['id'] }}</div>
+                                                                            class="text-left font-medium break-all">{{ $payment['id'] }}</div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
