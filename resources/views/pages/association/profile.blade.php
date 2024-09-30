@@ -350,6 +350,9 @@ $loadEvents = function () {
                                 <h3 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
                                     passives Mitglied werden
                                 </h3>
+                                <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
+                                    Passivmitglieder haben kein Stimmrecht. Firmen können nur Passivmitglieder werden und zahlen das 100-fache des festgelegten Beitrags.
+                                </h4>
                                 <div class="text-sm">
                                     <x-textarea
                                             corner="Beschreibe deine Motivation, passives Mitglied zu werden."
@@ -372,6 +375,11 @@ $loadEvents = function () {
                                 <h3 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
                                     aktives Mitglied werden
                                 </h3>
+                                <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
+                                    Aktivmitglieder arbeiten ehrenamtlich für den Verein, z.B. als Podcast-Moderator
+                                    oder Software-Entwickler. Der Vorstand wählt sie aus. Nur Menschen können
+                                    Aktivmitglieder werden, zahlen 21 Satoshis im Jahr und haben volles Stimmrecht.
+                                </h4>
                                 <div class="text-sm">
                                     <x-textarea
                                         corner="Woher kennen wir dich? Was möchtest du einbringen?"
