@@ -44,7 +44,7 @@ mount(function () {
         ->get()
         ->toArray();
     $this->loadEvents();
-    if ($this->election->end_time->isPast()) {
+    if ($this->election->end_time->isPast() || !config('services.voting')) {
         $this->isNotClosed = false;
     }
 });

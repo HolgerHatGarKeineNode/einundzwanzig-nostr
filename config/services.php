@@ -14,6 +14,8 @@ return [
     |
     */
 
+    'voting' => env('ENABLE_VOTING', false),
+
     'relay' => env('NOSTR_RELAY'),
     'nostr' => env('NOSTR_P'),
 

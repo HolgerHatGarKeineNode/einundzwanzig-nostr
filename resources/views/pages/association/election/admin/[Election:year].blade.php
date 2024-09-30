@@ -191,22 +191,21 @@ $loadEvents = function () {
 
         <!-- Cards -->
         <div class="grid grid-cols-12 gap-6">
-
-            @foreach($positions as $key => $position)
-                <div wire:key="pos_{{ $key }}" wire:ignore
-                     class="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                    <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                        <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
-                                class="fa-sharp-duotone fa-solid {{ $position['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $position['title'] }}
-                        </h2>
-                    </header>
-                    <div class="grow">
-                        <!-- Change the height attribute to adjust the chart height -->
-                        <canvas x-ref="chart_{{ $key }}" width="724" height="288"
-                                style="display: block; box-sizing: border-box; height: 288px; width: 724px;"></canvas>
+                @foreach($positions as $key => $position)
+                    <div wire:key="pos_{{ $key }}" wire:ignore
+                         class="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                        <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+                            <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
+                                    class="fa-sharp-duotone fa-solid {{ $position['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $position['title'] }}
+                            </h2>
+                        </header>
+                        <div class="grow">
+                            <!-- Change the height attribute to adjust the chart height -->
+                            <canvas x-ref="chart_{{ $key }}" width="724" height="288"
+                                    style="display: block; box-sizing: border-box; height: 288px; width: 724px;"></canvas>
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
 
         </div>
 
