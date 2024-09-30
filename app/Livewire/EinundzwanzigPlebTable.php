@@ -140,8 +140,10 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
     {
         $pleb = EinundzwanzigPleb::query()->findOrFail($rowId);
         $for = $pleb->application_for;
+        $text = $pleb->application_text;
         $pleb->association_status = AssociationStatus::from($for);
         $pleb->application_for = null;
+        $pleb->archived_application_text = $text;
         $pleb->application_text = null;
         $pleb->save();
 
