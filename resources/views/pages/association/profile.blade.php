@@ -29,7 +29,6 @@ state(['events' => []]);
 state(['payments' => []]);
 state(['invoice' => null]);
 state(['qrCode' => null]);
-state(['paid' => false]);
 state(['amountToPay' => 1]);
 state(['currentYearIsPaid' => false]);
 state(['currentPubkey' => null]);
@@ -63,6 +62,7 @@ on([
         }
         if ($this->currentPleb->paymentEvents->count() < 1) {
             $this->createPaymentEvent();
+            $this->currentPleb->refresh();
         }
         $this->loadEvents();
         $this->searchPaymentEvent();
@@ -70,7 +70,7 @@ on([
 ]);
 
 $listenForPayment = function () {
-    if (!$this->paid) {
+    if (!$this->currentYearIsPaid) {
         $this->searchPaymentEvent();
     }
 };
@@ -127,10 +127,9 @@ $searchPaymentEvent = function () {
         );
 
         if ($this->currentYearIsPaid) {
+            $this->qrCode = null;
             $this->currentPleb->paymentEvents->first()->update(['paid' => true]);
         }
-
-        $this->paid = true;
     }
 };
 
