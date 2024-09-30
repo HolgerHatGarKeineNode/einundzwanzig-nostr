@@ -98,7 +98,10 @@ $searchPaymentEvent = function () {
             'pubkey' => $event->event->pubkey,
             'tags' => $event->event->tags,
             'created_at' => $event->event->created_at,
-        ])->toArray();
+        ])
+            ->filter(fn($payment) => collect($payment['tags'])->firstWhere('0', 'p')[1] === $this->currentPubkey)
+            ->values()
+            ->toArray();
 
         $this->yearsPaid = collect($this->payments)->map(fn($payment)
             => [
@@ -108,13 +111,13 @@ $searchPaymentEvent = function () {
                         collect($payment['tags'])->firstWhere('0', 'description')[1],
                         true,
                         512,
-                        JSON_THROW_ON_ERROR
-                    )['tags']
+                        JSON_THROW_ON_ERROR,
+                    )['tags'],
                 )->firstWhere('0', 'amount')[1] / 1000,
         ]);
 
         $this->currentYearIsPaid = collect($this->yearsPaid)->contains(
-            fn($yearPaid) => $yearPaid['year'] == date('Y') && $yearPaid['amount'] == $this->amountToPay
+            fn($yearPaid) => $yearPaid['year'] == date('Y') && $yearPaid['amount'] == $this->amountToPay,
         );
 
         $this->paid = true;
