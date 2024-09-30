@@ -13,6 +13,8 @@ use function Livewire\Volt\{on};
 
 name('association.elections');
 
+state(['isAllowed' => false]);
+state(['currentPubkey' => null]);
 state(['elections' => []]);
 
 mount(function () {
@@ -21,7 +23,16 @@ mount(function () {
         ->toArray();
 });
 
-updated([
+on([
+    'nostrLoggedIn' => function ($pubkey) {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
+            ->where('pubkey', $pubkey)->first();
+        if($this->currentPleb->association_status->value < 3) {
+            return redirect()->route('association.profile');
+        }
+        $this->isAllowed = true;
+    },
 ]);
 
 $saveElection = function ($index) {
@@ -35,7 +46,7 @@ $saveElection = function ($index) {
 
 <x-layouts.app title="{{ __('Wahlen') }}">
     @volt
-    <div class="relative flex h-full">
+    <div x-cloak class="relative flex h-full" x-show="isAllowed" x-data="{isAllowed: $wire.entangle('isAllowed').live}">
         @foreach($elections as $election)
             <div class="w-full sm:w-1/3 p-4">
                 <div class="shadow-lg rounded-lg overflow-hidden">

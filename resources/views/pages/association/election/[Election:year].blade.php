@@ -24,7 +24,9 @@ use function Livewire\Volt\{on};
 
 name('association.election');
 
+state(['isAllowed' => false]);
 state(['currentPubkey' => null]);
+state(['currentPleb' => null]);
 state(['events' => []]);
 state(['election' => fn() => $election]);
 state(['plebs' => []]);
@@ -50,6 +52,12 @@ mount(function () {
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
+            ->where('pubkey', $pubkey)->first();
+        if($this->currentPleb->association_status->value < 3) {
+            return redirect()->route('association.profile');
+        }
+        $this->isAllowed = true;
     },
 ]);
 
@@ -150,7 +158,7 @@ $signEvent = function ($event) {
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div class="relative flex h-full" x-data="nostrApp(@this)" wire:poll.600000ms="checkElection">
+    <div x-cloak x-show="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)" wire:poll.600000ms="checkElection">
 
         @php
             $positions = [
@@ -189,7 +197,7 @@ $signEvent = function ($event) {
                 ->values();
         @endphp
 
-            <!-- Inbox sidebar -->
+        <!-- Inbox sidebar -->
         <div id="inbox-sidebar"
              class="absolute z-20 top-0 bottom-0 w-full md:w-auto md:static md:top-auto md:bottom-auto -mr-px md:translate-x-0 transition-transform duration-200 ease-in-out"
              :class="inboxSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
