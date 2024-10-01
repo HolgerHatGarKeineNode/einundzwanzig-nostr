@@ -25,7 +25,7 @@ export default (livewireComponent) => ({
         const amount = amountToPay * 1000;
         console.log('event', event);
 
-        const zapEndpoint = 'https://getalby.com/lnurlp/portaleinundzwanzig/callback';
+        const zapEndpoint = 'https://pay.einundzwanzig.space/BTC/UILNURL/pay/i/98eo2PNNWByxqMCFZR5nzW';
 
         const zapEvent = nip57.makeZapRequest({
             profile: sender,

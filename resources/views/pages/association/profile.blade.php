@@ -149,24 +149,6 @@ $save = function ($type) {
         ]);
 };
 
-$createKind0 = function () {
-    $note = new NostrEvent();
-    $note->setKind(0);
-    $note->setContent('');
-    $note->setTags([
-        ['display_name', 'Einundzwanzig Portal'],
-        ['lud16', 'portaleinundzwanzig@getalby.com'],
-        ['pubkey', 'daf83d92768b5d0005373f83e30d4203c0b747c170449e02fea611a0da125ee6'],
-    ]);
-    $signer = new Sign();
-    $signer->signEvent($note, config('services.nostr'));
-    $eventMessage = new EventMessage($note);
-    $relayUrl = config('services.relay');
-    $relay = new Relay($relayUrl);
-    $relay->setMessage($eventMessage);
-    $result = $relay->send();
-};
-
 $createPaymentEvent = function () {
     $note = new NostrEvent();
     $note->setKind(32121);
