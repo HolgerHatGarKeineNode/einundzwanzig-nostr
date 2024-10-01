@@ -8,7 +8,7 @@ export default (livewireComponent) => ({
     invoice: livewireComponent.entangle('invoice', true),
 
     async zap(message, sender, amountToPay, env) {
-        const relayUrl = env === 'production' ? 'wss://nostr.einundzwanzig.space' : 'wss://simple-relay.steuernsindraub21.xyz';
+        const relayUrl = env === 'production' ? 'wss://simple-relay.steuernsindraub21.xyz' : 'wss://simple-relay.steuernsindraub21.xyz';
 
         const ndk = new NDK({
             explicitRelayUrls: [
