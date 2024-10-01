@@ -72,7 +72,11 @@ mount(function () {
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
-        if ($this->currentPubkey !== '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033') {
+        $allowedPubkeys = [
+            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
+            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279'
+        ];
+        if (!in_array($this->currentPubkey, $allowedPubkeys, true)) {
             return redirect()->route('association.profile');
         }
         $this->isAllowed = true;
