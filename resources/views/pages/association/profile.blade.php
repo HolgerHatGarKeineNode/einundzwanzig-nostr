@@ -469,7 +469,7 @@ $loadEvents = function () {
                                                                 @if(!$invoice && !$currentYearIsPaid)
                                                                     <div class="flex justify-center">
                                                                         <button
-                                                                            @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }})"
+                                                                            @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }}, '{{ config('app.env') }}')"
                                                                             class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                         >
                                                                             <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>

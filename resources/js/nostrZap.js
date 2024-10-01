@@ -7,9 +7,13 @@ export default (livewireComponent) => ({
 
     invoice: livewireComponent.entangle('invoice', true),
 
-    async zap(message, sender, amountToPay) {
+    async zap(message, sender, amountToPay, env) {
+        const relayUrl = env === 'production' ? 'wss://nostr.einundzwanzig.space' : 'wss://simple-relay.steuernsindraub21.xyz';
+
         const ndk = new NDK({
-            explicitRelayUrls: ['wss://simple-relay.steuernsindraub21.xyz'],
+            explicitRelayUrls: [
+                relayUrl
+            ],
             enableOutboxModel: false,
         });
         // Now connect to specified relays
@@ -27,7 +31,7 @@ export default (livewireComponent) => ({
             profile: sender,
             event: event.id,
             amount: amount,
-            relays: ['wss://simple-relay.steuernsindraub21.xyz'],
+            relays: [relayUrl],
             comment: message,
         });
         console.log('zapEvent', zapEvent);
