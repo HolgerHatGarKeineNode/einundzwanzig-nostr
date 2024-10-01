@@ -29,7 +29,7 @@ state(['events' => []]);
 state(['payments' => []]);
 state(['invoice' => null]);
 state(['qrCode' => null]);
-state(['amountToPay' => 21]);
+state(['amountToPay' => 21000]);
 state(['currentYearIsPaid' => false]);
 state(['currentPubkey' => null]);
 state(['currentPleb' => null]);
@@ -58,7 +58,7 @@ on([
             ])
             ->where('pubkey', $pubkey)->first();
         if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
-            $this->amountToPay = 21;
+            $this->amountToPay = 21000;
         }
         if ($this->currentPleb->paymentEvents->count() < 1) {
             $this->createPaymentEvent();
@@ -360,7 +360,7 @@ $loadEvents = function () {
                                 <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
                                     Aktivmitglieder arbeiten ehrenamtlich für den Verein, z.B. als Podcast-Moderator
                                     oder Software-Entwickler. Der Vorstand wählt sie aus. Nur Menschen können
-                                    Aktivmitglieder werden, zahlen 21 Satoshis im Jahr und haben volles Stimmrecht.
+                                    Aktivmitglieder werden, zahlen 21.000 Satoshis im Jahr und haben volles Stimmrecht.
                                 </h4>
                                 <div class="text-sm">
                                     <x-textarea
