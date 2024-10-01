@@ -22,7 +22,7 @@ on([
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
-        if($this->currentPubkey !== '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033') {
+        if($this->currentPleb->association_status->value < 3) {
             return redirect()->route('association.profile');
         }
         $this->isAllowed = true;
