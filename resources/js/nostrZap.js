@@ -36,7 +36,10 @@ export default (livewireComponent) => ({
         const amount = amountToPay * 1000;
         console.log('event', event);
 
-        const zapEndpoint = 'https://pay.einundzwanzig.space/BTC/UILNURL/pay/i/98eo2PNNWByxqMCFZR5nzW';
+        // Fetch the callback URL
+        const callbackResponse = await fetch('https://pay.einundzwanzig.space/BTC/UILNURL/pay/lnaddress/verein');
+        const callbackData = await callbackResponse.json();
+        const zapEndpoint = callbackData.callback;
 
         const zapEvent = nip57.makeZapRequest({
             profile: sender,
