@@ -49,7 +49,10 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return EinundzwanzigPleb::query()
             ->with([
                 'profile',
-                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+                'paymentEvents' => fn($query)
+                    => $query
+                    ->where('year', date('Y'))
+                    ->where('paid', true),
             ])
             ->where('association_status', '>', 1)
             ->orWhereNotNull('application_for');
@@ -78,7 +81,8 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->add(
                 'payment',
                 fn(EinundzwanzigPleb $model)
-                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first()->paid ? $model->paymentEvents->first()->amount : 'keine Zahlung vorhanden',
+                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first(
+                )->paid ? $model->paymentEvents->first()->amount : 'keine Zahlung vorhanden',
             )
             ->add(
                 'npub',
@@ -105,7 +109,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
     {
         return [
             Column::make('Avatar', 'avatar')
-                ->visibleInExport( visible: false),
+                ->visibleInExport(visible: false),
 
             Column::make('Npub', 'npub')
                 ->visibleInExport(visible: false)
@@ -115,18 +119,18 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 ->sortable(),
 
             Column::make('Aktueller Status', 'association_status_formatted', 'association_status')
-                ->visibleInExport( visible: true)
+                ->visibleInExport(visible: true)
                 ->sortable(),
 
             Column::make('Beitrag ' . date('Y'), 'payment')
-                ->visibleInExport( visible: true),
+                ->visibleInExport(visible: true),
 
             Column::make('Bewirbt sich für', 'for', 'application_for')
-                ->visibleInExport( visible: false)
+                ->visibleInExport(visible: false)
                 ->sortable(),
 
             Column::action('Action')
-                ->visibleInExport( visible: false),
+                ->visibleInExport(visible: false),
         ];
     }
 
