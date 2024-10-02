@@ -409,9 +409,64 @@ $signEvent = function ($event) {
 
                         <!-- Mail -->
                         <div class="py-6">
+                            <h1 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                Wahl des Präsidiums
+                            </h1>
+                            @php
+                                $president = $positions['presidency'];
+                            @endphp
+                            <div
+                                class="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                                <div class="flex flex-col h-full p-5">
+                                    <header>
+                                        <div class="flex items-center justify-between">
+                                            <i class="fa-sharp-duotone fa-solid {{ $president['icon'] }} w-9 h-9 fill-current text-white"></i>
+                                        </div>
+                                    </header>
+                                    <div class="grow mt-2">
+                                        <div
+                                            class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
+                                            <h2 class="text-xl leading-snug font-semibold">{{ $president['title'] }}</h2>
+                                        </div>
+                                        <div class="text-sm">
+                                            @php
+                                                $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', 'presidency');
+                                            @endphp
+                                            @if($votedResult)
+                                                <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
+                                            @else
+                                                <span>Wähle deinen Kandidaten für das Präsidium.</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <footer class="mt-5">
+                                        <div class="grid sm:grid-cols-2 gap-y-2">
+                                            @foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] as $c)
+                                                <div
+                                                    @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', 'presidency')"
+                                                    @endif
+                                                    class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                    <div class="flex items-center">
+                                                        <img class="w-6 h-6 rounded-full mr-2 bg-black"
+                                                             src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                             onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
+                                                             width="24" height="24"
+                                                             alt="{{ $c['name'] }}"/>
+                                                        {{ $c['name'] }}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </footer>
+                                </div>
+                            </div>
+
+                            <h1 class="mt-6 border-t text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                Bestätigung der Vorstandsmitglieder
+                            </h1>
                             <div class="grid grid-cols-12 gap-6">
 
-                                @foreach($positions as $type => $position)
+                                @foreach(collect($positions)->filter(fn($position, $type) => $type !== 'presidency') as $type => $position)
                                     @if($electionConfig->firstWhere('type', $type))
                                         <div
                                             class="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
@@ -433,7 +488,7 @@ $signEvent = function ($event) {
                                                         @if($votedResult)
                                                             <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
                                                         @else
-                                                            <span>Klicke auf den Kandidaten, den du wählen möchtest.</span>
+                                                            <span>Klicke auf den Kandidaten, um seine Position als Vorstandsmitglied zu bestätigen.</span>
                                                         @endif
                                                     </div>
                                                 </div>
