@@ -4,6 +4,7 @@ export default (livewireComponent) => ({
     plebs: livewireComponent.entangle('plebs', true),
     electionConfig: livewireComponent.entangle('electionConfig', true),
     votes: livewireComponent.entangle('votes', true),
+    boardVotes: livewireComponent.entangle('boardVotes', true),
     charts: {}, // Store chart instances
 
     hexToRGB(h) {
@@ -24,19 +25,11 @@ export default (livewireComponent) => ({
 
     init() {
         this.createChart('chart_presidency', 'presidency');
-        this.createChart('chart_vice_president', 'vice_president');
-        this.createChart('chart_finances', 'finances');
-        this.createChart('chart_secretary', 'secretary');
-        this.createChart('chart_press_officer', 'press_officer');
-        this.createChart('chart_it_manager', 'it_manager');
+        this.createChart('chart_board', 'board');
 
         this.$watch('votes', () => {
             this.createChart('chart_presidency', 'presidency');
-            this.createChart('chart_vice_president', 'vice_president');
-            this.createChart('chart_finances', 'finances');
-            this.createChart('chart_secretary', 'secretary');
-            this.createChart('chart_press_officer', 'press_officer');
-            this.createChart('chart_it_manager', 'it_manager');
+            this.createChart('chart_board', 'board');
         });
     },
 
@@ -79,7 +72,12 @@ export default (livewireComponent) => ({
         const config = this.electionConfig.find(config => config.type === type);
         const labels = config ? config.candidates.map(candidate => candidate.name) : [];
         const labelsPubkeys = config ? config.candidates.map(candidate => candidate.pubkey) : [];
-        const data = this.votes.find(vote => vote.type === type);
+        let data;
+        if (type === 'board') {
+            data = this.boardVotes.find(vote => vote.type === type);
+        } else {
+            data = this.votes.find(vote => vote.type === type);
+        }
         const findVoteCountInDataByLabelsPubkey = data ? labelsPubkeys.map(pubkey => data.votes[pubkey]?.count ?? 0) : labelsPubkeys.map(() => 0);
         console.log('findVoteCountInDataByLabelsPubkey', findVoteCountInDataByLabelsPubkey);
 

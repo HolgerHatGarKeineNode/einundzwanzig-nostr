@@ -1,49 +1,46 @@
 <?php
 
 use Livewire\Volt\Component;
+use swentel\nostr\{Filter\Filter,
+    Key\Key,
+    Message\EventMessage,
+    Message\RequestMessage,
+    Relay\Relay,
+    Relay\RelaySet,
+    Request\Request,
+    Subscription\Subscription,
+    Event\Event as NostrEvent,
+    Sign\Sign
+};
 
-use swentel\nostr\Filter\Filter;
-use swentel\nostr\Key\Key;
-use swentel\nostr\Message\EventMessage;
-use swentel\nostr\Message\RequestMessage;
-use swentel\nostr\Relay\Relay;
-use swentel\nostr\Relay\RelaySet;
-use swentel\nostr\Request\Request;
-use swentel\nostr\Subscription\Subscription;
-use swentel\nostr\Event\Event as NostrEvent;
-use swentel\nostr\Sign\Sign;
-
-use function Livewire\Volt\computed;
-use function Livewire\Volt\mount;
-use function Livewire\Volt\state;
-use function Livewire\Volt\with;
-use function Livewire\Volt\updated;
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
-use function Livewire\Volt\{on};
+use function Livewire\Volt\{computed, mount, state, with, updated, on};
+use function Laravel\Folio\{middleware, name};
 
 name('association.election');
 
-state(['isAllowed' => false]);
-state(['currentPubkey' => null]);
-state(['currentPleb' => null]);
-state(['events' => []]);
-state(['election' => fn() => $election]);
-state(['plebs' => []]);
-state(['search' => '']);
-state(['signThisEvent' => '']);
-state(['isNotClosed' => true]);
+state([
+    'isAllowed' => false,
+    'showLog' => false,
+    'currentPubkey' => null,
+    'currentPleb' => null,
+    'events' => [],
+    'boardEvents' => [],
+    'election' => fn() => $election,
+    'plebs' => [],
+    'search' => '',
+    'signThisEvent' => '',
+    'isNotClosed' => true
+]);
 
 mount(function () {
     $this->plebs = \App\Models\EinundzwanzigPleb::query()
-        ->with([
-            'profile',
-        ])
+        ->with(['profile'])
         ->whereIn('association_status', [3, 4])
         ->orderBy('association_status', 'desc')
         ->get()
         ->toArray();
     $this->loadEvents();
+    $this->loadBoardEvents();
     if ($this->election->end_time->isPast() || !config('services.voting')) {
         $this->isNotClosed = false;
     }
@@ -52,60 +49,59 @@ mount(function () {
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
-        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
-            ->where('pubkey', $pubkey)->first();
-        if($this->currentPleb->association_status->value < 3) {
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
+        if ($this->currentPleb->association_status->value < 3) {
             return redirect()->route('association.profile');
+        }
+        $logPubkeys = [
+            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
+            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
+        ];
+        if (in_array($this->currentPubkey, $logPubkeys, true)) {
+            $this->showLog = true;
         }
         $this->isAllowed = true;
     },
-]);
-
-on([
     'echo:votes,.newVote' => function () {
         $this->loadEvents();
+        $this->loadBoardEvents();
     }
 ]);
 
 updated([
     'search' => function ($value) {
         $this->plebs = \App\Models\EinundzwanzigPleb::query()
-            ->with([
-                'profile',
-            ])
+            ->with(['profile'])
             ->whereIn('association_status', [3, 4])
             ->where(fn($query)
                 => $query
                 ->where('pubkey', 'like', "%$value%")
-                ->orWhereHas('profile', function ($query) use ($value) {
-                    $query->where('name', 'ilike', "%$value%");
-                }))
+                ->orWhereHas('profile', fn($query) => $query->where('name', 'ilike', "%$value%")))
             ->orderBy('association_status', 'desc')
             ->get()
             ->toArray();
-    },
+    }
 ]);
 
 $loadEvents = function () {
+    $this->events = $this->loadNostrEvents([32121]);
+};
+
+$loadBoardEvents = function () {
+    $this->boardEvents = $this->loadNostrEvents([2121]);
+};
+
+$loadNostrEvents = function ($kinds) {
     $subscription = new Subscription();
     $subscriptionId = $subscription->setId();
-
-    $filter1 = new Filter();
-    $filter1->setKinds([2121]); // You can add multiple kind numbers
-    $filters = [$filter1]; // You can add multiple filters.
-
-    $requestMessage = new RequestMessage($subscriptionId, $filters);
-
-    $relays = [
-        new Relay(config('services.relay')),
-    ];
+    $filter = new Filter();
+    $filter->setKinds($kinds);
+    $requestMessage = new RequestMessage($subscriptionId, [$filter]);
     $relaySet = new RelaySet();
-    $relaySet->setRelays($relays);
-
+    $relaySet->setRelays([new Relay(config('services.relay'))]);
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
-
-    $this->events = collect($response[config('services.relay')])
+    return collect($response[config('services.relay')])
         ->map(fn($event)
             => [
             'id' => $event->event->id,
@@ -117,14 +113,18 @@ $loadEvents = function () {
         ])->toArray();
 };
 
-$vote = function ($pubkey, $type) {
+$vote = function ($pubkey, $type, $board = false) {
     if ($this->election->end_time->isPast()) {
         $this->isNotClosed = false;
         return;
     }
     $note = new NostrEvent();
-    $note->setContent($pubkey . ',' . $type);
-    $note->setKind(2121);
+    $note->setKind($board ? 2121 : 32121);
+    if (!$board) {
+        $dTag = sprintf('%s,%s,%s', $this->currentPleb->pubkey, date('Y'), $type);
+        $note->setTags([['d', $dTag]]);
+    }
+    $note->setContent("$pubkey,$type");
     $this->signThisEvent = $note->toJson();
 };
 
@@ -144,30 +144,23 @@ $signEvent = function ($event) {
     $note->setTags($event['tags']);
     $note->setCreatedAt($event['created_at']);
     $eventMessage = new EventMessage($note);
-    $relayUrl = config('services.relay');
-    $relay = new Relay($relayUrl);
+    $relay = new Relay(config('services.relay'));
     $relay->setMessage($eventMessage);
-    $result = $relay->send();
-
-    Broadcast::on('votes')
-        ->as('newVote')
-        ->sendNow();
+    $relay->send();
+    Broadcast::on('votes')->as('newVote')->sendNow();
 };
 
 ?>
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div x-cloak x-show="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)" wire:poll.600000ms="checkElection">
+    <div x-cloak x-show="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)"
+         wire:poll.600000ms="checkElection">
 
         @php
             $positions = [
                 'presidency' => ['icon' => 'fa-crown', 'title' => 'Präsidium'],
-                'vice_president' => ['icon' => 'fa-user-group-crown', 'title' => 'Vizepräsidium'],
-                'finances' => ['icon' => 'fa-bitcoin-sign', 'title' => 'Finanzen'],
-                'secretary' => ['icon' => 'fa-stapler', 'title' => 'Revisionsstelle'],
-                'press_officer' => ['icon' => 'fa-newspaper', 'title' => 'Pressewart'],
-                'it_manager' => ['icon' => 'fa-server', 'title' => 'Technikwart'],
+                'board' => ['icon' => 'fa-users', 'title' => 'Vizepräsidium'],
             ];
             $loadedEvents = collect($events)
                 ->map(function($event) {
@@ -195,9 +188,34 @@ $signEvent = function ($event) {
                 ->sortByDesc('created_at')
                 ->unique(fn ($event) => $event['pubkey'] . $event['type'])
                 ->values();
+            $loadedBoardEvents = collect($boardEvents)
+                ->map(function($event) {
+                    $profile = \App\Models\Profile::query()
+                        ->where('pubkey', $event['pubkey'])
+                        ->first()
+                        ?->toArray();
+                    $votedFor = \App\Models\Profile::query()
+                        ->where('pubkey', str($event['content'])->before(',')->toString())
+                        ->first()
+                        ?->toArray();
+
+                    return [
+                        'id' => $event['id'],
+                        'kind' => $event['kind'],
+                        'content' => $event['content'],
+                        'pubkey' => $event['pubkey'],
+                        'tags' => $event['tags'],
+                        'created_at' => $event['created_at'],
+                        'profile' => $profile,
+                        'votedFor' => $votedFor,
+                        'type' => str($event['content'])->after(',')->toString(),
+                    ];
+                })
+                ->sortByDesc('created_at')
+                ->values();
         @endphp
 
-        <!-- Inbox sidebar -->
+            <!-- Inbox sidebar -->
         <div id="inbox-sidebar"
              class="absolute z-20 top-0 bottom-0 w-full md:w-auto md:static md:top-auto md:bottom-auto -mr-px md:translate-x-0 transition-transform duration-200 ease-in-out"
              :class="inboxSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
@@ -361,6 +379,33 @@ $signEvent = function ($event) {
                         'candidates' => $candidates,
                     ];
                 });
+                $electionConfigBoard = collect(json_decode($election->candidates, true, 512, JSON_THROW_ON_ERROR))
+                ->map(function ($c) use ($loadedBoardEvents, $currentPubkey) {
+                    $candidates = \App\Models\Profile::query()
+                        ->whereIn('pubkey', $c['c'])
+                        ->get()
+                        ->map(function ($p) use ($loadedBoardEvents, $c, $currentPubkey) {
+                            $votedClass = ' bg-green-500/20 text-green-700';
+                            $notVotedClass = ' bg-gray-500/20 text-gray-100';
+                            $hasVoted = $loadedBoardEvents
+                                ->filter(fn($e) => $e['type'] === $c['type'] && $e['pubkey'] === $currentPubkey)
+                                ->firstWhere('votedFor.pubkey', $p->pubkey);
+
+                            return [
+                                'pubkey' => $p->pubkey,
+                                'name' => $p->name,
+                                'picture' => $p->picture,
+                                'votedClass' => $hasVoted ? $votedClass : $notVotedClass,
+                                'hasVoted' => $hasVoted,
+                            ];
+                        });
+
+                    return [
+                        'type' => $c['type'],
+                        'c' => $c['c'],
+                        'candidates' => $candidates,
+                    ];
+                });
             @endphp
 
             <div class="grow flex flex-col md:translate-x-0 transition-transform duration-300 ease-in-out"
@@ -414,107 +459,90 @@ $signEvent = function ($event) {
                             </h1>
                             @php
                                 $president = $positions['presidency'];
+                                $board = $positions['board'];
                             @endphp
-                            <div
-                                class="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                                <div class="flex flex-col h-full p-5">
-                                    <header>
-                                        <div class="flex items-center justify-between">
-                                            <i class="fa-sharp-duotone fa-solid {{ $president['icon'] }} w-9 h-9 fill-current text-white"></i>
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div
+                                    class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                                    <div class="flex flex-col h-full p-5">
+                                        <header>
+                                            <div class="flex items-center justify-between">
+                                                <i class="fa-sharp-duotone fa-solid {{ $president['icon'] }} w-9 h-9 fill-current text-white"></i>
+                                            </div>
+                                        </header>
+                                        <div class="grow mt-2">
+                                            <div
+                                                class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
+                                                <h2 class="text-xl leading-snug font-semibold">{{ $president['title'] }}</h2>
+                                            </div>
+                                            <div class="text-sm">
+                                                @php
+                                                    $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', 'presidency');
+                                                @endphp
+                                                @if($votedResult)
+                                                    <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
+                                                @else
+                                                    <span>Wähle deinen Kandidaten für das Präsidium.</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </header>
-                                    <div class="grow mt-2">
-                                        <div
-                                            class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
-                                            <h2 class="text-xl leading-snug font-semibold">{{ $president['title'] }}</h2>
-                                        </div>
-                                        <div class="text-sm">
-                                            @php
-                                                $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', 'presidency');
-                                            @endphp
-                                            @if($votedResult)
-                                                <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
-                                            @else
-                                                <span>Wähle deinen Kandidaten für das Präsidium.</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <footer class="mt-5">
-                                        <div class="grid sm:grid-cols-2 gap-y-2">
-                                            @foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] as $c)
-                                                <div
-                                                    @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', 'presidency')"
-                                                    @endif
-                                                    class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
-                                                    <div class="flex items-center">
-                                                        <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                             src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
-                                                             onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
-                                                             width="24" height="24"
-                                                             alt="{{ $c['name'] }}"/>
-                                                        {{ $c['name'] }}
+                                        <footer class="mt-5">
+                                            <div class="grid sm:grid-cols-2 gap-2">
+                                                @foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] as $c)
+                                                    <div
+                                                        @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', 'presidency')"
+                                                        @endif
+                                                        class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                        <div class="flex items-center">
+                                                            <img class="w-6 h-6 rounded-full mr-2 bg-black"
+                                                                 src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                 onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
+                                                                 width="24" height="24"
+                                                                 alt="{{ $c['name'] }}"/>
+                                                            {{ $c['name'] }}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </footer>
+                                                @endforeach
+                                            </div>
+                                        </footer>
+                                    </div>
                                 </div>
                             </div>
 
-                            <h1 class="mt-6 border-t text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
-                                Bestätigung der Vorstandsmitglieder
+                            <h1 class="mt-6 text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                Wahl der übrigen Vorstandsmitglieder
                             </h1>
-                            <div class="grid grid-cols-12 gap-6">
+                            <div class="grid gap-6">
 
-                                @foreach(collect($positions)->filter(fn($position, $type) => $type !== 'presidency') as $type => $position)
-                                    @if($electionConfig->firstWhere('type', $type))
-                                        <div
-                                            class="col-span-full sm:col-span-6 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                                            <div class="flex flex-col h-full p-5">
-                                                <header>
-                                                    <div class="flex items-center justify-between">
-                                                        <i class="fa-sharp-duotone fa-solid {{ $position['icon'] }} w-9 h-9 fill-current text-white"></i>
-                                                    </div>
-                                                </header>
-                                                <div class="grow mt-2">
-                                                    <div
-                                                        class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
-                                                        <h2 class="text-xl leading-snug font-semibold">{{ $position['title'] }}</h2>
-                                                    </div>
-                                                    <div class="text-sm">
-                                                        @php
-                                                            $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', $type);
-                                                        @endphp
-                                                        @if($votedResult)
-                                                            <span>Du hast "{{ $votedResult['votedFor']['name'] ?? 'error' }}" gewählt</span>
-                                                        @else
-                                                            <span>Klicke auf den Kandidaten, um seine Position als Vorstandsmitglied zu bestätigen.</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <footer class="mt-5">
-                                                    <div class="grid sm:grid-cols-2 gap-y-2">
-                                                        @foreach($electionConfig->firstWhere('type', $type)['candidates'] as $c)
-                                                            <div
-                                                                @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', '{{ $type }}')"
-                                                                @endif
-                                                                class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
-                                                                <div class="flex items-center">
-                                                                    <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                                         src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
-                                                                         onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
-                                                                         width="24" height="24"
-                                                                         alt="{{ $c['name'] }}"/>
-                                                                    {{ $c['name'] }}
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </footer>
+                                <div
+                                    class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                                    <div class="flex flex-col h-full p-5">
+                                        <div class="grow mt-2">
+                                            <div class="text-sm">
+                                                <span>Klicke auf den Kandidaten, um seine Position als Vorstandsmitglied zu bestätigen.</span>
                                             </div>
                                         </div>
-                                    @endif
-                                @endforeach
+                                        <footer class="mt-5">
+                                            <div class="grid sm:grid-cols-4 gap-2">
+                                                @foreach($electionConfigBoard->firstWhere('type', 'board')['candidates'] as $c)
+                                                    <div
+                                                        @if($isNotClosed && !$c['hasVoted'])wire:click="vote('{{ $c['pubkey'] }}', 'board', true)"
+                                                        @endif
+                                                        class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                        <div class="flex items-center">
+                                                            <img class="w-6 h-6 rounded-full mr-2 bg-black"
+                                                                 src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                 onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
+                                                                 width="24" height="24"
+                                                                 alt="{{ $c['name'] }}"/>
+                                                            {{ $c['name'] }}
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </footer>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -522,10 +550,10 @@ $signEvent = function ($event) {
                     </div>
 
                     <!-- Log events -->
-                    {{--<div class="mt-6 hidden sm:block">
+                    <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
                         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                             <header class="px-5 py-4">
-                                <h2 class="font-semibold text-gray-800 dark:text-gray-100">Logged Votes on Nostr <span
+                                <h2 class="font-semibold text-gray-800 dark:text-gray-100">Präsidium Log <span
                                         class="text-gray-400 dark:text-gray-500 font-medium">{{ $loadedEvents->count() }}</span>
                                 </h2>
                             </header>
@@ -588,7 +616,74 @@ $signEvent = function ($event) {
                                 </div>
                             </div>
                         </div>
-                    </div>--}}
+                    </div>
+                    <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
+                        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
+                            <header class="px-5 py-4">
+                                <h2 class="font-semibold text-gray-800 dark:text-gray-100">Board Log <span
+                                        class="text-gray-400 dark:text-gray-500 font-medium">{{ $loadedBoardEvents->count() }}</span>
+                                </h2>
+                            </header>
+                            <div>
+                                <!-- Table -->
+                                <div class="overflow-x-auto">
+                                    <table
+                                        class="table-auto w-full dark:text-gray-300 divide-y divide-gray-100 dark:divide-gray-700/60">
+                                        <!-- Table header -->
+                                        <thead
+                                            class="text-xs uppercase text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20 border-t border-gray-100 dark:border-gray-700/60">
+                                        <tr>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">ID</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">Kind</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">Pubkey</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">Created At</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">Voted For</div>
+                                            </th>
+                                            <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                <div class="font-semibold text-left">Type</div>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <!-- Table body -->
+                                        <tbody class="text-sm">
+                                        @foreach($loadedBoardEvents as $event)
+                                            <tr>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div
+                                                        class="font-medium">{{ \Illuminate\Support\Str::limit($event['id'], 10) }}</div>
+                                                </td>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div>{{ $event['kind'] }}</div>
+                                                </td>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div>{{ $event['profile']['name'] ?? '' }}</div>
+                                                </td>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div>{{ $event['created_at'] }}</div>
+                                                </td>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div>{{ $event['votedFor']['name'] ?? '' }}</div>
+                                                </td>
+                                                <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                                                    <div>{{ $event['type'] }}</div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
 

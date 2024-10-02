@@ -1,157 +1,157 @@
 <?php
 
 use Livewire\Volt\Component;
+use swentel\nostr\{Filter\Filter,
+    Key\Key,
+    Message\EventMessage,
+    Message\RequestMessage,
+    Relay\Relay,
+    Relay\RelaySet,
+    Request\Request,
+    Subscription\Subscription,
+    Event\Event as NostrEvent,
+    Sign\Sign};
 
-use swentel\nostr\Filter\Filter;
-use swentel\nostr\Key\Key;
-use swentel\nostr\Message\EventMessage;
-use swentel\nostr\Message\RequestMessage;
-use swentel\nostr\Relay\Relay;
-use swentel\nostr\Relay\RelaySet;
-use swentel\nostr\Request\Request;
-use swentel\nostr\Subscription\Subscription;
-use swentel\nostr\Event\Event as NostrEvent;
-use swentel\nostr\Sign\Sign;
-
-use function Livewire\Volt\computed;
-use function Livewire\Volt\mount;
-use function Livewire\Volt\state;
-use function Livewire\Volt\with;
-use function Livewire\Volt\updated;
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
-use function Livewire\Volt\{on};
+use function Livewire\Volt\{computed, mount, state, with, updated, on};
+use function Laravel\Folio\{middleware, name};
 
 name('association.election.admin');
 
-state(['isAllowed' => false]);
-state(['currentPubkey' => null]);
-state(['votes' => null]);
-state(['events' => null]);
-state(['election' => fn() => $election]);
-state(['signThisEvent' => '']);
 state([
+    'isAllowed' => false,
+    'currentPubkey' => null,
+    'votes' => null,
+    'boardVotes' => null,
+    'events' => null,
+    'boardEvents' => null,
+    'election' => fn() => $election,
+    'signThisEvent' => '',
     'plebs' => fn()
         => \App\Models\EinundzwanzigPleb::query()
-        ->with([
-            'profile',
-        ])
+        ->with(['profile'])
         ->whereIn('association_status', [3, 4])
         ->orderBy('association_status', 'desc')
         ->get()
         ->toArray(),
-]);
-state([
-    'electionConfig' => function () {
-        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
-            ->map(function ($c) {
-                $candidates = \App\Models\Profile::query()
-                    ->whereIn('pubkey', $c['c'])
-                    ->get()
-                    ->map(fn($p)
-                        => [
-                        'pubkey' => $p->pubkey,
-                        'name' => $p->name,
-                        'picture' => $p->picture,
-                    ]);
-
-                return [
-                    'type' => $c['type'],
-                    'c' => $c['c'],
-                    'candidates' => $candidates,
-                ];
-            });
-    },
+    'electionConfig' => fn()
+        => collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+        ->map(fn($c)
+            => [
+            'type' => $c['type'],
+            'c' => $c['c'],
+            'candidates' => \App\Models\Profile::query()
+                ->whereIn('pubkey', $c['c'])
+                ->get()
+                ->map(fn($p)
+                    => [
+                    'pubkey' => $p->pubkey,
+                    'name' => $p->name,
+                    'picture' => $p->picture,
+                ]),
+        ]),
 ]);
 
-mount(function () {
-    $this->loadEvents();
-    $this->loadVotes();
-});
+mount(fn()
+    => [
+    $this->loadEvents(),
+    $this->loadBoardEvents(),
+    $this->loadVotes(),
+    $this->loadBoardVotes(),
+]);
 
 on([
-    'nostrLoggedIn' => function ($pubkey) {
-        $this->currentPubkey = $pubkey;
+    'nostrLoggedIn' => fn($pubkey)
+        => [
+        $this->currentPubkey = $pubkey,
         $allowedPubkeys = [
             '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279'
-        ];
-        if (!in_array($this->currentPubkey, $allowedPubkeys, true)) {
-            return redirect()->route('association.profile');
-        }
-        $this->isAllowed = true;
-    },
-]);
-
-on([
-    'echo:votes,.newVote' => function () {
-        $this->loadEvents();
-        $this->loadVotes();
-    },
+            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
+        ],
+        !in_array($this->currentPubkey, $allowedPubkeys, true) ? redirect()->route(
+            'association.profile',
+        ) : $this->isAllowed = true,
+    ],
+    'echo:votes,.newVote' => fn()
+        => [
+        $this->loadEvents(),
+        $this->loadBoardEvents(),
+        $this->loadVotes(),
+        $this->loadBoardVotes(),
+    ],
 ]);
 
 $loadVotes = function () {
-    $votes = collect($this->events)
-        ->map(function ($event) {
-            $votedFor = \App\Models\Profile::query()
-                ->where('pubkey', str($event['content'])->before(',')->toString())
-                ->first();
-            if (!$votedFor) {
-                Artisan::call(\App\Console\Commands\Nostr\FetchProfile::class, [
-                    '--pubkey' => str($event['content'])->before(',')->toString(),
-                ]);
-                $votedFor = \App\Models\Profile::query()
-                    ->where('pubkey', str($event['content'])->before(',')->toString())
-                    ->first();
-            }
-            $votedFor = $votedFor->toArray();
-
-            return [
-                'created_at' => $event['created_at'],
-                'pubkey' => $event['pubkey'],
-                'forpubkey' => $votedFor['pubkey'],
-                'type' => str($event['content'])->after(',')->toString(),
-            ];
-        })
+    $this->votes = collect($this->events)
+        ->map(fn($event)
+            => [
+            'created_at' => $event['created_at'],
+            'pubkey' => $event['pubkey'],
+            'forpubkey' => $this->fetchProfile($event['content']),
+            'type' => str($event['content'])->after(',')->toString(),
+        ])
         ->sortByDesc('created_at')
         ->unique(fn($event) => $event['pubkey'] . $event['type'])
         ->values()
-        ->toArray();
-
-    $this->votes = collect($votes)
         ->groupBy('type')
         ->map(fn($votes)
             => [
             'type' => $votes[0]['type'],
-            'votes' => collect($votes)
-                ->groupBy('forpubkey')
-                ->map(fn($group) => ['count' => $group->count()])
-                ->toArray(),
+            'votes' => $votes->groupBy('forpubkey')->map(fn($group) => ['count' => $group->count()])->toArray(),
+        ])
+        ->values()
+        ->toArray();
+};
+
+$loadBoardVotes = function () {
+    $this->boardVotes = collect($this->boardEvents)
+        ->map(fn($event)
+            => [
+            'created_at' => $event['created_at'],
+            'pubkey' => $event['pubkey'],
+            'forpubkey' => $this->fetchProfile($event['content']),
+            'type' => str($event['content'])->after(',')->toString(),
+        ])
+        ->sortByDesc('created_at')
+        ->values()
+        ->groupBy('type')
+        ->map(fn($votes)
+            => [
+            'type' => $votes[0]['type'],
+            'votes' => $votes->groupBy('forpubkey')->map(fn($group) => ['count' => $group->count()])->toArray(),
         ])
         ->values()
         ->toArray();
 };
 
 $loadEvents = function () {
+    $this->events = $this->loadNostrEvents([32121]);
+};
+
+$loadBoardEvents = function () {
+    $this->boardEvents = $this->loadNostrEvents([2121]);
+};
+
+$fetchProfile = function ($content) {
+    $pubkey = str($content)->before(',')->toString();
+    $profile = \App\Models\Profile::query()->where('pubkey', $pubkey)->first();
+    if (!$profile) {
+        Artisan::call(\App\Console\Commands\Nostr\FetchProfile::class, ['--pubkey' => $pubkey]);
+        $profile = \App\Models\Profile::query()->where('pubkey', $pubkey)->first();
+    }
+    return $profile->pubkey;
+};
+
+$loadNostrEvents = function ($kinds) {
     $subscription = new Subscription();
     $subscriptionId = $subscription->setId();
-
-    $filter1 = new Filter();
-    $filter1->setKinds([2121]); // You can add multiple kind numbers
-    $filters = [$filter1]; // You can add multiple filters.
-
-    $requestMessage = new RequestMessage($subscriptionId, $filters);
-
-    $relays = [
-        new Relay(config('services.relay')),
-    ];
+    $filter = new Filter();
+    $filter->setKinds($kinds);
+    $requestMessage = new RequestMessage($subscriptionId, [$filter]);
     $relaySet = new RelaySet();
-    $relaySet->setRelays($relays);
-
+    $relaySet->setRelays([new Relay(config('services.relay'))]);
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
-
-    $this->events = collect($response[config('services.relay')])
+    return collect($response[config('services.relay')])
         ->map(fn($event)
             => [
             'id' => $event->event->id,
@@ -160,8 +160,7 @@ $loadEvents = function () {
             'pubkey' => $event->event->pubkey,
             'tags' => $event->event->tags,
             'created_at' => $event->event->created_at,
-        ])
-        ->toArray();
+        ])->toArray();
 };
 
 ?>
@@ -171,11 +170,7 @@ $loadEvents = function () {
     @php
         $positions = [
             'presidency' => ['icon' => 'fa-crown', 'title' => 'Präsidium'],
-            'vice_president' => ['icon' => 'fa-user-group-crown', 'title' => 'Vizepräsidium'],
-            'finances' => ['icon' => 'fa-bitcoin-sign', 'title' => 'Finanzen'],
-            'secretary' => ['icon' => 'fa-stapler', 'title' => 'Revisionsstelle'],
-            'press_officer' => ['icon' => 'fa-newspaper', 'title' => 'Pressewart'],
-            'it_manager' => ['icon' => 'fa-server', 'title' => 'Technikwart'],
+            'board' => ['icon' => 'fa-users', 'title' => 'Vorstandsmitglieder'],
         ];
     @endphp
 
@@ -193,24 +188,39 @@ $loadEvents = function () {
 
         </div>
 
-        <!-- Cards -->
-        <div class="grid grid-cols-12 gap-6">
-                @foreach($positions as $key => $position)
-                    <div wire:key="pos_{{ $key }}" wire:ignore
-                         class="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                        <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                            <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
-                                    class="fa-sharp-duotone fa-solid {{ $position['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $position['title'] }}
-                            </h2>
-                        </header>
-                        <div class="grow">
-                            <!-- Change the height attribute to adjust the chart height -->
-                            <canvas x-ref="chart_{{ $key }}" width="724" height="288"
-                                    style="display: block; box-sizing: border-box; height: 288px; width: 724px;"></canvas>
-                        </div>
-                    </div>
-                @endforeach
+        @php
+            $president = $positions['presidency'];
+            $board = $positions['board'];
+        @endphp
 
+            <!-- Cards -->
+        <div class="grid gap-y-4">
+            <div wire:key="presidency" wire:ignore
+                 class="flex flex-col bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
+                            class="fa-sharp-duotone fa-solid {{ $president['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $president['title'] }}
+                    </h2>
+                </header>
+                <div class="grow">
+                    <!-- Change the height attribute to adjust the chart height -->
+                    <canvas x-ref="chart_presidency" width="724" height="288"
+                            style="display: block; box-sizing: border-box; height: 288px; width: 724px;"></canvas>
+                </div>
+            </div>
+            <div wire:key="board" wire:ignore
+                 class="flex flex-col bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
+                            class="fa-sharp-duotone fa-solid {{ $board['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $board['title'] }}
+                    </h2>
+                </header>
+                <div class="grow">
+                    <!-- Change the height attribute to adjust the chart height -->
+                    <canvas x-ref="chart_board" width="724" height="288"
+                            style="display: block; box-sizing: border-box; height: 288px; width: 724px;"></canvas>
+                </div>
+            </div>
         </div>
 
     </div>
