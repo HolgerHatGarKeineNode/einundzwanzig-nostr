@@ -124,7 +124,7 @@ $loadBoardVotes = function () {
 };
 
 $loadEvents = function () {
-    $this->events = $this->loadNostrEvents([32121]);
+    $this->events = $this->loadNostrEvents([32122]);
 };
 
 $loadBoardEvents = function () {

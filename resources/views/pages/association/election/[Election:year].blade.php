@@ -84,7 +84,7 @@ updated([
 ]);
 
 $loadEvents = function () {
-    $this->events = $this->loadNostrEvents([32121]);
+    $this->events = $this->loadNostrEvents([32122]);
 };
 
 $loadBoardEvents = function () {
@@ -119,7 +119,7 @@ $vote = function ($pubkey, $type, $board = false) {
         return;
     }
     $note = new NostrEvent();
-    $note->setKind($board ? 2121 : 32121);
+    $note->setKind($board ? 2121 : 32122);
     if (!$board) {
         $dTag = sprintf('%s,%s,%s', $this->currentPleb->pubkey, date('Y'), $type);
         $note->setTags([['d', $dTag]]);
