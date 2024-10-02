@@ -29,7 +29,7 @@ state(['events' => []]);
 state(['payments' => []]);
 state(['invoice' => null]);
 state(['qrCode' => null]);
-state(['amountToPay' => 21000]);
+state(['amountToPay' => config('app.env') === 'production' ? 21000 : 1]);
 state(['currentYearIsPaid' => false]);
 state(['currentPubkey' => null]);
 state(['currentPleb' => null]);
@@ -58,7 +58,7 @@ on([
             ])
             ->where('pubkey', $pubkey)->first();
         if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
-            $this->amountToPay = 21000;
+            $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
         }
         if ($this->currentPleb->paymentEvents->count() < 1) {
             $this->createPaymentEvent();
@@ -155,7 +155,7 @@ $createPaymentEvent = function () {
     $note->setContent(
         'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr ' . date(
             'Y',
-        ) . '. Bitte zappe den Betrag von ' . $this->amountToPay . ' Satoshi.',
+        ) . '. Bitte zappe den Betrag von ' . number_format($this->amountToPay, 0, ',', '.') . ' Satoshi.',
     );
     $note->setTags([
         ['d', $this->currentPleb->pubkey . ',' . date('Y')],
