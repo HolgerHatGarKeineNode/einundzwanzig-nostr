@@ -438,12 +438,12 @@ $signEvent = function ($event) {
                 <div class="grow px-4 sm:px-6 md:px-5 py-4">
 
                     <!-- Mail subject -->
-                    <header class="sm:flex sm:items-start sm:justify-between mb-4">
+                    <header class="sm:flex sm:items-start space-x-4 mb-4">
                         <h1 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
-                            Wahl des Vereinsvorstands
+                            Wahlen
                         </h1>
                         <button
-                            class="text-xs inline-flex font-medium bg-sky-500/20 text-sky-700 rounded-full text-center px-2.5 py-1 whitespace-nowrap">
+                            class="text-xs inline-flex font-bold bg-amber-500/20 text-sky-700 rounded-full text-center px-2.5 py-1 whitespace-nowrap">
                             2024
                         </button>
                     </header>
