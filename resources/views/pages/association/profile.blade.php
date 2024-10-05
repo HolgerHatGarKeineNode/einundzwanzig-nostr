@@ -445,7 +445,7 @@ $loadEvents = function () {
                                                             class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
                                                     </p>
                                                     <div>
-                                                        @if(isset($events[0]))
+                                                        @if(false && isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
                                                             <div class="mt-8">
                                                                 @if(!$invoice && !$currentYearIsPaid)
@@ -483,6 +483,17 @@ $loadEvents = function () {
                                                                         @endif
                                                                     @endif
                                                                 @endif
+                                                            </div>
+                                                        @else
+                                                            <div class="flex sm:justify-center">
+                                                                <button
+                                                                    class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
+                                                                >
+                                                                    <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
+                                                                    Die Funktion für die Zahlung der Mitgliedsbeiträge
+                                                                    muss noch eingehend getestet und weiterentwickelt
+                                                                    werden.
+                                                                </button>
                                                             </div>
                                                         @endif
                                                     </div>
