@@ -47,6 +47,14 @@ mount(function () {
 });
 
 on([
+    'nostrLoggedOut' => function () {
+        $this->isAllowed = false;
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+    },
+]);
+
+on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();

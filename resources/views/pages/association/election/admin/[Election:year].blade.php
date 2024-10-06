@@ -60,6 +60,13 @@ mount(fn()
 ]);
 
 on([
+    'nostrLoggedOut' => function () {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+    },
+]);
+
+on([
     'nostrLoggedIn' => fn($pubkey)
         => [
         $this->currentPubkey = $pubkey,

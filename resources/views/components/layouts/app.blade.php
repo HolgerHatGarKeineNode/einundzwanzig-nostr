@@ -9,8 +9,6 @@
     @vite(['resources/js/app.js','resources/css/app.css'])
     @googlefonts
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
-    <script src='https://www.unpkg.com/nostr-login@latest/dist/unpkg.js' data-perms="sign_event:1,sign_event:0"
-            data-theme="default" data-dark-mode="true"></script>
     @wireUiScripts
     @stack('scripts')
 </head>

@@ -49,6 +49,20 @@ updated([
 ]);
 
 on([
+    'nostrLoggedOut' => function () {
+    $this->currentPubkey = null;
+    $this->currentPleb = null;
+    $this->yearsPaid = [];
+    $this->events = [];
+    $this->payments = [];
+    $this->invoice = null;
+    $this->qrCode = null;
+    $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+    $this->currentYearIsPaid = false;
+    },
+]);
+
+on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
