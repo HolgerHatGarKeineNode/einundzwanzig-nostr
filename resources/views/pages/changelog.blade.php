@@ -14,42 +14,18 @@ name('changelog');
 state(['entries' => []]);
 
 mount(function () {
-    // Führen Sie den Git-Befehl aus, um die Commit-Historie zu erhalten
-    $gitLog = shell_exec('git log --pretty=format:"%h|%an|%ad%n%s%n%b" --date=iso --no-merges');
-
-    // Parsen Sie die Ausgabe des Git-Befehls
-    $rawEntries = explode("\n\n", $gitLog);
+    $output = shell_exec('git log -n1000 --pretty=format:"%H|%s|%an|%ad" --date=format:"%Y-%m-%d %H:%M:%S"');
+    $lines = explode("\n", trim($output));
     $entries = [];
-    $uniqueMessages = [];
 
-    foreach ($rawEntries as $entry) {
-        $lines = explode("\n", $entry);
-        if (count($lines) < 3) {
-            continue;
-        }
-
-        $header = explode('|', array_shift($lines));
-        if (count($header) !== 3) {
-            continue;
-        }
-
-        [$hash, $author, $date] = $header;
-        $message = implode("\n", $lines);
-
-        // Format the date to a human-readable format
-        $dateTime = new DateTime($date);
-        $formattedDate = $dateTime->format('F j, Y, g:i a');
-
-        // Überprüfen, ob die Nachricht bereits existiert
-        if (!in_array($message, $uniqueMessages, true)) {
-            $uniqueMessages[] = $message;
-            $entries[] = [
-                'hash' => $hash,
-                'message' => $message,
-                'author' => $author,
-                'date' => $formattedDate,
-            ];
-        }
+    foreach ($lines as $line) {
+        [$hash, $message, $author, $date] = explode('|', $line);
+        $entries[] = [
+            'hash' => $hash,
+            'message' => $message,
+            'author' => $author,
+            'date' => $date,
+        ];
     }
     $this->entries = $entries;
 });
