@@ -50,15 +50,15 @@ updated([
 
 on([
     'nostrLoggedOut' => function () {
-    $this->currentPubkey = null;
-    $this->currentPleb = null;
-    $this->yearsPaid = [];
-    $this->events = [];
-    $this->payments = [];
-    $this->invoice = null;
-    $this->qrCode = null;
-    $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
-    $this->currentYearIsPaid = false;
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+        $this->yearsPaid = [];
+        $this->events = [];
+        $this->payments = [];
+        $this->invoice = null;
+        $this->qrCode = null;
+        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+        $this->currentYearIsPaid = false;
     },
 ]);
 
@@ -423,6 +423,12 @@ $loadEvents = function () {
                                                 </div>
                                                 <div>{{ $currentPleb->application_text }}</div>
                                             </div>
+                                            <div>
+                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                    Schaue später vorbei, denn nun muss jemand aus dem Vorstand deine
+                                                    Bewerbung prüfen.
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -513,12 +519,10 @@ $loadEvents = function () {
                                                         @else
                                                             <div class="flex sm:justify-center">
                                                                 <button
-                                                                    class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
+                                                                    class="btn dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
                                                                 >
                                                                     <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
-                                                                    Die Funktion für die Zahlung der Mitgliedsbeiträge
-                                                                    muss noch eingehend getestet und weiterentwickelt
-                                                                    werden.
+                                                                    Die Zahlungsfunktion der Mitgliedsbeiträge wird derzeit entwickelt.
                                                                 </button>
                                                             </div>
                                                         @endif
