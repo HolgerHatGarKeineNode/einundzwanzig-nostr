@@ -23,7 +23,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
     use WireUiActions;
     use WithExport;
 
-    public string $sortField = 'application_for';
+    public string $sortField = 'association_status';
 
     public string $sortDirection = 'desc';
 
