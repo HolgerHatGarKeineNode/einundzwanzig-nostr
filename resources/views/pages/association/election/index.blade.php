@@ -37,7 +37,7 @@ on([
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
         if ($this->currentPubkey !== '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033') {
-            return redirect()->route('association.profile');
+            return $this->js('alert("Du bist nicht berechtigt, Wahlen zu bearbeiten.")');
         }
         $this->isAllowed = true;
     },

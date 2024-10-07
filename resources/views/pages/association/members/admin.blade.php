@@ -34,7 +34,7 @@ on([
             '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
         ];
         if (!in_array($this->currentPubkey, $allowedPubkeys, true)) {
-            return redirect()->route('association.profile');
+            return $this->js('alert("Du bist nicht berechtigt, Mitglieder zu bearbeiten.")');
         }
         $this->isAllowed = true;
     },
