@@ -27,7 +27,6 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
 
     public string $sortDirection = 'desc';
 
-    public bool $multiSort = true;
 
     public function setUp(): array
     {
@@ -93,6 +92,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                         $model->npub,
                     ) . '">Nostr Profile</a>',
             )
+            ->add('association_status')
             ->add(
                 'association_status_formatted',
                 fn(EinundzwanzigPleb $model)
