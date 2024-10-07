@@ -309,6 +309,7 @@ $loadEvents = function () {
                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
                                           x-show="!$store.nostr.user"/>
+                                {{-- https://v.nostr.build/bomfuwLnOTIDrP4y.mp4 --}}
                                 <template x-if="$store.nostr.user">
                                     <div class="flex items">
                                         <img class="w-12 h-12 rounded-full"
@@ -338,6 +339,19 @@ $loadEvents = function () {
                                         </div>
                                     </div>
                                 @endif
+                            </div>
+                            <div class="mt-8 flex">
+                                <div class="w-full sm:w-1/2">
+                                    <h2 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
+                                        Nsec.app Tutorial (sicheres Anmelden mit Nsec)
+                                    </h2>
+                                    <video class="aspect-video rounded-lg shadow-sm"
+                                           x-show="!$store.nostr.user"
+                                           src="https://v.nostr.build/bomfuwLnOTIDrP4y.mp4"
+                                           autoplay
+                                           playsinline
+                                           controls/>
+                                </div>
                             </div>
                         </section>
 
