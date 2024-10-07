@@ -25,7 +25,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
 
     public string $sortField = 'application_for';
 
-    public string $sortDirection = 'asc';
+    public string $sortDirection = 'desc';
 
     public bool $multiSort = true;
 
