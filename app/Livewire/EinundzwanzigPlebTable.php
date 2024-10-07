@@ -36,7 +36,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
             Header::make()->showSearchInput(),
             Footer::make()
-                ->showPerPage(25)
+                ->showPerPage(0)
                 ->showRecordCount(),
             Detail::make()
                 ->view('components.detail')
