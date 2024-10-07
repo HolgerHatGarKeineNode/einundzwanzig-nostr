@@ -95,8 +95,16 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->add('association_status')
             ->add(
                 'association_status_formatted',
-                fn(EinundzwanzigPleb $model)
-                    => $model->association_status->label(),
+                function (EinundzwanzigPleb $model) {
+                    $class = match ($model->association_status) {
+                        AssociationStatus::DEFAULT => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-gray-500/20 text-gray-700',
+                        AssociationStatus::PASSIVE => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-yellow-500/20 text-yellow-700',
+                        AssociationStatus::ACTIVE => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-green-500/20 text-green-700',
+                        AssociationStatus::HONORARY => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-blue-500/20 text-blue-700',
+                        default => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 text-red-700',
+                    };
+                    return '<span class="'.$class.'">' . $model->association_status->label().'</span>';
+                },
             )
             ->add(
                 'name_lower',
