@@ -6,11 +6,11 @@
 
     <title>{{ $title ?? 'Page Title' }}</title>
     @livewireStyles
+    @wireUiScripts
+    @stack('scripts')
     @vite(['resources/js/app.js','resources/css/app.css'])
     @googlefonts
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
-    @wireUiScripts
-    @stack('scripts')
 </head>
 <body
     class="font-sans antialiased bg-gray-100 dark:bg-[#222222] text-gray-600 dark:text-gray-400"
@@ -18,6 +18,8 @@
     x-data="{ sidebarOpen: false, sidebarExpanded: localStorage.getItem('sidebar-expanded') == 'true', inboxSidebarOpen: false }"
     x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebar-expanded', value))"
 >
+<x-dialog />
+<x-notifications />
 <script>
     if (localStorage.getItem('sidebar-expanded') == 'true') {
         document.querySelector('body').classList.add('sidebar-expanded');

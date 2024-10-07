@@ -16,9 +16,11 @@ use PowerComponents\LivewirePowerGrid\PowerGrid;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\Traits\WithExport;
+use WireUi\Traits\WireUiActions;
 
 final class EinundzwanzigPlebTable extends PowerGridComponent
 {
+    use WireUiActions;
     use WithExport;
 
     public string $sortField = 'application_for';
@@ -139,8 +141,37 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return [];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
+    #[\Livewire\Attributes\On('accept')]
+    public function accept($rowId): void
+    {
+        $pleb = EinundzwanzigPleb::query()
+            ->with('profile')
+            ->findOrFail($rowId);
+        $this->dialog()->confirm([
+            'title' => 'Bist du sicher?',
+            'description' => 'Möchtest du ' . $pleb->profile->name . ' wirklich akzeptieren?',
+            'acceptLabel' => 'Ja, akzeptieren',
+            'method' => 'acceptPleb',
+            'params' => $rowId,
+        ]);
+    }
+
+    #[\Livewire\Attributes\On('delete')]
+    public function delete($rowId): void
+    {
+        $pleb = EinundzwanzigPleb::query()
+            ->with('profile')
+            ->findOrFail($rowId);
+        $this->dialog()->confirm([
+            'title' => 'Bist du sicher?',
+            'description' => 'Möchtest du ' . $pleb->profile->name . ' wirklich löschen?',
+            'acceptLabel' => 'Ja, lösche',
+            'method' => 'deletePleb',
+            'params' => $rowId,
+        ]);
+    }
+
+    public function acceptPleb($rowId)
     {
         $pleb = EinundzwanzigPleb::query()->findOrFail($rowId);
         $for = $pleb->application_for;
@@ -154,16 +185,33 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         $this->fillData();
     }
 
+    public function deletePleb($rowId)
+    {
+        $pleb = EinundzwanzigPleb::query()->findOrFail($rowId);
+        $pleb->application_for = null;
+        $pleb->application_text = null;
+        $pleb->save();
+
+        $this->fillData();
+    }
+
     public function actions(EinundzwanzigPleb $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Approve')
+            Button::add('delete')
+                ->slot('Löschen')
+                ->id()
+                ->class(
+                    'btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-red-500',
+                )
+                ->dispatch('delete', ['rowId' => $row->id]),
+            Button::add('accept')
+                ->slot('Akzeptieren')
                 ->id()
                 ->class(
                     'btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500',
                 )
-                ->dispatch('edit', ['rowId' => $row->id]),
+                ->dispatch('accept', ['rowId' => $row->id]),
         ];
     }
 
@@ -171,7 +219,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
     {
         return [
             // Hide button edit for ID 1
-            Rule::button('edit')
+            Rule::button('accept')
                 ->when(fn($row) => $row->application_for === null)
                 ->hide(),
         ];
