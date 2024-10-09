@@ -23,6 +23,7 @@
         "livewire/volt": "^1.6",
         "openspout/openspout": "^4.24",
         "power-components/livewire-powergrid": "^5.10",
+        "sentry/sentry-laravel": "^4.9",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/image": "^3.7",
         "spatie/laravel-google-fonts": "^1.4",
