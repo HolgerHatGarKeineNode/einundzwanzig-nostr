@@ -38,8 +38,7 @@ trait NostrFetcherTrait
         $filter1 = new Filter();
         $filter1->setKinds([0]); // You can add multiple kind numbers
         $filter1->setAuthors($hex->pluck('hex')->toArray()); // You can add multiple author ids
-        $filters = [$filter1]; // You can add multiple filters.
-
+        $filters = [$filter1];
         $requestMessage = new RequestMessage($subscriptionId, $filters);
 
         $relayUrls = [
@@ -69,7 +68,6 @@ trait NostrFetcherTrait
         if (empty($data)) {
             return;
         }
-
         foreach ($data as $item) {
             try {
                 if (isset($item->event)) {

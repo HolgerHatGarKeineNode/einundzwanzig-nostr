@@ -32,6 +32,8 @@ class SyncProfiles extends Command
         $plebs = EinundzwanzigPleb::query()
             ->whereDoesntHave('profile')
             ->get();
-        $this->fetchProfile($plebs->pluck('npub')->toArray());
+        if ($plebs->count() > 0) {
+            $this->fetchProfile($plebs->pluck('npub')->toArray());
+        }
     }
 }
