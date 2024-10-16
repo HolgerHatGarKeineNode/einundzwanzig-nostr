@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\Profile;
+use Illuminate\Support\Facades\Log;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
 use swentel\nostr\Message\RequestMessage;
@@ -71,27 +72,28 @@ trait NostrFetcherTrait
 
         foreach ($data as $item) {
             try {
-                $result = json_decode($item->event->content, true, 512, JSON_THROW_ON_ERROR);
+                if (isset($item->event)) {
+                    $result = json_decode($item->event->content, true, 512, JSON_THROW_ON_ERROR);
+                    Profile::query()->updateOrCreate(
+                        ['pubkey' => $item->event->pubkey],
+                        [
+                            'name' => $result['name'] ?? null,
+                            'display_name' => $result['display_name'] ?? null,
+                            'picture' => $result['picture'] ?? null,
+                            'banner' => $result['banner'] ?? null,
+                            'website' => $result['website'] ?? null,
+                            'about' => $result['about'] ?? null,
+                            'nip05' => $result['nip05'] ?? null,
+                            'lud16' => $result['lud16'] ?? null,
+                            'lud06' => $result['lud06'] ?? null,
+                            'deleted' => $result['deleted'] ?? false,
+                        ],
+                    );
+                }
             } catch (\JsonException $e) {
                 throw new \RuntimeException('Error decoding JSON: ' . $e->getMessage());
             }
-            Profile::query()->updateOrCreate(
-                ['pubkey' => $item->event->pubkey],
-                [
-                    'name' => $result['name'] ?? null,
-                    'display_name' => $result['display_name'] ?? null,
-                    'picture' => $result['picture'] ?? null,
-                    'banner' => $result['banner'] ?? null,
-                    'website' => $result['website'] ?? null,
-                    'about' => $result['about'] ?? null,
-                    'nip05' => $result['nip05'] ?? null,
-                    'lud16' => $result['lud16'] ?? null,
-                    'lud06' => $result['lud06'] ?? null,
-                    'deleted' => $result['deleted'] ?? false,
-                ]
-            );
         }
-
     }
 
 }
