@@ -66,7 +66,7 @@ trait NostrFetcherTrait
         }
 
         if (empty($data)) {
-            throw new \RuntimeException('No data received from any relay.');
+            return;
         }
 
         foreach ($data as $item) {
