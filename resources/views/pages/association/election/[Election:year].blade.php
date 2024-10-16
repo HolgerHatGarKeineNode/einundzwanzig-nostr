@@ -317,7 +317,7 @@ $signEvent = function ($event) {
                                                  onerror="this.onerror=null; this.src='https://robohash.org/test';"
                                                  width="32"
                                                  height="32"
-                                                 alt="{{ $pleb['pubkey'] }}"/>
+                                                 alt="A"/>
                                             <div class="grow truncate">
                                                 <div class="flex items-center justify-between mb-1.5">
                                                     <div class="truncate">
