@@ -442,7 +442,7 @@ $loadEvents = function () {
                                                                     @if(!$currentYearIsPaid && $qrCode)
                                                                         <div class="flex justify-center"
                                                                              wire:key="qrcode"
-                                                                             wire:poll="listenForPayment">
+                                                                             wire:poll.2s.keep-alive="listenForPayment">
                                                                             <a href="lightning:{{ $invoice }}">
                                                                                 <img
                                                                                     class="p-4 sm:p-12 bg-white"
