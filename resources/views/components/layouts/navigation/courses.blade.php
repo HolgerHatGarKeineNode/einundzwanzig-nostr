@@ -13,7 +13,7 @@
                @click.prevent="open = !open; sidebarExpanded = true">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <i class="fa-sharp-duotone fa-solid fa-graduation-cap h-6 w-6"></i>
+                        <i class="fa-sharp-duotone fa-solid fa-graduation-cap h-4 w-4"></i>
                         <span
                             class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Browse</span>
                     </div>
@@ -58,7 +58,7 @@
                href="#0" @click.prevent="open = !open; sidebarExpanded = true">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <i class="fa-sharp-duotone fa-solid fa-pencil h-6 w-6"></i>
+                        <i class="fa-sharp-duotone fa-solid fa-pencil h-4 w-4"></i>
                         <span
                             class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Manage</span>
                     </div>

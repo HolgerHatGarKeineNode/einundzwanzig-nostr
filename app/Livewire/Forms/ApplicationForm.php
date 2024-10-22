@@ -7,6 +7,6 @@ use Livewire\Form;
 
 class ApplicationForm extends Form
 {
-    #[Validate('required|min:5')]
+    #[Validate('nullable|string')]
     public $reason = '';
 }

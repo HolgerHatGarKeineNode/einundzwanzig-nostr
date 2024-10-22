@@ -1,7 +1,8 @@
 <?php
 
 use Livewire\Volt\Component;
-use swentel\nostr\{Filter\Filter,
+use swentel\nostr\{
+    Filter\Filter,
     Key\Key,
     Message\EventMessage,
     Message\RequestMessage,

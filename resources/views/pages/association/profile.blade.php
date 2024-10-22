@@ -158,8 +158,7 @@ $save = function ($type) {
     $this->form->validate();
     $this->currentPleb
         ->update([
-            'application_for' => $type,
-            'application_text' => $this->form->reason,
+            'association_status' => $type,
         ]);
 };
 
@@ -334,7 +333,7 @@ $loadEvents = function () {
                                                     <path
                                                         d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
                                                 </svg>
-                                                <div>Profil in der Datenbank vorhanden. Bewerbung kann erfolgen.</div>
+                                                <div>Profil in der Datenbank vorhanden.</div>
                                             </div>
                                         </div>
                                     </div>
@@ -381,26 +380,17 @@ $loadEvents = function () {
                         <section>
                             @if($currentPubkey && !$currentPleb->application_for && $currentPleb->association_status->value < 2)
                                 <h3 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
-                                    aktives Mitglied werden
+                                    Einundzwanzig Mitglied werden
                                 </h3>
                                 <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
-                                    Aktivmitglieder arbeiten ehrenamtlich für den Verein, z.B. als Podcast-Moderator
-                                    oder Software-Entwickler. Der Vorstand wählt sie aus. Nur Menschen können
-                                    Aktivmitglieder werden, zahlen 21.000 Satoshis im Jahr und haben volles Stimmrecht.
+                                    Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr (Die Zahlung
+                                    ist noch in der Entwicklung).<br>
+                                    <span class="text-amber-500">Firmen melden sich bitte direkt an den Vorstand.</span>
                                 </h4>
-                                <div class="text-sm">
-                                    <x-textarea
-                                        corner="Woher kennen wir dich? Was möchtest du einbringen?"
-                                        description="Wir bitten dich mindestens von 3 aktiven Mitgliedern auf Nostr gefolgt zu werden."
-                                        label="Warum möchtest du aktives Mitglied werden?"
-                                        wire:model="form.reason"/>
-                                </div>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
-                                    <div class="sm:w-1/3 flex flex-col space-y-2">
-                                        <x-button label="Für aktive Mitgliedschaft bewerben"
-                                                  wire:click="save({{ \App\Enums\AssociationStatus::ACTIVE() }})"/>
-                                        <x-badge outline
-                                                 label="Es wird im Anschluss ein Nostr Event erzeugt, das du mit dem Mitgliedsbeitrag zappen kannst, nachdem du bestätigt wurdest."/>
+                                    <div class="sm:w-1/2 flex flex-col space-y-2">
+                                        <x-button label="Mit deinem aktuellen Nostr-Profil Mitglied werden"
+                                                  wire:click="save({{ \App\Enums\AssociationStatus::PASSIVE() }})"/>
                                     </div>
                                 </div>
                             @endif
@@ -448,8 +438,7 @@ $loadEvents = function () {
                                             </svg>
                                             <div>
                                                 <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
-                                                    Dein aktueller
-                                                    Status: {{ $currentPleb->association_status->label() }}
+                                                    Du bist derzeit ein Mitglied des Vereins.
                                                 </div>
                                             </div>
                                         </div>
@@ -522,7 +511,8 @@ $loadEvents = function () {
                                                                     class="btn dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
                                                                 >
                                                                     <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
-                                                                    Die Zahlungsfunktion der Mitgliedsbeiträge wird derzeit entwickelt.
+                                                                    Die Zahlungsfunktion der Mitgliedsbeiträge wird
+                                                                    derzeit entwickelt.
                                                                 </button>
                                                             </div>
                                                         @endif
