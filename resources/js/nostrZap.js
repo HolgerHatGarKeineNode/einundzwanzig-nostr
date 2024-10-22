@@ -16,7 +16,7 @@ export default (livewireComponent) => ({
                 relayUrl: 'wss://simple-test-relay.steuernsindraub21.xyz',
             },
             local: {
-                relayUrl: 'ws://simple-test-relay.steuernsindraub21.xyz',
+                relayUrl: 'wss://simple-test-relay.steuernsindraub21.xyz',
             },
         };
         const relayUrl = config[env]?.relayUrl || config['local'].relayUrl;
@@ -40,6 +40,8 @@ export default (livewireComponent) => ({
         const callbackResponse = await fetch('https://pay.einundzwanzig.space/BTC/UILNURL/pay/lnaddress/verein');
         const callbackData = await callbackResponse.json();
         const zapEndpoint = callbackData.callback;
+
+        livewireComponent.call('updateZapEndpoint', zapEndpoint);
 
         const zapEvent = nip57.makeZapRequest({
             profile: sender,

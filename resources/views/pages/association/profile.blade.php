@@ -79,79 +79,38 @@ on([
             $this->currentPleb->load('paymentEvents');
         }
         $this->loadEvents();
-        $this->searchPaymentEvent();
+        $this->listenForPayment();
     },
 ]);
 
 $listenForPayment = function () {
-    if (!$this->currentYearIsPaid) {
-        $this->searchPaymentEvent();
+    $paymentEvent = $this->currentPleb
+        ->paymentEvents()
+        ->where('year', date('Y'))
+        ->first();
+    if ($paymentEvent && !$paymentEvent->paid && $paymentEvent->zap_endpoint && !$this->currentYearIsPaid) {
+        $response = Http::get($paymentEvent->zap_endpoint);
+
+        if (!isset($response->json()['tag'])) {
+            $paymentEvent->update(['paid' => true]);
+            $this->currentYearIsPaid = true;
+        }
+    }
+
+    if ($paymentEvent && $paymentEvent->paid && !$this->currentYearIsPaid) {
+        $this->payments = $paymentEvent = $this->currentPleb
+            ->paymentEvents()
+            ->get();
+        $this->currentYearIsPaid = true;
     }
 };
 
-$searchPaymentEvent = function () {
-    $subscription = new Subscription();
-    $subscriptionId = $subscription->setId();
-
-    $filter1 = new Filter();
-    $filter1->setKinds([9735]);
-    $filters = [$filter1];
-
-    $requestMessage = new RequestMessage($subscriptionId, $filters);
-
-    $relays = [
-        new Relay(config('services.relay')),
-    ];
-    $relaySet = new RelaySet();
-    $relaySet->setRelays($relays);
-
-    $request = new Request($relaySet, $requestMessage);
-    $response = $request->send();
-
-    if (count($response[config('services.relay')]) > 0) {
-        $this->payments = collect($response[config('services.relay')])
-            ->map(fn($event)
-                => [
-                'id' => $event->event->id,
-                'kind' => $event->event->kind,
-                'content' => $event->event->content,
-                'pubkey' => $event->event->pubkey,
-                'tags' => $event->event->tags,
-                'created_at' => $event->event->created_at,
-            ])
-            ->filter(fn($payment)
-                => collect($payment['tags'])->firstWhere('0', 'p')[1] === $this->currentPubkey
-                && json_decode(
-                    collect($payment['tags'])->firstWhere('0', 'description')[1],
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR,
-                )['content'] == date('Y'))
-            ->values()
-            ->toArray();
-
-        $this->yearsPaid = collect($this->payments)->map(fn($payment)
-            => [
-            'year' => $payment['content'],
-            'amount' => collect(
-                    json_decode(
-                        collect($payment['tags'])->firstWhere('0', 'description')[1],
-                        true,
-                        512,
-                        JSON_THROW_ON_ERROR,
-                    )['tags'],
-                )->firstWhere('0', 'amount')[1] / 1000,
-        ]);
-
-        $this->currentYearIsPaid = collect($this->yearsPaid)->contains(
-            fn($yearPaid) => $yearPaid['year'] == date('Y') && $yearPaid['amount'] == $this->amountToPay,
-        );
-
-        if ($this->currentYearIsPaid) {
-            $this->qrCode = null;
-            $this->currentPleb->paymentEvents->first()->update(['paid' => true]);
-        }
-    }
+$updateZapEndpoint = function ($zapEndpoint) {
+    $this->currentPleb
+        ->paymentEvents()
+        ->where('year', date('Y'))
+        ->first()
+        ->update(['zap_endpoint' => $zapEndpoint]);
 };
 
 $save = function ($type) {
@@ -466,17 +425,17 @@ $loadEvents = function () {
                                                             class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
                                                     </p>
                                                     <div>
-                                                        @if(false && isset($events[0]))
+                                                        @if(isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
                                                             <div class="mt-8">
                                                                 @if(!$invoice && !$currentYearIsPaid)
                                                                     <div class="flex justify-center">
                                                                         <button
-                                                                            @click="zap('{{ date('Y') }}', '{{ $currentPubkey }}', {{ $amountToPay }}, '{{ config('app.env') }}')"
+                                                                            @click="zap('Mitgliedsbeitrag {{ date('Y') }} von {{ $currentPubkey }}', '{{ $currentPubkey }}', {{ $amountToPay }}, '{{ config('app.env') }}')"
                                                                             class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                         >
                                                                             <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
-                                                                            Zap
+                                                                            Zap {{ $amountToPay }} Sats
                                                                         </button>
                                                                     </div>
                                                                 @else
@@ -545,18 +504,18 @@ $loadEvents = function () {
                                                                         <div
                                                                             class="text-left font-medium text-gray-800 dark:text-gray-100">
                                                                             <span class="sm:hidden">Sats:</span>
-                                                                            {{ collect(json_decode(collect($payment['tags'])->firstWhere('0', 'description')[1], true, 512, JSON_THROW_ON_ERROR)['tags'])->firstWhere('0', 'amount')[1] / 1000 }}
+                                                                            {{ $payment->amount }}
                                                                         </div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
                                                                             class="text-left"><span
-                                                                                class="sm:hidden">Jahr:</span>{{ $payment['content'] }}
+                                                                                class="sm:hidden">Jahr:</span>{{ $payment->year }}
                                                                         </div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
-                                                                            class="text-left font-medium break-all">{{ $payment['id'] }}</div>
+                                                                            class="text-left font-medium break-all">{{ $payment->event_id }}</div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
