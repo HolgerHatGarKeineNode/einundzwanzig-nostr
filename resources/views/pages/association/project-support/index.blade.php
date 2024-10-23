@@ -42,7 +42,7 @@ state([
             </div>
 
             <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 justify-start sm:justify-end gap-2">
 
                 <!-- Search form -->
                 <form class="relative">
@@ -52,7 +52,7 @@ state([
 
                 <!-- Add meetup button -->
                 <x-button :href="route('association.projectSupport.create')" icon="plus"
-                          label="Projekt für Unterstützung einreichen"/>
+                          label="Projekt einreichen"/>
             </div>
 
         </div>
@@ -93,7 +93,7 @@ state([
                     <a class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
                        href="meetups-post.html">
                         <img class="absolute object-cover object-center w-full h-full"
-                             src="{{ asset('einundzwanzig-alpha.jpg') }}" width="220" height="236" alt="Meetup 01">
+                             src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Meetup 01">
                         <button class="absolute top-0 right-0 mt-4 mr-4">
                             <img class="rounded-full h-8 w-8" src="{{ $project->einundzwanzigPleb->profile->picture }}"
                                  alt="">
@@ -110,7 +110,7 @@ state([
                                     {{ $project->name }}
                                 </h3>
                             </a>
-                            <div class="text-sm">
+                            <div class="text-sm line-clamp-6">
                                 {!! strip_tags($project->description) !!}
                             </div>
                         </div>
