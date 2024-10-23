@@ -1,5 +1,6 @@
 import {Alpine, Livewire} from '../../vendor/livewire/livewire/dist/livewire.esm';
 
+import nostrDefault from "./nostrDefault.js";
 import nostrApp from "./nostrApp.js";
 import nostrLogin from "./nostrLogin.js";
 import nostrZap from "./nostrZap.js";
@@ -18,6 +19,7 @@ Alpine.store('nostr', {
     user: null,
 });
 
+Alpine.data('nostrDefault', nostrDefault);
 Alpine.data('nostrApp', nostrApp);
 Alpine.data('nostrLogin', nostrLogin);
 Alpine.data('nostrZap', nostrZap);

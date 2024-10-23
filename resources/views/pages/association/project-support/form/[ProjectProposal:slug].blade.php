@@ -12,14 +12,18 @@ use function Laravel\Folio\{middleware};
 use function Laravel\Folio\name;
 use function Livewire\Volt\{state, mount, on, computed};
 
-name('welcome');
+name('association.projectSupport.form');
+
+state([
+    'projectProposal' => fn() => $projectProposal,
+]);
 
 ?>
 
 <x-layouts.app title="Welcome">
     @volt
     <div>
-        TEST
+        @dd($projectProposal)
     </div>
     @endvolt
 </x-layouts.app>
