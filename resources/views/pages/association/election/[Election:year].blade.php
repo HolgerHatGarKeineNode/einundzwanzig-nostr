@@ -42,7 +42,7 @@ mount(function () {
         ->toArray();
     $this->loadEvents();
     $this->loadBoardEvents();
-    if ($this->election->end_time->isPast() || !config('services.voting')) {
+    if ($this->election->end_time?->isPast() || !config('services.voting')) {
         $this->isNotClosed = false;
     }
 });
@@ -123,7 +123,7 @@ $loadNostrEvents = function ($kinds) {
 };
 
 $vote = function ($pubkey, $type, $board = false) {
-    if ($this->election->end_time->isPast()) {
+    if ($this->election->end_time?->isPast()) {
         $this->isNotClosed = false;
         return;
     }
@@ -138,7 +138,7 @@ $vote = function ($pubkey, $type, $board = false) {
 };
 
 $checkElection = function () {
-    if ($this->election->end_time->isPast()) {
+    if ($this->election->end_time?->isPast()) {
         $this->isNotClosed = false;
     }
 };
@@ -429,7 +429,7 @@ $signEvent = function ($event) {
                             <div>
                                 @if($isNotClosed)
                                     <x-badge success
-                                             label="Die Wahl ist geöffnet bis zum {{ $election->end_time->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
+                                             label="Die Wahl ist geöffnet bis zum {{ $election->end_time?->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
                                 @else
                                     <x-badge negative label="Die Wahl ist geschlossen"/>
                                 @endif
@@ -497,7 +497,7 @@ $signEvent = function ($event) {
                                         </div>
                                         <footer class="mt-5">
                                             <div class="grid sm:grid-cols-2 gap-2">
-                                                @foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] as $c)
+                                                @foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] ?? [] as $c)
                                                     <div
                                                         @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', 'presidency')"
                                                         @endif
@@ -533,7 +533,7 @@ $signEvent = function ($event) {
                                         </div>
                                         <footer class="mt-5">
                                             <div class="grid sm:grid-cols-4 gap-2">
-                                                @foreach($electionConfigBoard->firstWhere('type', 'board')['candidates'] as $c)
+                                                @foreach($electionConfigBoard->firstWhere('type', 'board')['candidates'] ?? [] as $c)
                                                     <div
                                                         @if($isNotClosed && !$c['hasVoted'])wire:click="vote('{{ $c['pubkey'] }}', 'board', true)"
                                                         @endif
