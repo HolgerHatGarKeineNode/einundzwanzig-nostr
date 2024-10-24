@@ -134,7 +134,7 @@ $handleNotApprove = function () {
                     </a>
                 </div>
                 <div class="text-sm font-semibold text-violet-500 uppercase mb-2">
-                    {{ $projectProposal->created_at->format('D d M, Y') }}
+                    {{ $projectProposal->created_at->translatedFormat('d.m.Y') }}
                 </div>
                 <header class="mb-4">
                     <!-- Title -->
