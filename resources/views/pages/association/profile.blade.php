@@ -125,20 +125,16 @@ $listenForPayment = function () {
         if ($response->json()['status'] === 'Settled') {
             $paymentEvent->paid = true;
             $paymentEvent->save();
-            $this->payments = $this->currentPleb
-                ->paymentEvents()
-                ->where('paid', true)
-                ->get();
             $this->currentYearIsPaid = true;
         }
     }
     if ($paymentEvent->paid) {
         $this->currentYearIsPaid = true;
-        $this->payments = $this->currentPleb
-            ->paymentEvents()
-            ->where('paid', true)
-            ->get();
     }
+    $this->payments = $this->currentPleb
+        ->paymentEvents()
+        ->where('paid', true)
+        ->get();
 };
 
 $save = function ($type) {
