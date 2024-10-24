@@ -113,7 +113,7 @@ $handleNotApprove = function () {
 ?>
 
 <x-layouts.app title="{{ $projectProposal->name }}"
-               :seo="new SEOData(image: $projectProposal->getFirstMediaUrl('main'), description: str($projectProposal->description)->limit(100, '...', true))">
+               :seo="new SEOData(description: 'Unterstützung für: ' . str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full" x-data="nostrDefault(@this)" x-cloak
          x-show="isAllowed">
