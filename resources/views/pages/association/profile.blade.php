@@ -14,13 +14,8 @@ use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Sign\Sign;
 use WireUi\Actions\Notification;
 
-use function Livewire\Volt\computed;
-use function Livewire\Volt\mount;
-use function Livewire\Volt\state;
-use function Livewire\Volt\with;
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
-use function Livewire\Volt\{on, form, updated};
+use function Livewire\Volt\{computed, mount, state, with, on, form, updated};
+use function Laravel\Folio\{middleware, name};
 
 name('association.profile');
 

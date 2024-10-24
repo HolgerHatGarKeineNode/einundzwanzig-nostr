@@ -2,14 +2,18 @@
 
 use Livewire\Volt\Component;
 
-use function Livewire\Volt\computed;
-use function Livewire\Volt\mount;
-use function Livewire\Volt\state;
-use function Livewire\Volt\with;
-use function Livewire\Volt\updated;
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
-use function Livewire\Volt\{on};
+use function Livewire\Volt\{
+    computed,
+    mount,
+    state,
+    with,
+    updated,
+    on
+};
+use function Laravel\Folio\{
+    middleware,
+    name
+};
 
 name('association.members.admin');
 

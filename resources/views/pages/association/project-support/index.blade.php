@@ -9,8 +9,7 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
 use WireUi\Actions\Notification;
 
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
+use function Laravel\Folio\{middleware, name};
 use function Livewire\Volt\{state, mount, on, computed};
 
 name('association.projectSupport');
