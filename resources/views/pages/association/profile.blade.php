@@ -127,6 +127,7 @@ $listenForPayment = function () {
             $paymentEvent->save();
             $this->payments = $this->currentPleb
                 ->paymentEvents()
+                ->where('paid', true)
                 ->get();
             $this->currentYearIsPaid = true;
         }
@@ -135,6 +136,7 @@ $listenForPayment = function () {
         $this->currentYearIsPaid = true;
         $this->payments = $this->currentPleb
             ->paymentEvents()
+            ->where('paid', true)
             ->get();
     }
 };
