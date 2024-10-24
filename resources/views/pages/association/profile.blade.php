@@ -532,8 +532,10 @@ $loadEvents = function () {
                                                                             class="text-left font-medium break-all">{{ $payment->event_id }}</div>
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                        <x-button target="_blank" xs label="Quittung"
-                                                                                  href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"/>
+                                                                        @if($payment->btc_pay_invoice)
+                                                                            <x-button target="_blank" xs label="Quittung"
+                                                                                      href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"/>
+                                                                        @endif
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
