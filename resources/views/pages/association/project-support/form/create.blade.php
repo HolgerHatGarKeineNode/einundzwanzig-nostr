@@ -55,7 +55,7 @@ $save = function () {
 
 ?>
 
-<x-layouts.app title="Welcome">
+<x-layouts.app title="Neuer Vorschlag für eine Unterstützung">
     @volt
     <div x-cloak x-show="isAllowed" class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto"
          x-data="nostrDefault(@this)">
@@ -109,6 +109,10 @@ $save = function () {
                     </x-input.group>
 
                     <x-input.group :for="md5('save')" label="">
+                        <x-button secondary :href="route('association.projectSupport')">
+                            <i class="fa fa-thin fa-arrow-left"></i>
+                            {{ __('Zurück') }}
+                        </x-button>
                         <x-button primary wire:click="save">
                             <i class="fa fa-thin fa-save"></i>
                             {{ __('Save') }}

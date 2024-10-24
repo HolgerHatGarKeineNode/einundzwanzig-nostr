@@ -64,7 +64,7 @@ class ProjectProposal extends Model implements HasMedia
         $this
             ->addMediaCollection('main')
             ->singleFile()
-            ->useFallbackUrl(asset('img/einundzwanzig.png'));
+            ->useFallbackUrl(asset('einundzwanzig-alpha.jpg'));
     }
 
     public function einundzwanzigPleb(): BelongsTo

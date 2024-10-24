@@ -7,6 +7,7 @@ use swentel\nostr\Message\RequestMessage;
 use swentel\nostr\Relay\Relay;
 use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
+use WireUi\Actions\Notification;
 
 use function Laravel\Folio\{middleware};
 use function Laravel\Folio\name;
@@ -44,11 +45,35 @@ on([
     },
 ]);
 
+$confirmDelete = function ($id) {
+    $notification = new Notification($this);
+    $notification->confirm([
+        'title' => 'Projektunterstützung löschen',
+        'message' => 'Bist du sicher, dass du diese Projektunterstützung löschen möchtest?',
+        'accept' => [
+            'label' => 'Ja, löschen',
+            'method' => 'delete',
+            'params' => $id,
+        ],
+    ]);
+};
+
+$delete = function ($id) {
+    \App\Models\ProjectProposal::query()->findOrFail($id)->delete();
+    $this->projects = \App\Models\ProjectProposal::query()
+        ->with([
+            'einundzwanzigPleb.profile',
+            'votes',
+        ])
+        ->get();
+};
+
 ?>
 
 <x-layouts.app title="Projekt Unterstützungen">
     @volt
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)" x-cloak x-show="isAllowed">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)" x-cloak
+         x-show="isAllowed">
 
         <!-- Page header -->
         <div class="sm:flex sm:justify-between sm:items-center mb-5">
@@ -147,6 +172,17 @@ on([
                                         Anzahl der Unterstützer: +{{ $project->votes->count() }}
                                     </div>
                                 </div>
+                            @endif
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            @if($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
+                                <x-button
+                                    negative
+                                    wire:click="confirmDelete({{ $project->id }})"
+                                    label="Löschen"/>
+                                <x-button
+                                    :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
+                                    label="Editieren"/>
                             @endif
                         </div>
                     </div>
