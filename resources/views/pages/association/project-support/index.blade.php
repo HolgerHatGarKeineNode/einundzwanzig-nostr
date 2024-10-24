@@ -135,7 +135,7 @@ $delete = function ($id) {
                     class="flex bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden">
                     <!-- Image -->
                     <a class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
-                       href="meetups-post.html">
+                        href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
                         <img class="absolute object-cover object-center w-full h-full"
                              src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Meetup 01">
                         <button class="absolute top-0 right-0 mt-4 mr-4">
@@ -170,10 +170,10 @@ $delete = function ($id) {
                                 <a href="{{ $project->website }}" target="_blank">Webseite</a>
                             </div>
                             <!-- Avatars -->
-                            @if($project->votes->count() > 0)
+                            @if($project->votes->where('value', true)->count() > 0)
                                 <div class="flex items-center space-x-2">
                                     <div class="text-xs font-medium text-gray-400 dark:text-gray-300 italic">
-                                        Anzahl der Unterstützer: +{{ $project->votes->count() }}
+                                        Anzahl der Unterstützer: +{{ $project->votes->where('value', true)->count() }}
                                     </div>
                                 </div>
                             @endif
