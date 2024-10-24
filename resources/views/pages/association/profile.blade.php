@@ -131,6 +131,12 @@ $listenForPayment = function () {
             $this->currentYearIsPaid = true;
         }
     }
+    if ($paymentEvent->paid) {
+        $this->currentYearIsPaid = true;
+        $this->payments = $this->currentPleb
+            ->paymentEvents()
+            ->get();
+    }
 };
 
 $save = function ($type) {
