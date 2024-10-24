@@ -45,8 +45,6 @@ on([
 $save = function () {
     $this->form->validate();
 
-    $this->validate('image', 'image|max:1024');
-
     $projectProposal = \App\Models\ProjectProposal::query()->create([
         ...$this->form->all(),
         'einundzwanzig_pleb_id' => $this->currentPleb->id,
