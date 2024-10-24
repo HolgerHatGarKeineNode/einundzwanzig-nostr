@@ -3,6 +3,7 @@
 use App\Livewire\Forms\VoteForm;
 use App\Models\Vote;
 use Livewire\Volt\Component;
+use RalphJSmit\Laravel\SEO\Support\SEOData;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
 use swentel\nostr\Message\RequestMessage;
@@ -10,9 +11,8 @@ use swentel\nostr\Relay\Relay;
 use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
 
-use function Laravel\Folio\{middleware};
-use function Laravel\Folio\name;
-use function Livewire\Volt\{state, mount, on, computed, form};
+use function Laravel\Folio\{middleware, name};
+use function Livewire\Volt\{state, mount, on, computed, form, with};
 
 name('association.projectSupport.item');
 
@@ -105,7 +105,9 @@ $notApprove = function () {
 
 ?>
 
-<x-layouts.app title="{{ $projectProposal->name }}">
+<x-layouts.app title="{{ $projectProposal->name }}"
+               :seo="new SEOData(image: $projectProposal->getFirstMediaUrl('main'), description: str($projectProposal->description)->limit(100, '...', true))">
+    >
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full" x-data="nostrDefault(@this)" x-cloak
          x-show="isAllowed">
