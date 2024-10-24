@@ -181,10 +181,12 @@ $delete = function ($id) {
                         <div class="flex justify-between items-center mt-3">
                             @if($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
                                 <x-button
+                                    xs
                                     negative
                                     wire:click="confirmDelete({{ $project->id }})"
                                     label="Löschen"/>
                                 <x-button
+                                    xs
                                     :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
                                     label="Editieren"/>
                             @endif
