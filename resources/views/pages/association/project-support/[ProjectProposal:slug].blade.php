@@ -23,50 +23,66 @@ state([
     'isAllowed' => false,
     'currentPubkey' => null,
     'currentPleb' => null,
-    'reasons' => fn()
-        => Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->where('value', false)
-        ->get(),
+    'reasons' => fn() => $this->getReasons(),
     'ownVoteExists' => false,
-    'boardVotes' => fn()
-        => Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board')))
-        ->where('value', true)
-        ->get(),
-    'otherVotes' => fn()
-        => Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->whereDoesntHave(
-            'einundzwanzigPleb',
-            fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board')),
-        )
-        ->where('value', true)
-        ->get(),
+    'boardVotes' => fn() => $this->getBoardVotes(),
+    'otherVotes' => fn() => $this->getOtherVotes(),
 ]);
 
 on([
-    'nostrLoggedIn' => function ($pubkey) {
-        $this->currentPubkey = $pubkey;
-        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-        if ($this->currentPleb->association_status->value < 2) {
-            return $this->js('alert("Du bist hierzu nicht berechtigt.")');
-        }
-        $this->isAllowed = true;
-        $this->ownVoteExists = Vote::query()
-            ->where('project_proposal_id', $this->projectProposal->id)
-            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
-            ->exists();
-    },
-    'nostrLoggedOut' => function () {
-        $this->isAllowed = false;
-        $this->currentPubkey = null;
-        $this->currentPleb = null;
-    },
+    'nostrLoggedIn' => fn($pubkey) => $this->handleNostrLoggedIn($pubkey),
+    'nostrLoggedOut' => fn() => $this->handleNostrLoggedOut(),
 ]);
 
-$approve = function () {
+$approve = fn() => $this->handleApprove();
+$notApprove = fn() => $this->handleNotApprove();
+
+$getReasons = function () {
+    return Vote::query()
+        ->where('project_proposal_id', $this->projectProposal->id)
+        ->where('value', false)
+        ->get();
+};
+
+$getBoardVotes = function () {
+    return Vote::query()
+        ->where('project_proposal_id', $this->projectProposal->id)
+        ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board')))
+        ->where('value', true)
+        ->get();
+};
+
+$getOtherVotes = function () {
+    return Vote::query()
+        ->where('project_proposal_id', $this->projectProposal->id)
+        ->whereDoesntHave(
+            'einundzwanzigPleb',
+            fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board'))
+        )
+        ->where('value', true)
+        ->get();
+};
+
+$handleNostrLoggedIn = function ($pubkey) {
+    $this->currentPubkey = $pubkey;
+    $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
+    if ($this->currentPleb->association_status->value < 2) {
+        return $this->js('alert("Du bist hierzu nicht berechtigt.")');
+    }
+    $this->isAllowed = true;
+    $this->ownVoteExists = Vote::query()
+        ->where('project_proposal_id', $this->projectProposal->id)
+        ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
+        ->exists();
+};
+
+$handleNostrLoggedOut = function () {
+    $this->isAllowed = false;
+    $this->currentPubkey = null;
+    $this->currentPleb = null;
+};
+
+$handleApprove = function () {
     Vote::query()->updateOrCreate([
         'project_proposal_id' => $this->projectProposal->id,
         'einundzwanzig_pleb_id' => $this->currentPleb->id,
@@ -75,17 +91,11 @@ $approve = function () {
     ]);
     $this->form->reset();
     $this->ownVoteExists = true;
-    $this->boardVotes = Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->where('value', false)
-        ->get();
-    $this->otherVotes = Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->where('value', false)
-        ->get();
+    $this->boardVotes = $this->getBoardVotes();
+    $this->otherVotes = $this->getOtherVotes();
 };
 
-$notApprove = function () {
+$handleNotApprove = function () {
     $this->form->validate();
 
     Vote::query()->updateOrCreate([
@@ -97,17 +107,13 @@ $notApprove = function () {
     ]);
     $this->form->reset();
     $this->ownVoteExists = true;
-    $this->reasons = Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->where('value', false)
-        ->get();
+    $this->reasons = $this->getReasons();
 };
 
 ?>
 
 <x-layouts.app title="{{ $projectProposal->name }}"
                :seo="new SEOData(image: $projectProposal->getFirstMediaUrl('main'), description: str($projectProposal->description)->limit(100, '...', true))">
-    >
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full" x-data="nostrDefault(@this)" x-cloak
          x-show="isAllowed">
