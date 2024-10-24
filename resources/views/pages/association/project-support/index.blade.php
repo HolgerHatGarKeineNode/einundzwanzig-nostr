@@ -135,9 +135,9 @@ $delete = function ($id) {
                     class="flex bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden">
                     <!-- Image -->
                     <a class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
-                        href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
+                       href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
                         <img class="absolute object-cover object-center w-full h-full"
-                             src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Meetup 01">
+                             src="{{ $project->getFirstMediaUrl('main') }}" alt="Meetup 01">
                         <button class="absolute top-0 right-0 mt-4 mr-4">
                             <img class="rounded-full h-8 w-8" src="{{ $project->einundzwanzigPleb->profile->picture }}"
                                  alt="">

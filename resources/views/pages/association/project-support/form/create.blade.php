@@ -45,10 +45,20 @@ on([
 $save = function () {
     $this->form->validate();
 
-    \App\Models\ProjectProposal::query()->create([
+    $this->validate('image', 'image|max:1024');
+
+    $projectProposal = \App\Models\ProjectProposal::query()->create([
         ...$this->form->all(),
         'einundzwanzig_pleb_id' => $this->currentPleb->id,
     ]);
+    if ($this->image) {
+        $this->validate([
+            'image' => 'image|max:1024',
+        ]);
+        $projectProposal
+            ->addMedia($this->image->getRealPath())
+            ->toMediaCollection('main');
+    }
 
     return redirect()->route('association.projectSupport');
 };
@@ -65,7 +75,7 @@ $save = function () {
 
                     <x-input.group :for=" md5('image')" :label="__('Bild')">
                         <div class="py-4">
-                            @if ($image && str($image->getMimeType())->contains(['image/jpeg','image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp']))
+                            @if ($image && method_exists($image, 'temporaryUrl') && str($image->getMimeType())->contains(['image/jpeg','image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp']))
                                 <div class="text-gray-200">{{ __('Preview') }}:</div>
                                 <img class="h-48 object-contain" src="{{ $image->temporaryUrl() }}">
                             @endif

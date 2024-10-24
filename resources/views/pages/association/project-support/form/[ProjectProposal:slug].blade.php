@@ -50,6 +50,14 @@ on([
 
 $save = function () {
     $this->form->validate();
+    if ($this->image) {
+        $this->validate([
+            'image' => 'image|max:1024',
+        ]);
+        $this->projectProposal
+            ->addMedia($this->image->getRealPath())
+            ->toMediaCollection('main');
+    }
 
     $this->projectProposal->update([
         ...$this->form->except('id', 'slug'),
@@ -71,7 +79,7 @@ $save = function () {
 
                     <x-input.group :for=" md5('image')" :label="__('Bild')">
                         <div class="py-4">
-                            @if ($image && str($image->getMimeType())->contains(['image/jpeg','image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp']))
+                            @if ($image && method_exists($image, 'temporaryUrl') && str($image->getMimeType())->contains(['image/jpeg','image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp']))
                                 <div class="text-gray-200">{{ __('Preview') }}:</div>
                                 <img class="h-48 object-contain" src="{{ $image->temporaryUrl() }}">
                             @endif
