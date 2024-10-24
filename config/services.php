@@ -40,4 +40,8 @@ return [
         ],
     ],
 
+    'btc_pay' => [
+        'api_key' => env('BTC_PAY_API_KEY'),
+    ]
+
 ];

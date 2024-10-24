@@ -2,7 +2,6 @@
 
 use Livewire\Volt\Component;
 
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
 use swentel\nostr\Message\EventMessage;
@@ -13,6 +12,7 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Sign\Sign;
+use WireUi\Actions\Notification;
 
 use function Livewire\Volt\computed;
 use function Livewire\Volt\mount;
@@ -27,40 +27,12 @@ name('association.profile');
 state(['yearsPaid' => []]);
 state(['events' => []]);
 state(['payments' => []]);
-state(['invoice' => null]);
-state(['qrCode' => null]);
 state(['amountToPay' => config('app.env') === 'production' ? 21000 : 1]);
 state(['currentYearIsPaid' => false]);
 state(['currentPubkey' => null]);
 state(['currentPleb' => null]);
 
 form(\App\Livewire\Forms\ApplicationForm::class);
-
-updated([
-    'invoice' => function () {
-        $this->qrCode = base64_encode(
-            QrCode::format('png')
-                ->size(300)
-                ->merge('/public/android-chrome-192x192.png', .3)
-                ->errorCorrection('H')
-                ->generate($this->invoice),
-        );
-    },
-]);
-
-on([
-    'nostrLoggedOut' => function () {
-        $this->currentPubkey = null;
-        $this->currentPleb = null;
-        $this->yearsPaid = [];
-        $this->events = [];
-        $this->payments = [];
-        $this->invoice = null;
-        $this->qrCode = null;
-        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
-        $this->currentYearIsPaid = false;
-    },
-]);
 
 on([
     'nostrLoggedIn' => function ($pubkey) {
@@ -81,36 +53,84 @@ on([
         $this->loadEvents();
         $this->listenForPayment();
     },
+    'nostrLoggedOut' => function () {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+        $this->yearsPaid = [];
+        $this->events = [];
+        $this->payments = [];
+        $this->qrCode = null;
+        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+        $this->currentYearIsPaid = false;
+    },
 ]);
+
+$pay = function ($comment) {
+    $paymentEvent = $this->currentPleb
+        ->paymentEvents()
+        ->where('year', date('Y'))
+        ->first();
+    if ($paymentEvent->btc_pay_invoice) {
+        return redirect('https://pay.einundzwanzig.space/i/' . $paymentEvent->btc_pay_invoice);
+    }
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'token ' . config('services.btc_pay.api_key'),
+        ])->post(
+            'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices',
+            [
+                'amount' => $this->amountToPay,
+                'metadata' => [
+                    'orderId' => $comment,
+                    'orderUrl' => url()->route('association.profile'),
+                    'itemDesc' => 'Mitgliedsbeitrag ' . date('Y') . ' von nostr:' . $this->currentPleb->npub,
+                    'posData' => [
+                        'event' => $paymentEvent->event_id,
+                        'pubkey' => $this->currentPleb->pubkey,
+                        'npub' => $this->currentPleb->npub,
+                    ],
+                ],
+                'checkout' => [
+                    'expirationMinutes' => 60 * 24 * 356,
+                    'redirectURL' => url()->route('association.profile'),
+                    'redirectAutomatically' => true,
+                    'defaultLanguage' => 'de',
+                ],
+            ],
+        )->throw();
+        $paymentEvent->btc_pay_invoice = $response->json()['id'];
+        $paymentEvent->save();
+
+        return redirect($response->json()['checkoutLink']);
+    } catch (Exception $e) {
+        $notification = new Notification($this);
+        $notification->error(
+            'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: ' . $e->getMessage(),
+        );
+    }
+};
 
 $listenForPayment = function () {
     $paymentEvent = $this->currentPleb
         ->paymentEvents()
         ->where('year', date('Y'))
         ->first();
-    if ($paymentEvent && !$paymentEvent->paid && $paymentEvent->zap_endpoint && !$this->currentYearIsPaid) {
-        $response = Http::get($paymentEvent->zap_endpoint);
-
-        if (!isset($response->json()['tag'])) {
-            $paymentEvent->update(['paid' => true]);
+    if ($paymentEvent->btc_pay_invoice) {
+        $response = Http::withHeaders([
+            'Authorization' => 'token ' . config('services.btc_pay.api_key'),
+        ])
+            ->get(
+                'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/' . $paymentEvent->btc_pay_invoice,
+            );
+        if ($response->json()['status'] === 'Settled') {
+            $paymentEvent->paid = true;
+            $paymentEvent->save();
+            $this->payments = $this->currentPleb
+                ->paymentEvents()
+                ->get();
             $this->currentYearIsPaid = true;
         }
     }
-
-    if ($paymentEvent && $paymentEvent->paid && !$this->currentYearIsPaid) {
-        $this->payments = $paymentEvent = $this->currentPleb
-            ->paymentEvents()
-            ->get();
-        $this->currentYearIsPaid = true;
-    }
-};
-
-$updateZapEndpoint = function ($zapEndpoint) {
-    $this->currentPleb
-        ->paymentEvents()
-        ->where('year', date('Y'))
-        ->first()
-        ->update(['zap_endpoint' => $zapEndpoint]);
 };
 
 $save = function ($type) {
@@ -127,7 +147,7 @@ $createPaymentEvent = function () {
     $note->setContent(
         'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr ' . date(
             'Y',
-        ) . '. Bitte zappe den Betrag von ' . number_format($this->amountToPay, 0, ',', '.') . ' Satoshi.',
+        ) . '. Bitte bezahle den Betrag von ' . number_format($this->amountToPay, 0, ',', '.') . ' Satoshis.',
     );
     $note->setTags([
         ['d', $this->currentPleb->pubkey . ',' . date('Y')],
@@ -188,7 +208,7 @@ $loadEvents = function () {
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrZap(@this)">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
         <!-- Page header -->
         <div class="mb-8">
@@ -425,42 +445,29 @@ $loadEvents = function () {
                                                             class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
                                                     </p>
                                                     <div>
-                                                        @if(false && isset($events[0]))
+                                                        @if(isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
                                                             <div class="mt-8">
-                                                                @if(!$invoice && !$currentYearIsPaid)
+                                                                @if(!$currentYearIsPaid)
                                                                     <div class="flex justify-center">
                                                                         <button
-                                                                            @click="zap('Mitgliedsbeitrag {{ date('Y') }} von {{ $currentPubkey }}', '{{ $currentPubkey }}', {{ $amountToPay }}, '{{ config('app.env') }}')"
+                                                                            wire:click="pay('{{ date('Y') }}:{{ $currentPubkey }}')"
                                                                             class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
                                                                         >
                                                                             <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
-                                                                            Zap {{ $amountToPay }} Sats
+                                                                            Pay {{ $amountToPay }} Sats
                                                                         </button>
                                                                     </div>
                                                                 @else
-                                                                    @if(!$currentYearIsPaid && $qrCode)
-                                                                        <div class="flex justify-center"
-                                                                             wire:key="qrcode"
-                                                                             wire:poll.2s.keep-alive="listenForPayment">
-                                                                            <a href="lightning:{{ $invoice }}">
-                                                                                <img
-                                                                                    class="p-4 sm:p-12 bg-white"
-                                                                                    src="{{ 'data:image/png;base64, '. $qrCode }}"
-                                                                                    alt="qrcode">
-                                                                            </a>
+                                                                    @if($currentYearIsPaid)
+                                                                        <div class="flex sm:justify-center">
+                                                                            <button
+                                                                                class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                            >
+                                                                                <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
+                                                                                aktuelles Jahr bezahlt
+                                                                            </button>
                                                                         </div>
-                                                                    @else
-                                                                        @if($currentYearIsPaid)
-                                                                            <div class="flex sm:justify-center">
-                                                                                <button
-                                                                                    class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
-                                                                                >
-                                                                                    <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
-                                                                                    aktuelles Jahr bezahlt
-                                                                                </button>
-                                                                            </div>
-                                                                        @endif
                                                                     @endif
                                                                 @endif
                                                             </div>
@@ -494,6 +501,9 @@ $loadEvents = function () {
                                                                 <th class="w-full hidden md:w-auto md:table-cell py-2">
                                                                     <div class="font-semibold text-left">Event-ID</div>
                                                                 </th>
+                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                                    <div class="font-semibold text-left">Quittung</div>
+                                                                </th>
                                                             </tr>
                                                             </thead>
                                                             <!-- Table body -->
@@ -516,6 +526,10 @@ $loadEvents = function () {
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         <div
                                                                             class="text-left font-medium break-all">{{ $payment->event_id }}</div>
+                                                                    </td>
+                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                        <x-button target="_blank" xs label="Quittung"
+                                                                                  href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"/>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
