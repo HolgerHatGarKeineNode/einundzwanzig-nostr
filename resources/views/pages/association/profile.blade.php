@@ -124,6 +124,7 @@ $listenForPayment = function () {
             );
         if ($response->json()['status'] === 'Expired') {
             $paymentEvent->btc_pay_invoice = null;
+            $paymentEvent->paid = false;
             $paymentEvent->save();
         }
         if ($response->json()['status'] === 'Settled') {
@@ -135,6 +136,7 @@ $listenForPayment = function () {
     if ($paymentEvent->paid) {
         $this->currentYearIsPaid = true;
     }
+    $paymentEvent = $paymentEvent->refresh();
     $this->payments = $this->currentPleb
         ->paymentEvents()
         ->where('paid', true)
