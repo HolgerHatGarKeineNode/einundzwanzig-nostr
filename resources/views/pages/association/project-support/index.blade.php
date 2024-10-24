@@ -23,13 +23,32 @@ state([
             'votes',
         ])
         ->get(),
+    'isAllowed' => false,
+    'currentPubkey' => null,
+    'currentPleb' => null,
+]);
+
+on([
+    'nostrLoggedIn' => function ($pubkey) {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
+        if ($this->currentPleb->association_status->value < 2) {
+            return $this->js('alert("Du bist hierzu nicht berechtigt.")');
+        }
+        $this->isAllowed = true;
+    },
+    'nostrLoggedOut' => function () {
+        $this->isAllowed = false;
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+    },
 ]);
 
 ?>
 
 <x-layouts.app title="Projekt Unterstützungen">
     @volt
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)" x-cloak x-show="isAllowed">
 
         <!-- Page header -->
         <div class="sm:flex sm:justify-between sm:items-center mb-5">

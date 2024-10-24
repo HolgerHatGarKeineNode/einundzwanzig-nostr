@@ -15,4 +15,7 @@ class ProjectProposalForm extends Form
 
     #[Validate('required|string|min:5')]
     public $description = '';
+
+    #[Validate('required|url')]
+    public $website= '';
 }

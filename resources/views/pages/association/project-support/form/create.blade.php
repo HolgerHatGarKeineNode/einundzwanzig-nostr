@@ -31,7 +31,7 @@ on([
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
         if ($this->currentPleb->association_status->value < 3) {
-            return $this->js('alert("Du bist hierzu berechtigt.")');
+            return $this->js('alert("Du bist hierzu nicht berechtigt.")');
         }
         $this->isAllowed = true;
     },
@@ -57,7 +57,8 @@ $save = function () {
 
 <x-layouts.app title="Welcome">
     @volt
-    <div x-cloak x-show="isAllowed" class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)">
+    <div x-cloak x-show="isAllowed" class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto"
+         x-data="nostrDefault(@this)">
         <form class="space-y-8 divide-y divide-gray-700 pb-24">
             <div class="space-y-8 divide-y divide-gray-700 sm:space-y-5">
                 <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
@@ -80,6 +81,11 @@ $save = function () {
                     <x-input.group :for="md5('form.name')" :label="__('Name')">
                         <x-input autocomplete="off" wire:model.debounce="form.name"
                                  :placeholder="__('Name')"/>
+                    </x-input.group>
+
+                    <x-input.group :for="md5('form.website')" :label="__('Webseite des Projekts')">
+                        <x-input autocomplete="off" wire:model.debounce="form.website"
+                                 :placeholder="__('Website')"/>
                     </x-input.group>
 
                     <x-input.group :for="md5('form.name')" :label="__('Beabsichtigte Unterstützung in Sats')">
