@@ -425,7 +425,7 @@ $loadEvents = function () {
                                                             class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
                                                     </p>
                                                     <div>
-                                                        @if(isset($events[0]))
+                                                        @if(false && isset($events[0]))
                                                             <p>{{ $events[0]['content'] }}</p>
                                                             <div class="mt-8">
                                                                 @if(!$invoice && !$currentYearIsPaid)
