@@ -91,7 +91,7 @@ $pay = function ($comment) {
                     ],
                 ],
                 'checkout' => [
-                    'expirationMinutes' => 60 * 24 * 356,
+                    'expirationMinutes' => 60 * 24,
                     'redirectURL' => url()->route('association.profile'),
                     'redirectAutomatically' => true,
                     'defaultLanguage' => 'de',
@@ -122,6 +122,10 @@ $listenForPayment = function () {
             ->get(
                 'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/' . $paymentEvent->btc_pay_invoice,
             );
+        if ($response->json()['status'] === 'Expired') {
+            $paymentEvent->btc_pay_invoice = null;
+            $paymentEvent->save();
+        }
         if ($response->json()['status'] === 'Settled') {
             $paymentEvent->paid = true;
             $paymentEvent->save();
@@ -533,7 +537,8 @@ $loadEvents = function () {
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         @if($payment->btc_pay_invoice)
-                                                                            <x-button target="_blank" xs label="Quittung"
+                                                                            <x-button target="_blank" xs
+                                                                                      label="Quittung"
                                                                                       href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"/>
                                                                         @endif
                                                                     </td>
