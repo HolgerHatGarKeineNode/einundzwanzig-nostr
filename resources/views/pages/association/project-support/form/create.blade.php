@@ -93,7 +93,9 @@ $save = function () {
 
                     <x-input.group :for="md5('form.website')" :label="__('Webseite des Projekts')">
                         <x-input autocomplete="off" wire:model.debounce="form.website"
-                                 :placeholder="__('Website')"/>
+                                 :placeholder="__('Website')"
+                                 description="Eine valide URL beginnt immer mit https://"
+                        />
                     </x-input.group>
 
                     <x-input.group :for="md5('form.name')" :label="__('Beabsichtigte Unterstützung in Sats')">
