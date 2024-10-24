@@ -165,6 +165,10 @@ $delete = function ($id) {
                                 class="text-xs inline-flex items-center font-bold border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-200 rounded-full text-center px-2.5 py-1">
                                 <span>{{ number_format($project->support_in_sats, 0, ',', '.') }} Sats</span>
                             </div>
+                            <div
+                                class="text-xs inline-flex items-center font-bold border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-200 rounded-full text-center px-2.5 py-1">
+                                <a href="{{ $project->website }}" target="_blank">Webseite</a>
+                            </div>
                             <!-- Avatars -->
                             @if($project->votes->count() > 0)
                                 <div class="flex items-center space-x-2">
