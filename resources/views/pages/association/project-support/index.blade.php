@@ -177,18 +177,26 @@ $delete = function ($id) {
                                 </div>
                             @endif
                         </div>
-                        <div class="flex justify-between items-center mt-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
                             @if($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
                                 <x-button
+                                    icon="trash"
                                     xs
                                     negative
                                     wire:click="confirmDelete({{ $project->id }})"
                                     label="Löschen"/>
                                 <x-button
+                                    icon="pencil"
                                     xs
+                                    secondary
                                     :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
                                     label="Editieren"/>
                             @endif
+                            <x-button
+                                icon="folder-open"
+                                xs
+                                :href="route('association.projectSupport.item', ['projectProposal' => $project])"
+                                label="Öffnen"/>
                         </div>
                     </div>
                 </article>

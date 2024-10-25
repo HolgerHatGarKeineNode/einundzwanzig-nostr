@@ -49,7 +49,7 @@ mount(function() {
                 </svg>
             </button>
             <!-- Logo -->
-            <img src="{{ asset('img/einundzwanzig-horizontal-inverted.svg') }}" alt="Logo" width="auto" height="32">
+            <img class="w-6 h-6" src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo">
         </div>
 
         @php
