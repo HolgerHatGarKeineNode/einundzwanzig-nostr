@@ -6,6 +6,16 @@
         <span class="lg:hidden lg:sidebar-expanded:block 2xl:block">Verein</span>
     </h3>
     <ul class="mt-3">
+        <li class="{{ $currentRoute === 'news' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
+            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
+               href="{{ route('news') }}">
+                <div class="flex items-center">
+                    <i class="fa-sharp-duotone fa-solid fa-rss h-4 w-4"></i>
+                    <span
+                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">News</span>
+                </div>
+            </a>
+        </li>
         <li class="{{ $currentRoute === 'association.profile' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
             <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
                href="{{ route('association.profile') }}">
