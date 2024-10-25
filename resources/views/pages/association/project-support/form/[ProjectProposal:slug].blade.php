@@ -52,9 +52,9 @@ on([
 
 $save = function () {
     $this->form->validate();
-    if ($this->image) {
+    if ($this->image && method_exists($this->image, 'temporaryUrl')) {
         $this->validate([
-            'image' => 'image|max:1024',
+            'image' => 'nullable|image|max:1024',
         ]);
         $this->projectProposal
             ->addMedia($this->image->getRealPath())
