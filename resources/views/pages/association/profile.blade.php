@@ -476,7 +476,7 @@ $loadEvents = function () {
                                                         sichern
                                                         diese Adresse AES-256 verschlüsselt in der Datenbank ab.
                                                     </div>
-                                                    <div class="flex space-x-2">
+                                                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                                                         <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
                                                         <x-input wire:model.live.debounce="email"
                                                                  label="E-Mail Adresse"/>
