@@ -8,6 +8,7 @@ use swentel\nostr\Message\RequestMessage;
 use swentel\nostr\Relay\Relay;
 use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
+use WireUi\Actions\Notification as WireNotification;
 
 use function Laravel\Folio\{middleware, name};
 use function Livewire\Volt\{state, mount, on, computed, form, usesFileUploads};
@@ -65,6 +66,28 @@ $save = function () {
         ->addMedia($this->file->getRealPath())
         ->toMediaCollection('pdf');
 
+    $this->form->reset();
+    $this->file = null;
+
+    $this->news = \App\Models\Notification::query()->get();
+};
+
+$delete = function($id) {
+    $notification = new WireNotification($this);
+    $notification->confirm([
+        'title' => 'Post löschen',
+        'message' => 'Bist du sicher, dass du diesen Post löschen möchtest?',
+        'accept' => [
+            'label' => 'Ja, löschen',
+            'method' => 'deleteNow',
+            'params' => $id,
+        ],
+    ]);
+};
+
+$deleteNow = function($id) {
+    $notification = \App\Models\Notification::query()->find($id);
+    $notification->delete();
     $this->news = \App\Models\Notification::query()->get();
 };
 
@@ -111,7 +134,7 @@ $save = function () {
                                             </div>
                                             <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
                                                 @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
-                                                    <li class="mr-0.5 md:mr-0 md:mb-0.5">
+                                                    <li class="mr-0.5 md:mr-0 md:mb-0.5" wire:key="category_{{ $category['value'] }}">
                                                         <a class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-white dark:bg-gray-800"
                                                            href="#0">
                                                             <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current text-amber-500 mr-2"></i>
@@ -133,7 +156,7 @@ $save = function () {
 
                                 <div class="space-y-2">
                                     @forelse($news as $post)
-                                        <article class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
+                                        <article wire:key="post_{{ $post->id }}" class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
                                             <div class="flex flex-start space-x-4">
                                                 <!-- Avatar -->
                                                 <div class="shrink-0 mt-1.5">
@@ -175,13 +198,19 @@ $save = function () {
                                                         </div>
                                                     </footer>
                                                 </div>
-                                                <!-- Upvote button -->
                                                 <div class="shrink-0">
                                                     <x-button
                                                         target="_blank"
                                                         :href="$post->getFirstMediaUrl('pdf')"
                                                         label="Öffnen"
                                                         primary icon="cloud-arrow-down"/>
+                                                    @if($canEdit)
+                                                        <x-button
+                                                            xs
+                                                            wire:click="delete({{ $post->id }})"
+                                                            label="Löschen"
+                                                            negative icon="trash"/>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </article>
