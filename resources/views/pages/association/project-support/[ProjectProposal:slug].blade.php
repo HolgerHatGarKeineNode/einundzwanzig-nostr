@@ -115,7 +115,7 @@ $handleNotApprove = function () {
 <x-layouts.app :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name,description: str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full" x-data="nostrDefault(@this)" x-cloak
-         x-if="isAllowed">
+         x-show="isAllowed">
 
         <!-- Page content -->
         <div class="max-w-5xl mx-auto flex flex-col lg:flex-row lg:space-x-8 xl:space-x-16">

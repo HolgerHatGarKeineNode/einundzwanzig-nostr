@@ -54,7 +54,7 @@ $saveElection = function ($index) {
 
 <x-layouts.app title="{{ __('Wahlen') }}">
     @volt
-    <div x-cloak class="relative flex h-full" x-if="isAllowed" x-data="{isAllowed: $wire.entangle('isAllowed').live}">
+    <div x-cloak class="relative flex h-full" x-show="isAllowed" x-data="{isAllowed: $wire.entangle('isAllowed').live}">
         @foreach($elections as $election)
             <div class="w-full sm:w-1/3 p-4">
                 <div class="shadow-lg rounded-lg overflow-hidden">

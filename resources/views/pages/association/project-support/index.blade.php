@@ -74,7 +74,7 @@ $delete = function ($id) {
 >
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)" x-cloak
-         x-if="isAllowed">
+         x-show="show">
 
         <!-- Page header -->
         <div class="sm:flex sm:justify-between sm:items-center mb-5">
@@ -96,8 +96,10 @@ $delete = function ($id) {
                 </form>
 
                 <!-- Add meetup button -->
-                <x-button :href="route('association.projectSupport.create')" icon="plus"
-                          label="Projekt einreichen"/>
+                @if($currentPleb && $currentPleb->status > 2)
+                    <x-button :href="route('association.projectSupport.create')" icon="plus"
+                              label="Projekt einreichen"/>
+                @endif
             </div>
 
         </div>
@@ -197,11 +199,13 @@ $delete = function ($id) {
                                     :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
                                     label="Editieren"/>
                             @endif
-                            <x-button
-                                icon="folder-open"
-                                xs
-                                :href="route('association.projectSupport.item', ['projectProposal' => $project])"
-                                label="Öffnen"/>
+                            @if($currentPleb && $currentPleb->status > 2)
+                                <x-button
+                                    icon="folder-open"
+                                    xs
+                                    :href="route('association.projectSupport.item', ['projectProposal' => $project])"
+                                    label="Öffnen"/>
+                            @endif
                         </div>
                     </div>
                 </article>

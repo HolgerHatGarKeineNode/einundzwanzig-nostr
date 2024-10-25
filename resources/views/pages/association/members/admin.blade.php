@@ -48,7 +48,7 @@ on([
 
 <x-layouts.app title="{{ __('Mitglieder') }}">
     @volt
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-if="isAllowed" x-data="{isAllowed: $wire.entangle('isAllowed').live}" x-cloak>
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-show="isAllowed" x-data="{isAllowed: $wire.entangle('isAllowed').live}" x-cloak>
         <livewire:einundzwanzig-pleb-table/>
     </div>
     @endvolt
