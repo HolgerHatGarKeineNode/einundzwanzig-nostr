@@ -160,7 +160,7 @@ $signEvent = function ($event) {
 
 <x-layouts.app title="{{ __('Wahl') }}">
     @volt
-    <div x-cloak x-show="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)"
+    <div x-cloak x-if="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)"
          wire:poll.600000ms="checkElection">
 
         @php
@@ -556,7 +556,7 @@ $signEvent = function ($event) {
                     </div>
 
                     <!-- Log events -->
-                    <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
+                    <div x-cloak x-if="showLog" class="mt-6 hidden sm:block">
                         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                             <header class="px-5 py-4">
                                 <h2 class="font-semibold text-gray-800 dark:text-gray-100">Präsidium Log <span
@@ -623,7 +623,7 @@ $signEvent = function ($event) {
                             </div>
                         </div>
                     </div>
-                    <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
+                    <div x-cloak x-if="showLog" class="mt-6 hidden sm:block">
                         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                             <header class="px-5 py-4">
                                 <h2 class="font-semibold text-gray-800 dark:text-gray-100">Board Log <span

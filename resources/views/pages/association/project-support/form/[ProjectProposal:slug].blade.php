@@ -70,7 +70,7 @@ $save = function () {
 
 <x-layouts.app title="{{ $projectProposal->name }}">
     @volt
-    <div x-cloak x-show="isAllowed" class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto"
+    <div x-cloak x-if="isAllowed" class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto"
          x-data="nostrDefault(@this)">
         <form class="space-y-8 divide-y divide-gray-700 pb-24">
             <div class="space-y-8 divide-y divide-gray-700 sm:space-y-5">
