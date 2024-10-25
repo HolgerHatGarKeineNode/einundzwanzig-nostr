@@ -60,7 +60,6 @@ $save = function () {
 
     $this->projectProposal->update([
         ...$this->form->except('id', 'slug'),
-        'einundzwanzig_pleb_id' => $this->currentPleb->id,
     ]);
 
     return redirect()->route('association.projectSupport');
