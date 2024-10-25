@@ -65,6 +65,7 @@ mount(function() {
             @include('components.layouts.navigation.courses')
             @include('components.layouts.navigation.nostr')
             @include('components.layouts.navigation.legacy')--}}
+            @include('components.layouts.navigation.admin')
         </div>
 
         <!-- Expand / collapse button -->

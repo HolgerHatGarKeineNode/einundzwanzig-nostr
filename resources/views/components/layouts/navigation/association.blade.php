@@ -7,42 +7,32 @@
     </h3>
     <ul class="mt-3">
         <li class="{{ $currentRoute === 'association.profile' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
-            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.profile') }}">
+            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
+               href="{{ route('association.profile') }}">
                 <div class="flex items-center">
                     <i class="fa-sharp-duotone fa-solid fa-id-card-clip h-4 w-4"></i>
-                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Meine Mitgliedschaft</span>
+                    <span
+                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Meine Mitgliedschaft</span>
                 </div>
             </a>
         </li>
         <li class="{{ $currentRoute === 'association.election' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
-            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.election', ['election' => date('Y')]) }}">
+            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
+               href="{{ route('association.election', ['election' => date('Y')]) }}">
                 <div class="flex items-center">
                     <i class="fa-sharp-duotone fa-solid fa-check-to-slot h-4 w-4"></i>
-                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Vorstands-Wahlen</span>
+                    <span
+                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Vorstands-Wahlen</span>
                 </div>
             </a>
         </li>
         <li class="{{ $currentRoute === 'association.projectSupport' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
-            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.projectSupport') }}">
+            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
+               href="{{ route('association.projectSupport') }}">
                 <div class="flex items-center">
                     <i class="fa-sharp-duotone fa-solid fa-hand-heart h-4 w-4"></i>
-                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Projekt-Unterstützungen</span>
-                </div>
-            </a>
-        </li>
-        <li class="{{ $currentRoute === 'association.elections' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
-            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.elections') }}">
-                <div class="flex items-center">
-                    <i class="fa-sharp-duotone fa-solid fa-booth-curtain h-4 w-4"></i>
-                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Einstellungen</span>
-                </div>
-            </a>
-        </li>
-        <li class="{{ $currentRoute === 'association.members.admin' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
-            <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition" href="{{ route('association.members.admin') }}">
-                <div class="flex items-center">
-                    <i class="fa-sharp-duotone fa-solid fa-users h-4 w-4"></i>
-                    <span class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Mitglieder</span>
+                    <span
+                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Projekt-Unterstützungen</span>
                 </div>
             </a>
         </li>
