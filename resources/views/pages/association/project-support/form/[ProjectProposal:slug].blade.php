@@ -37,7 +37,7 @@ on([
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
         if (
             $this->currentPleb->id !== $this->projectProposal->einundzwanzig_pleb_id
-            || !in_array($this->currentPleb->npub, config('einundzwanzig.config.current_board'), true)
+            && !in_array($this->currentPleb->npub, config('einundzwanzig.config.current_board'), true)
         ) {
             return $this->js('alert("Du bist hierzu nicht berechtigt.")');
         }
