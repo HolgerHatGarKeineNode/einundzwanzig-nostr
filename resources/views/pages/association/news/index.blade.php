@@ -204,20 +204,21 @@ $deleteNow = function($id) {
                                                         </div>
                                                     </footer>
                                                 </div>
-                                                <div class="shrink-0">
+                                            </div>
+                                            <div class="mt-2 flex justify-end w-full space-x-2">
+                                                <x-button
+                                                    xs
+                                                    target="_blank"
+                                                    :href="$post->getFirstMediaUrl('pdf')"
+                                                    label="Öffnen"
+                                                    primary icon="cloud-arrow-down"/>
+                                                @if($canEdit)
                                                     <x-button
-                                                        target="_blank"
-                                                        :href="$post->getFirstMediaUrl('pdf')"
-                                                        label="Öffnen"
-                                                        primary icon="cloud-arrow-down"/>
-                                                    @if($canEdit)
-                                                        <x-button
-                                                            xs
-                                                            wire:click="delete({{ $post->id }})"
-                                                            label="Löschen"
-                                                            negative icon="trash"/>
-                                                    @endif
-                                                </div>
+                                                        xs
+                                                        wire:click="delete({{ $post->id }})"
+                                                        label="Löschen"
+                                                        negative icon="trash"/>
+                                                @endif
                                             </div>
                                         </article>
                                     @empty
