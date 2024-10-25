@@ -173,7 +173,7 @@ $delete = function ($id) {
                                             {{ $project->name }}
                                         </h3>
                                     </div>
-                                    <div class="text-sm line-clamp-3">
+                                    <div class="text-sm line-clamp-1 sm:line-clamp-3">
                                         {!! strip_tags($project->description) !!}
                                     </div>
                                 </div>
@@ -190,7 +190,7 @@ $delete = function ($id) {
                                     </div>
                                     <!-- Avatars -->
                                     @if($project->votes->where('value', true)->count() > 0)
-                                        <div class="flex items-center space-x-2">
+                                        <div class="hidden sm:flex items-center space-x-2">
                                             <div class="text-xs font-medium text-gray-400 dark:text-gray-300 italic">
                                                 Anzahl der Unterstützer:
                                                 +{{ $project->votes->where('value', true)->count() }}
