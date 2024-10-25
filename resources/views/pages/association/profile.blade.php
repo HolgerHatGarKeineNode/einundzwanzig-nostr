@@ -20,6 +20,8 @@ use function Laravel\Folio\{middleware, name};
 name('association.profile');
 
 state([
+    'no' => false,
+    'showEmail' => true,
     'fax' => '',
     'email' => '',
     'yearsPaid' => [],
@@ -43,6 +45,8 @@ on([
             ])
             ->where('pubkey', $pubkey)->first();
         $this->email = $this->currentPleb->email;
+        $this->no = $this->currentPleb->no_email;
+        $this->showEmail = !$this->no;
         if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
             $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
         }
@@ -66,6 +70,12 @@ on([
 ]);
 
 updated([
+    'no' => function () {
+        $this->showEmail = !$this->no;
+        $this->currentPleb->update([
+            'no_email' => $this->no,
+        ]);
+    },
     'fax' => function () {
         $this->js('alert("Markus Turm wird sich per Fax melden!")');
     },
@@ -476,14 +486,27 @@ $loadEvents = function () {
                                                         sichern
                                                         diese Adresse AES-256 verschlüsselt in der Datenbank ab.
                                                     </div>
-                                                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                                        <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
-                                                        <x-input wire:model.live.debounce="email"
-                                                                 label="E-Mail Adresse"/>
+                                                    <div
+                                                        class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
+                                                        <x-toggle xl warning
+                                                                  wire:model.live="no"
+                                                                  label="NEIN">
+                                                            <x-slot name="description">
+                                                                <span class="py-2 text-amber-500">Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</span>
+                                                            </x-slot>
+                                                        </x-toggle>
                                                     </div>
-                                                    <div class="flex space-x-2 mt-2">
-                                                        <x-button wire:click="saveEmail" label="Speichern"/>
-                                                    </div>
+                                                    @if($showEmail)
+                                                        <div wire:key="showEmail"
+                                                             class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                                            <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
+                                                            <x-input wire:model.live.debounce="email"
+                                                                     label="E-Mail Adresse"/>
+                                                        </div>
+                                                        <div wire:key="showSave" class="flex space-x-2 mt-2">
+                                                            <x-button wire:click="saveEmail" label="Speichern"/>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
