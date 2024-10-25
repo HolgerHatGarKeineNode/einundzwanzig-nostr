@@ -182,7 +182,7 @@ $delete = function ($id) {
                         <div class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
                             @if(
                                 ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
-                                || ($currentPleb && in_array(config('einundzwanzig.config.current_board'), $currentPleb->npub, true))
+                                || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
                                 )
                                 <x-button
                                     icon="trash"
