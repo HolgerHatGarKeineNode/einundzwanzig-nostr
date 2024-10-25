@@ -69,7 +69,9 @@ $delete = function ($id) {
 
 ?>
 
-<x-layouts.app title="Projekt Unterstützungen">
+<x-layouts.app
+    :seo="new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'Projekt Unterstützungen', description: 'Einundzwanzig Projektunterstützungen')"
+>
     @volt
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="nostrDefault(@this)" x-cloak
          x-if="isAllowed">

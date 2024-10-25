@@ -12,7 +12,7 @@ return [
     /**
      * Use this setting to specify the site name that will be used in OpenGraph tags.
      */
-    'site_name' => null,
+    'site_name' => 'Einundzwanzig Verein',
 
     /**
      * Use this setting to specify the path to the sitemap of your website. This exact path will outputted, so
@@ -59,7 +59,7 @@ return [
      *
      * You can use the following filetypes: ico, png, gif, jpeg, svg.
      */
-    'favicon' => null,
+    'favicon' => 'favicon.ico',
 
     'title' => [
         /**
@@ -75,7 +75,7 @@ return [
          * Use this setting to provide a suffix that will be added after the title on each page.
          * If you don't want a suffix, you should specify an empty string.
          */
-        'suffix' => '',
+        'suffix' => ' - Einundzwanzig Verein',
 
         /**
          * Use this setting to provide a custom title for the homepage. We will not use the suffix on the homepage,
@@ -91,7 +91,7 @@ return [
          * where we don't have a description set via an associated ->seo model or via
          * the ->getDynamicSEOData() method.
          */
-        'fallback' => null,
+        'fallback' => 'Toximalistisches Infotainment für bullishe Bitcoiner.',
     ],
 
     'image' => [
@@ -101,7 +101,7 @@ return [
          * This should be a path to an image. The url to the path is generated using the `secure_url()` function
          * (`secure_url($yourProvidedPath)`), so make sure the image is accessible from the public folder.
          */
-        'fallback' => null,
+        'fallback' => 'einundzwanzig-alpha.jpg',
     ],
 
     'author' => [
@@ -117,6 +117,6 @@ return [
          * Use this setting to enter your username and include that with the Twitter Card tags.
          * Enter the username like 'yourUserName', so without the '@'.
          */
-        '@username' => null,
+        '@username' => '_einundzwanzig_',
     ],
 ];

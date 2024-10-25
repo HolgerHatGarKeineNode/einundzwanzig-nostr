@@ -30,7 +30,7 @@ state([
     'plebs' => [],
     'search' => '',
     'signThisEvent' => '',
-    'isNotClosed' => true
+    'isNotClosed' => true,
 ]);
 
 mount(function () {
@@ -68,10 +68,10 @@ on([
         $this->loadBoardEvents();
     },
     'nostrLoggedOut' => function () {
-    $this->isAllowed = false;
-    $this->currentPubkey = null;
-    $this->currentPleb = null;
-},
+        $this->isAllowed = false;
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+    },
 ]);
 
 updated([
@@ -86,7 +86,7 @@ updated([
             ->orderBy('association_status', 'desc')
             ->get()
             ->toArray();
-    }
+    },
 ]);
 
 $loadEvents = function () {
@@ -158,7 +158,9 @@ $signEvent = function ($event) {
 
 ?>
 
-<x-layouts.app title="{{ __('Wahl') }}">
+<x-layouts.app
+    :seo="new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'Wahlen ' . $election->year, description: 'Wahlen des Vereins im Jahr ' . $election->year)"
+>
     @volt
     <div x-cloak x-if="isAllowed" class="relative flex h-full" x-data="nostrApp(@this)"
          wire:poll.600000ms="checkElection">
