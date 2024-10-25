@@ -22,7 +22,9 @@ usesFileUploads();
 state([
     'file',
     'news' => fn()
-        => \App\Models\Notification::query()->get(),
+        => \App\Models\Notification::query()
+        ->orderBy('created_at', 'desc')
+        ->get(),
     'isAllowed' => false,
     'canEdit' => false,
     'currentPubkey' => null,
@@ -55,7 +57,9 @@ $save = function () {
         'file' => 'required|file|mimes:pdf|max:1024',
     ]);
 
-    $notification = \App\Models\Notification::query()->create([
+    $notification = \App\Models\Notification::query()
+        ->orderBy('created_at', 'desc')
+        ->create([
         'einundzwanzig_pleb_id' => $this->currentPleb->id,
         'category' => $this->form->category,
         'name' => $this->form->name,
@@ -69,7 +73,9 @@ $save = function () {
     $this->form->reset();
     $this->file = null;
 
-    $this->news = \App\Models\Notification::query()->get();
+    $this->news = \App\Models\Notification::query()
+        ->orderBy('created_at', 'desc')
+        ->get();
 };
 
 $delete = function($id) {
@@ -88,7 +94,9 @@ $delete = function($id) {
 $deleteNow = function($id) {
     $notification = \App\Models\Notification::query()->find($id);
     $notification->delete();
-    $this->news = \App\Models\Notification::query()->get();
+    $this->news = \App\Models\Notification::query()
+        ->orderBy('created_at', 'desc')
+        ->get();
 };
 
 ?>
