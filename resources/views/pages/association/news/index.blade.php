@@ -143,12 +143,11 @@ $deleteNow = function($id) {
                                             <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
                                                 @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
                                                     <li class="mr-0.5 md:mr-0 md:mb-0.5" wire:key="category_{{ $category['value'] }}">
-                                                        <a class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-white dark:bg-gray-800"
-                                                           href="#0">
+                                                        <div class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-white dark:bg-gray-800">
                                                             <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current text-amber-500 mr-2"></i>
                                                             <span
                                                                 class="text-sm font-medium text-amber-500">{{ $category['label'] }}</span>
-                                                        </a>
+                                                        </div>
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -186,8 +185,7 @@ $deleteNow = function($id) {
                                                     <footer class="flex flex-wrap text-sm">
                                                         <div
                                                             class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
-                                                            <a class="font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400"
-                                                               href="#0">
+                                                            <div class="font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400">
                                                                 <div class="flex items-center">
                                                                     <svg class="mr-2 fill-current" width="16"
                                                                          height="16"
@@ -197,7 +195,7 @@ $deleteNow = function($id) {
                                                                     </svg>
                                                                     {{ $post->einundzwanzigPleb->profile->name }}
                                                                 </div>
-                                                            </a>
+                                                            </div>
                                                         </div>
                                                         <div
                                                             class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
