@@ -1,6 +1,5 @@
 export default (livewireComponent) => ({
 
-    isAllowed: livewireComponent.entangle('isAllowed', true),
     signThisEvent: livewireComponent.entangle('signThisEvent'),
     showLog: livewireComponent.entangle('showLog', true),
 
