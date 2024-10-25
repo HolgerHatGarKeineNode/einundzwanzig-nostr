@@ -96,7 +96,7 @@ $delete = function ($id) {
                 </form>
 
                 <!-- Add meetup button -->
-                @if($currentPleb && $currentPleb->status > 2)
+                @if($currentPleb && $currentPleb->association_status->value > 2)
                     <x-button :href="route('association.projectSupport.create')" icon="plus"
                               label="Projekt einreichen"/>
                 @endif
@@ -199,7 +199,7 @@ $delete = function ($id) {
                                     :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
                                     label="Editieren"/>
                             @endif
-                            @if($currentPleb && $currentPleb->status > 2)
+                            @if($currentPleb && $currentPleb->association_status->value > 2)
                                 <x-button
                                     icon="folder-open"
                                     xs
