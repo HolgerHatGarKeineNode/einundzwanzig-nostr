@@ -26,7 +26,8 @@ class Notification extends Model implements HasMedia
         $this
             ->addMediaCollection('pdf')
             ->acceptsMimeTypes(['application/pdf'])
-            ->singleFile();
+            ->singleFile()
+            ->useDisk('private');
     }
 
     public function einundzwanzigPleb(): BelongsTo
