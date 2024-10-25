@@ -19,13 +19,17 @@ use function Laravel\Folio\{middleware, name};
 
 name('association.profile');
 
-state(['yearsPaid' => []]);
-state(['events' => []]);
-state(['payments' => []]);
-state(['amountToPay' => config('app.env') === 'production' ? 21000 : 1]);
-state(['currentYearIsPaid' => false]);
-state(['currentPubkey' => null]);
-state(['currentPleb' => null]);
+state([
+    'fax' => '',
+    'email' => '',
+    'yearsPaid' => [],
+    'events' => [],
+    'payments' => [],
+    'amountToPay' => config('app.env') === 'production' ? 21000 : 1,
+    'currentYearIsPaid' => false,
+    'currentPubkey' => null,
+    'currentPleb' => null,
+]);
 
 form(\App\Livewire\Forms\ApplicationForm::class);
 
@@ -38,6 +42,7 @@ on([
                     => $query->where('year', date('Y')),
             ])
             ->where('pubkey', $pubkey)->first();
+        $this->email = $this->currentPleb->email;
         if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
             $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
         }
@@ -59,6 +64,23 @@ on([
         $this->currentYearIsPaid = false;
     },
 ]);
+
+updated([
+    'fax' => function () {
+        $this->js('alert("Markus Turm wird sich per Fax melden!")');
+    },
+]);
+
+$saveEmail = function () {
+    $this->validate([
+        'email' => 'required|email',
+    ]);
+    $this->currentPleb->update([
+        'email' => $this->email,
+    ]);
+    $notification = new Notification($this);
+    $notification->success('E-Mail Adresse gespeichert.');
+};
 
 $pay = function ($comment) {
     $paymentEvent = $this->currentPleb
@@ -413,18 +435,55 @@ $loadEvents = function () {
 
                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
-                                <div
-                                    class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
-                                    <div class="flex w-full justify-between items-start">
-                                        <div class="flex">
-                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
-                                                 height="16" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
-                                            </svg>
-                                            <div>
-                                                <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
-                                                    Du bist derzeit ein Mitglied des Vereins.
+                                <div class="flex flex-col space-y-4">
+                                    <div
+                                        class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                        <div class="flex w-full justify-between items-start">
+                                            <div class="flex">
+                                                <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
+                                                     width="16"
+                                                     height="16" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                                </svg>
+                                                <div>
+                                                    <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                        Du bist derzeit ein Mitglied des Vereins.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                        <div class="flex w-full justify-between items-start">
+                                            <div class="flex w-full">
+                                                <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
+                                                     width="16"
+                                                     height="16" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                                </svg>
+                                                <div class="w-full">
+                                                    <div
+                                                        class="w-full font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                        Falls du möchtest, kannst du hier eine E-Mail Adresse
+                                                        hinterlegen,
+                                                        damit der Verein dich darüber informieren kann, wenn es
+                                                        Neuigkeiten
+                                                        gibt.<br><br>
+                                                        Am besten eine anynomisierte E-Mail Adresse verwenden. Wir
+                                                        sichern
+                                                        diese Adresse AES-256 verschlüsselt in der Datenbank ab.
+                                                    </div>
+                                                    <div class="flex space-x-2">
+                                                        <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
+                                                        <x-input wire:model.live.debounce="email"
+                                                                 label="E-Mail Adresse"/>
+                                                    </div>
+                                                    <div class="flex space-x-2 mt-2">
+                                                        <x-button wire:click="saveEmail" label="Speichern"/>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
