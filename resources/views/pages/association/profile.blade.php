@@ -466,12 +466,12 @@ $loadEvents = function () {
                                                                 @else
                                                                     @if($currentYearIsPaid)
                                                                         <div class="flex sm:justify-center">
-                                                                            <button
-                                                                                class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
+                                                                            <div
+                                                                                class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 text-green-500"
                                                                             >
                                                                                 <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
                                                                                 aktuelles Jahr bezahlt
-                                                                            </button>
+                                                                            </div>
                                                                         </div>
                                                                     @endif
                                                                 @endif
