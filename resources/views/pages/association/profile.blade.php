@@ -404,16 +404,19 @@ $loadEvents = function () {
                                 <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
                                     Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr (Die Zahlung
                                     ist noch in der Entwicklung).<br>
-                                    <a href="https://einundzwanzig.space/verein/" class="text-amber-500">Firmen melden sich bitte direkt an den Vorstand.</a>
+                                    <a href="https://einundzwanzig.space/verein/" class="text-amber-500">Firmen melden
+                                        sich bitte direkt an den Vorstand.</a>
                                 </h4>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/2 flex flex-col space-y-2">
                                         <div class="flex items-center space-x-2">
                                             <div>
-                                                <x-checkbox wire:model="form.check" label="Ich stimme den Vereins-Statuten zu"/>
+                                                <x-checkbox wire:model="form.check"
+                                                            label="Ich stimme den Vereins-Statuten zu"/>
                                             </div>
                                             <div>
-                                                <a href="https://einundzwanzig.space/verein/" target="_blank" class="text-amber-500">Statuten</a>
+                                                <a href="https://einundzwanzig.space/verein/" target="_blank"
+                                                   class="text-amber-500">Statuten</a>
                                             </div>
                                         </div>
                                         <x-button label="Mit deinem aktuellen Nostr-Profil Mitglied werden"
@@ -421,53 +424,55 @@ $loadEvents = function () {
                                     </div>
                                 </div>
                             @endif
-                            <div
-                                class="mt-6 inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
-                                <div class="flex w-full justify-between items-start">
-                                    <div class="flex w-full">
-                                        <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
-                                             width="16"
-                                             height="16" viewBox="0 0 16 16">
-                                            <path
-                                                d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
-                                        </svg>
-                                        <div class="w-full">
-                                            <div
-                                                class="w-full font-medium text-gray-800 dark:text-gray-100 mb-1">
-                                                Falls du möchtest, kannst du hier eine E-Mail Adresse
-                                                hinterlegen,
-                                                damit der Verein dich darüber informieren kann, wenn es
-                                                Neuigkeiten
-                                                gibt.<br><br>
-                                                Am besten eine anynomisierte E-Mail Adresse verwenden. Wir
-                                                sichern
-                                                diese Adresse AES-256 verschlüsselt in der Datenbank ab.
-                                            </div>
-                                            <div
-                                                class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
-                                                <x-toggle xl warning
-                                                          wire:model.live="no"
-                                                          label="NEIN">
-                                                    <x-slot name="description">
-                                                        <span class="py-2 text-amber-500">Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</span>
-                                                    </x-slot>
-                                                </x-toggle>
-                                            </div>
-                                            @if($showEmail)
-                                                <div wire:key="showEmail"
-                                                     class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                                    <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
-                                                    <x-input wire:model.live.debounce="email"
-                                                             label="E-Mail Adresse"/>
+                            @if($currentPubkey)
+                                <div
+                                    class="mt-6 inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
+                                    <div class="flex w-full justify-between items-start">
+                                        <div class="flex w-full">
+                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
+                                                 width="16"
+                                                 height="16" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                            </svg>
+                                            <div class="w-full">
+                                                <div
+                                                    class="w-full font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                    Falls du möchtest, kannst du hier eine E-Mail Adresse
+                                                    hinterlegen,
+                                                    damit der Verein dich darüber informieren kann, wenn es
+                                                    Neuigkeiten
+                                                    gibt.<br><br>
+                                                    Am besten eine anynomisierte E-Mail Adresse verwenden. Wir
+                                                    sichern
+                                                    diese Adresse AES-256 verschlüsselt in der Datenbank ab.
                                                 </div>
-                                                <div wire:key="showSave" class="flex space-x-2 mt-2">
-                                                    <x-button wire:click="saveEmail" label="Speichern"/>
+                                                <div
+                                                    class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
+                                                    <x-toggle xl warning
+                                                              wire:model.live="no"
+                                                              label="NEIN">
+                                                        <x-slot name="description">
+                                                            <span class="py-2 text-amber-500">Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</span>
+                                                        </x-slot>
+                                                    </x-toggle>
                                                 </div>
-                                            @endif
+                                                @if($showEmail)
+                                                    <div wire:key="showEmail"
+                                                         class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                                        <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
+                                                        <x-input wire:model.live.debounce="email"
+                                                                 label="E-Mail Adresse"/>
+                                                    </div>
+                                                    <div wire:key="showSave" class="flex space-x-2 mt-2">
+                                                        <x-button wire:click="saveEmail" label="Speichern"/>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
                         </section>
 
                         <section>
