@@ -9,4 +9,6 @@ class ApplicationForm extends Form
 {
     #[Validate('nullable|string')]
     public $reason = '';
+    #[Validate('boolean|in:true')]
+    public $check = false;
 }
