@@ -172,6 +172,10 @@ $listenForPayment = function () {
 
 $save = function ($type) {
     $this->form->validate();
+    if (!$this->form->check) {
+        $this->js('alert("Du musst den Statuten zustimmen.")');
+        return;
+    }
 
     $this->currentPleb
         ->update([
@@ -322,7 +326,6 @@ $loadEvents = function () {
                     <div class="p-6 space-y-6">
                         <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
 
-                        <!-- Picture -->
                         <section>
                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
