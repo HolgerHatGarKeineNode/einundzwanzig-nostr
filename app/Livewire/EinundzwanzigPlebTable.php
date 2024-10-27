@@ -83,7 +83,12 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 'payment',
                 fn(EinundzwanzigPleb $model)
                     => $model->paymentEvents->count() > 0 && $model->paymentEvents->first(
-                )->paid ? '<span class="text-green-500">' . $model->paymentEvents->first()->amount . '</span>' : 'keine Zahlung vorhanden',
+                )->paid ? '<span class="text-green-500">' . number_format(
+                        $model->paymentEvents->first()->amount,
+                        0,
+                        ',',
+                        '.',
+                    ) . '</span>' : 'keine Zahlung vorhanden',
             )
             ->add(
                 'npub',
@@ -103,7 +108,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                         AssociationStatus::HONORARY => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-blue-500/20 text-blue-700',
                         default => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 text-red-700',
                     };
-                    return '<span class="'.$class.'">' . $model->association_status->label().'</span>';
+                    return '<span class="' . $class . '">' . $model->association_status->label() . '</span>';
                 },
             )
             ->add(
