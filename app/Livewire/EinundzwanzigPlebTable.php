@@ -27,7 +27,6 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
 
     public string $sortDirection = 'desc';
 
-
     public function setUp(): array
     {
         return [
@@ -90,6 +89,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                         '.',
                     ) . '</span>' : 'keine Zahlung vorhanden',
             )
+            ->add('npub_export', fn(EinundzwanzigPleb $model) => $model->npub)
             ->add(
                 'npub',
                 fn(EinundzwanzigPleb $model)
@@ -98,6 +98,8 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                     ) . '">Nostr Profile</a>',
             )
             ->add('association_status')
+            ->add('association_status_name', fn(EinundzwanzigPleb $model) => $model->association_status->name)
+            ->add('paid_export', fn(EinundzwanzigPleb $model) => $model->paymentEvents->first()?->amount)
             ->add(
                 'association_status_formatted',
                 function (EinundzwanzigPleb $model) {
@@ -126,19 +128,36 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             Column::make('Avatar', 'avatar')
                 ->visibleInExport(visible: false),
 
+            Column::make('Email', 'email')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Status', 'association_status_name')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Npub', 'npub_export')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Bezahlt', 'paid_export')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
             Column::make('Npub', 'npub')
                 ->visibleInExport(visible: false)
                 ->sortable(),
 
             Column::make('Name', 'name_lower')
-                ->sortable(),
-
-            Column::make('Aktueller Status', 'association_status_formatted', 'association_status')
                 ->visibleInExport(visible: true)
                 ->sortable(),
 
+            Column::make('Aktueller Status', 'association_status_formatted', 'association_status')
+                ->visibleInExport(visible: false)
+                ->sortable(),
+
             Column::make('Beitrag ' . date('Y'), 'payment')
-                ->visibleInExport(visible: true),
+                ->visibleInExport(visible: false),
 
             Column::make('Bewirbt sich für', 'for', 'application_for')
                 ->visibleInExport(visible: false)
