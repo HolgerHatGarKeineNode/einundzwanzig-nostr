@@ -223,7 +223,8 @@ $delete = function ($id) {
                                             xs
                                             :href="route('association.projectSupport.item', ['projectProposal' => $project])"
                                             label="Öffnen"/>
-                                    @elseif($currentPleb && $currentPleb->association_status->value > 2 && $project->sats_paid)
+                                    @endif
+                                    @if($currentPleb && $currentPleb->association_status->value > 2 && $project->sats_paid)
                                         <div class="m-1.5">
                                             <div
                                                 class="text-sm inline-flex font-medium bg-green-500/20 text-green-700 rounded-full text-center px-2.5 py-1">
