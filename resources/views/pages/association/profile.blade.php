@@ -233,15 +233,20 @@ $loadEvents = function () {
     $response = $request->send();
 
     $this->events = collect($response[config('services.relay')])
-        ->map(fn($event)
-            => [
-            'id' => $event->event->id,
-            'kind' => $event->event->kind,
-            'content' => $event->event->content,
-            'pubkey' => $event->event->pubkey,
-            'tags' => $event->event->tags,
-            'created_at' => $event->event->created_at,
-        ])
+        ->map(function($event) {
+            if(!isset($event->event)) {
+                return false;
+            }
+            return [
+                'id' => $event->event->id,
+                'kind' => $event->event->kind,
+                'content' => $event->event->content,
+                'pubkey' => $event->event->pubkey,
+                'tags' => $event->event->tags,
+                'created_at' => $event->event->created_at,
+            ];
+        })
+        ->filter()
         ->unique('id')
         ->toArray();
 };

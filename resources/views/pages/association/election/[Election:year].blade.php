@@ -108,15 +108,21 @@ $loadNostrEvents = function ($kinds) {
     $request = new Request($relaySet, $requestMessage);
     $response = $request->send();
     return collect($response[config('services.relay')])
-        ->map(fn($event)
-            => [
-            'id' => $event->event->id,
-            'kind' => $event->event->kind,
-            'content' => $event->event->content,
-            'pubkey' => $event->event->pubkey,
-            'tags' => $event->event->tags,
-            'created_at' => $event->event->created_at,
-        ])->toArray();
+        ->map(function($event) {
+            if(!isset($event->event)) {
+                return false;
+            }
+            return [
+                'id' => $event->event->id,
+                'kind' => $event->event->kind,
+                'content' => $event->event->content,
+                'pubkey' => $event->event->pubkey,
+                'tags' => $event->event->tags,
+                'created_at' => $event->event->created_at,
+            ];
+        })
+        ->filter()
+        ->toArray();
 };
 
 $vote = function ($pubkey, $type, $board = false) {
