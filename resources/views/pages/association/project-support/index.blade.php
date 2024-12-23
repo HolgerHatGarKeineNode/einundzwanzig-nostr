@@ -22,6 +22,7 @@ state([
             'einundzwanzigPleb.profile',
             'votes',
         ])
+        ->orderBy('created_at', 'desc')
         ->get(),
     'isAllowed' => false,
     'currentPubkey' => null,
@@ -64,6 +65,7 @@ $delete = function ($id) {
             'einundzwanzigPleb.profile',
             'votes',
         ])
+        ->orderBy('created_at', 'desc')
         ->get();
 };
 
