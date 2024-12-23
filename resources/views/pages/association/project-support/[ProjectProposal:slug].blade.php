@@ -23,7 +23,6 @@ state([
     'isAllowed' => false,
     'currentPubkey' => null,
     'currentPleb' => null,
-    'reasons' => fn() => $this->getReasons(),
     'ownVoteExists' => false,
     'boardVotes' => fn() => $this->getBoardVotes(),
     'otherVotes' => fn() => $this->getOtherVotes(),
@@ -37,18 +36,10 @@ on([
 $approve = fn() => $this->handleApprove();
 $notApprove = fn() => $this->handleNotApprove();
 
-$getReasons = function () {
-    return Vote::query()
-        ->where('project_proposal_id', $this->projectProposal->id)
-        ->where('value', false)
-        ->get();
-};
-
 $getBoardVotes = function () {
     return Vote::query()
         ->where('project_proposal_id', $this->projectProposal->id)
         ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board')))
-        ->where('value', true)
         ->get();
 };
 
@@ -59,7 +50,6 @@ $getOtherVotes = function () {
             'einundzwanzigPleb',
             fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board'))
         )
-        ->where('value', true)
         ->get();
 };
 
@@ -103,11 +93,9 @@ $handleNotApprove = function () {
         'einundzwanzig_pleb_id' => $this->currentPleb->id,
     ], [
         'value' => false,
-        'reason' => $this->form->reason,
     ]);
     $this->form->reset();
     $this->ownVoteExists = true;
-    $this->reasons = $this->getReasons();
 };
 
 ?>
@@ -183,7 +171,7 @@ $handleNotApprove = function () {
                         <hr class="my-6 border-t border-gray-100 dark:border-gray-700/60">
 
                         <!-- Reasons -->
-                        <div>
+                        {{--<div>
                             <h2 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-2">
                                 Ablehnungen ({{ count($reasons) }})
                             </h2>
@@ -205,7 +193,7 @@ $handleNotApprove = function () {
                                     </li>
                                 @endforeach
                             </ul>
-                        </div>
+                        </div>--}}
 
                     </div>
 
@@ -228,7 +216,7 @@ $handleNotApprove = function () {
                                         <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down"></i>
                                         <span class="ml-1">Ablehnen</span>
                                     </button>
-                                    <x-textarea wire:model="form.reason" label="Grund für deine Ablehnung"/>
+                                    {{--<x-textarea wire:model="form.reason" label="Grund für deine Ablehnung"/>--}}
                                 </div>
                             @else
                                 <div class="space-y-2">
@@ -241,11 +229,11 @@ $handleNotApprove = function () {
                         <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
                             <div class="flex justify-between space-x-1 mb-5">
                                 <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Zustimmungen des Vorstands ({{ count($boardVotes) }})
+                                    Zustimmungen des Vorstands ({{ count($boardVotes->where('value', 1)) }})
                                 </div>
                             </div>
                             <ul class="space-y-3">
-                                @foreach($boardVotes as $vote)
+                                @foreach($boardVotes->where('value', 1) as $vote)
                                     <li>
                                         <div class="flex justify-between">
                                             <div class="grow flex items-center">
@@ -257,9 +245,40 @@ $handleNotApprove = function () {
                                                          alt="{{ $vote->einundzwanzigPleb->profile->name }}">
                                                 </div>
                                                 <div class="truncate">
-                                            <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                {{ $vote->einundzwanzigPleb->profile->name }}
-                                            </span>
+                                                    <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                                        {{ $vote->einundzwanzigPleb->profile->name }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <!-- 2nd block -->
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                            <div class="flex justify-between space-x-1 mb-5">
+                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                    Ablehnungen des Vorstands ({{ count($boardVotes->where('value', 0)) }})
+                                </div>
+                            </div>
+                            <ul class="space-y-3">
+                                @foreach($boardVotes->where('value', 0) as $vote)
+                                    <li>
+                                        <div class="flex justify-between">
+                                            <div class="grow flex items-center">
+                                                <div class="relative mr-3">
+                                                    <img class="w-8 h-8 rounded-full"
+                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
+                                                         width="32"
+                                                         height="32"
+                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
+                                                </div>
+                                                <div class="truncate">
+                                                    <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                                        {{ $vote->einundzwanzigPleb->profile->name }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -272,11 +291,43 @@ $handleNotApprove = function () {
                         <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
                             <div class="flex justify-between space-x-1 mb-5">
                                 <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Zustimmungen der übrigen Mitglieder ({{ count($otherVotes) }})
+                                    Zustimmungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 1)) }})
                                 </div>
                             </div>
                             <ul class="space-y-3">
-                                @foreach($otherVotes as $vote)
+                                @foreach($otherVotes->where('value', 1) as $vote)
+                                    <li>
+                                        <div class="flex items-center justify-between">
+                                            <div class="grow flex items-center">
+                                                <div class="relative mr-3">
+                                                    <img class="w-8 h-8 rounded-full"
+                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
+                                                         width="32"
+                                                         height="32"
+                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
+                                                </div>
+                                                <div class="truncate">
+                                        <span
+                                            class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                                            {{ $vote->einundzwanzigPleb->profile->name }}
+                                        </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <!-- 3rd block -->
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                            <div class="flex justify-between space-x-1 mb-5">
+                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                    Ablehnungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 0)) }})
+                                </div>
+                            </div>
+                            <ul class="space-y-3">
+                                @foreach($otherVotes->where('value', 0) as $vote)
                                     <li>
                                         <div class="flex items-center justify-between">
                                             <div class="grow flex items-center">
