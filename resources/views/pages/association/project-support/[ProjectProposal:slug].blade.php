@@ -101,7 +101,7 @@ $handleNotApprove = function () {
 ?>
 
 <x-layouts.app
-    :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name,description: str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
+    :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name, description: $projectProposal->accepted ? 'Wurde mit ' . $projectProposal->sats_paid . ' unterstützt!' :str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
     @volt
     <div>
         @if($projectProposal->accepted || $isAllowed)
@@ -248,7 +248,8 @@ $handleNotApprove = function () {
                             <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
                                 <div class="flex justify-between space-x-1 mb-5">
                                     <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                        Zustimmungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 1)) }})
+                                        Zustimmungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 1)) }}
+                                        )
                                     </div>
                                 </div>
                             </div>
