@@ -111,6 +111,15 @@ $save = function () {
                                          :placeholder="__('Beabsichtigte Unterstützung in Sats')"/>
                             </x-input.group>
 
+                            <x-input.group :for="md5('form.accepted')" :label="__('Wurde angenommen')">
+                                <x-checkbox autocomplete="off" wire:model.debounce="form.accepted"/>
+                            </x-input.group>
+
+                            <x-input.group :for="md5('form.sats_paid')" :label="__('Letztendlich bezahlte Satoshis')">
+                                <x-input autocomplete="off" wire:model.debounce="form.sats_paid"
+                                         :placeholder="__('Satoshi-Anzahl')"/>
+                            </x-input.group>
+
                             <x-input.group :for="md5('form.description')">
                                 <x-slot name="label">
                                     <div>

@@ -17,5 +17,11 @@ class ProjectProposalForm extends Form
     public $description = '';
 
     #[Validate('required|url')]
-    public $website= '';
+    public $website = '';
+
+    #[Validate('bool')]
+    public $accepted = '';
+
+    #[Validate('nullable|numeric')]
+    public $sats_paid = '';
 }

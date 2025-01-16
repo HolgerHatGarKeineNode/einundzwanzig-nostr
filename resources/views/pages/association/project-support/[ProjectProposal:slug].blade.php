@@ -104,7 +104,7 @@ $handleNotApprove = function () {
     :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name,description: str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
     @volt
     <div>
-        @if($isAllowed)
+        @if($projectProposal->accepted || $isAllowed)
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full">
 
                 <!-- Page content -->
@@ -165,7 +165,7 @@ $handleNotApprove = function () {
 
                         <figure class="mb-6">
                             <img class="rounded-sm h-48" src="{{ $projectProposal->getFirstMediaUrl('main') }}"
-                                 alt="Meetup">
+                                 alt="Picture">
                         </figure>
 
                         <hr class="my-6 border-t border-gray-100 dark:border-gray-700/60">
@@ -197,161 +197,73 @@ $handleNotApprove = function () {
 
                     </div>
 
-                    <!-- Sidebar -->
-                    <div class="space-y-4">
+                    @if($isAllowed && !$projectProposal->accepted)
+                        <!-- Sidebar -->
+                        <div class="space-y-4">
 
-                        <!-- 1st block -->
-                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                            @if(!$ownVoteExists)
-                                <div class="space-y-2">
-                                    <button
-                                        wire:click="approve"
-                                        class="btn w-full bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white">
-                                        <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up"></i>
-                                        <span class="ml-1">Zustimmen</span>
-                                    </button>
-                                    <button
-                                        wire:click="notApprove"
-                                        class="btn w-full bg-red-900 text-red-100 hover:bg-red-800 dark:bg-red-100 dark:text-red-800 dark:hover:bg-red-400">
-                                        <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down"></i>
-                                        <span class="ml-1">Ablehnen</span>
-                                    </button>
-                                    {{--<x-textarea wire:model="form.reason" label="Grund für deine Ablehnung"/>--}}
-                                </div>
-                            @else
-                                <div class="space-y-2">
-                                    <p>Du hast bereits abgestimmt.</p>
-                                </div>
-                            @endif
-                        </div>
+                            <!-- 1st block -->
+                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                                @if(!$ownVoteExists)
+                                    <div class="space-y-2">
+                                        <button
+                                            wire:click="approve"
+                                            class="btn w-full bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white">
+                                            <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up"></i>
+                                            <span class="ml-1">Zustimmen</span>
+                                        </button>
+                                        <button
+                                            wire:click="notApprove"
+                                            class="btn w-full bg-red-900 text-red-100 hover:bg-red-800 dark:bg-red-100 dark:text-red-800 dark:hover:bg-red-400">
+                                            <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down"></i>
+                                            <span class="ml-1">Ablehnen</span>
+                                        </button>
+                                        {{--<x-textarea wire:model="form.reason" label="Grund für deine Ablehnung"/>--}}
+                                    </div>
+                                @else
+                                    <div class="space-y-2">
+                                        <p>Du hast bereits abgestimmt.</p>
+                                    </div>
+                                @endif
+                            </div>
 
-                        <!-- 2nd block -->
-                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                            <div class="flex justify-between space-x-1 mb-5">
-                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Zustimmungen des Vorstands ({{ count($boardVotes->where('value', 1)) }})
+                            <!-- 2nd block -->
+                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                                <div class="flex justify-between space-x-1 mb-5">
+                                    <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                        Zustimmungen des Vorstands ({{ count($boardVotes->where('value', 1)) }})
+                                    </div>
                                 </div>
                             </div>
-                            <ul class="space-y-3">
-                                @foreach($boardVotes->where('value', 1) as $vote)
-                                    <li>
-                                        <div class="flex justify-between">
-                                            <div class="grow flex items-center">
-                                                <div class="relative mr-3">
-                                                    <img class="w-8 h-8 rounded-full"
-                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
-                                                         width="32"
-                                                         height="32"
-                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
-                                                </div>
-                                                <div class="truncate">
-                                                    <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                        {{ $vote->einundzwanzigPleb->profile->name }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
 
-                        <!-- 2nd block -->
-                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                            <div class="flex justify-between space-x-1 mb-5">
-                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Ablehnungen des Vorstands ({{ count($boardVotes->where('value', 0)) }})
+                            <!-- 2nd block -->
+                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                                <div class="flex justify-between space-x-1 mb-5">
+                                    <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                        Ablehnungen des Vorstands ({{ count($boardVotes->where('value', 0)) }})
+                                    </div>
                                 </div>
                             </div>
-                            <ul class="space-y-3">
-                                @foreach($boardVotes->where('value', 0) as $vote)
-                                    <li>
-                                        <div class="flex justify-between">
-                                            <div class="grow flex items-center">
-                                                <div class="relative mr-3">
-                                                    <img class="w-8 h-8 rounded-full"
-                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
-                                                         width="32"
-                                                         height="32"
-                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
-                                                </div>
-                                                <div class="truncate">
-                                                    <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                                        {{ $vote->einundzwanzigPleb->profile->name }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
 
-                        <!-- 3rd block -->
-                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                            <div class="flex justify-between space-x-1 mb-5">
-                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Zustimmungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 1)) }})
+                            <!-- 3rd block -->
+                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                                <div class="flex justify-between space-x-1 mb-5">
+                                    <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                        Zustimmungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 1)) }})
+                                    </div>
                                 </div>
                             </div>
-                            <ul class="space-y-3">
-                                @foreach($otherVotes->where('value', 1) as $vote)
-                                    <li>
-                                        <div class="flex items-center justify-between">
-                                            <div class="grow flex items-center">
-                                                <div class="relative mr-3">
-                                                    <img class="w-8 h-8 rounded-full"
-                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
-                                                         width="32"
-                                                         height="32"
-                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
-                                                </div>
-                                                <div class="truncate">
-                                        <span
-                                            class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                            {{ $vote->einundzwanzigPleb->profile->name }}
-                                        </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
 
-                        <!-- 3rd block -->
-                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                            <div class="flex justify-between space-x-1 mb-5">
-                                <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                                    Ablehnungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 0)) }})
+                            <!-- 3rd block -->
+                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
+                                <div class="flex justify-between space-x-1 mb-5">
+                                    <div class="text-sm text-gray-800 dark:text-gray-100 font-semibold">
+                                        Ablehnungen der übrigen Mitglieder ({{ count($otherVotes->where('value', 0)) }})
+                                    </div>
                                 </div>
                             </div>
-                            <ul class="space-y-3">
-                                @foreach($otherVotes->where('value', 0) as $vote)
-                                    <li>
-                                        <div class="flex items-center justify-between">
-                                            <div class="grow flex items-center">
-                                                <div class="relative mr-3">
-                                                    <img class="w-8 h-8 rounded-full"
-                                                         src="{{ $vote->einundzwanzigPleb->profile->picture }}"
-                                                         width="32"
-                                                         height="32"
-                                                         alt="{{ $vote->einundzwanzigPleb->profile->name }}">
-                                                </div>
-                                                <div class="truncate">
-                                        <span
-                                            class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                                            {{ $vote->einundzwanzigPleb->profile->name }}
-                                        </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
 
-                    </div>
+                        </div>
+                    @endif
 
                 </div>
 
