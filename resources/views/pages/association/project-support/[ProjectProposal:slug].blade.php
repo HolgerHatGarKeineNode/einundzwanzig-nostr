@@ -101,7 +101,7 @@ $handleNotApprove = function () {
 ?>
 
 <x-layouts.app
-    :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name, description: $projectProposal->accepted ? 'Wurde mit ' . $projectProposal->sats_paid . ' unterstützt!' :str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
+    :seo="new SEOData(title: 'Unterstützung für: ' .  $projectProposal->name, description: $projectProposal->accepted ? 'Wurde mit ' . number_format($projectProposal->sats_paid, 0, ',', '.') . ' Satoshis unterstützt!' :str($projectProposal->description)->limit(100, '...', true), image: $projectProposal->getFirstMediaUrl('main'))">
     @volt
     <div>
         @if($projectProposal->accepted || $isAllowed)
