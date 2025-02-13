@@ -410,8 +410,7 @@ $loadEvents = function () {
                                     Einundzwanzig Mitglied werden
                                 </h3>
                                 <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
-                                    Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr (Die Zahlung
-                                    ist noch in der Entwicklung).<br>
+                                    Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr.<br>
                                     <a href="https://einundzwanzig.space/verein/" class="text-amber-500">Firmen melden
                                         sich bitte direkt an den Vorstand.</a>
                                 </h4>
