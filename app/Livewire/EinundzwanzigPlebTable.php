@@ -117,7 +117,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 'name_lower',
                 fn(EinundzwanzigPleb $model)
                     => strtolower(
-                    e($model->profile?->name ?? $model->profile?->display_name ?? ''),
+                    e($model->profile?->name ?: $model->profile?->display_name ?? ''),
                 ),
             );
     }
@@ -127,22 +127,6 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return [
             Column::make('Avatar', 'avatar')
                 ->visibleInExport(visible: false),
-
-            Column::make('Email', 'email')
-                ->hidden()
-                ->visibleInExport(visible: true),
-
-            Column::make('Status', 'association_status_name')
-                ->hidden()
-                ->visibleInExport(visible: true),
-
-            Column::make('Npub', 'npub_export')
-                ->hidden()
-                ->visibleInExport(visible: true),
-
-            Column::make('Bezahlt', 'paid_export')
-                ->hidden()
-                ->visibleInExport(visible: true),
 
             Column::make('Npub', 'npub')
                 ->visibleInExport(visible: false)
@@ -165,6 +149,22 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
 
             Column::action('Action')
                 ->visibleInExport(visible: false),
+
+            Column::make('Email', 'email')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Status', 'association_status_name')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Npub', 'npub_export')
+                ->hidden()
+                ->visibleInExport(visible: true),
+
+            Column::make('Bezahlt', 'paid_export')
+                ->hidden()
+                ->visibleInExport(visible: true),
         ];
     }
 
