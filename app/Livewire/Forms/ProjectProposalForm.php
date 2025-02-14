@@ -20,8 +20,8 @@ class ProjectProposalForm extends Form
     public $website = '';
 
     #[Validate('bool')]
-    public $accepted = '';
+    public $accepted = false;
 
     #[Validate('nullable|numeric')]
-    public $sats_paid = '';
+    public $sats_paid = 0;
 }
