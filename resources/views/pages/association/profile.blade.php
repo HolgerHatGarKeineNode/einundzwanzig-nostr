@@ -552,11 +552,15 @@ $loadEvents = function () {
                                                     class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
                                                     <p>Nostr Event für die Zahlung des
                                                         Mitgliedsbeitrags: <span
-                                                            class="break-all">{{ $currentPleb->paymentEvents->first()->event_id }}</span>
+                                                            class="break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
                                                     </p>
                                                     <div>
-                                                        @if(isset($events[0]))
-                                                            <p>{{ $events[0]['content'] }}</p>
+                                                        @php
+                                                            // latest event by created_at field of $events
+                                                            $latestEvent = collect($events)->sortByDesc('created_at')->first();
+                                                        @endphp
+                                                        @if(isset($latestEvent))
+                                                            <p>{{ $latestEvent['content'] }}</p>
                                                             <div class="mt-8">
                                                                 @if(!$currentYearIsPaid)
                                                                     <div class="flex justify-center">
