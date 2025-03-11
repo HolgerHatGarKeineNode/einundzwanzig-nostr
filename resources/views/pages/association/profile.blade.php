@@ -345,7 +345,7 @@ $loadEvents = function () {
                                                 <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="jhttps://github.com/greenart7c3/Amber">
                                                     Amber
                                                 </a>
-                                                <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in der man alle Accounts/nsecs verwalten kann.</div>
+                                                <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in der man alle Keys/nsecs verwalten kann.</div>
                                             </div>
                                         </div>
                                         <!-- Right side -->
@@ -365,7 +365,7 @@ $loadEvents = function () {
                                                     Alby - Bitcoin Lightning Wallet & Nostr
                                                 </a>
                                                 <div class="text-sm">
-                                                    Browser-Erweiterung in die man seinen nsec eigeben kann. Pro Alby-Konto ein nsec.
+                                                    Browser-Erweiterung in die man seinen Key/nsec eingeben kann. Pro Alby-Konto ein nsec.
                                                 </div>
                                             </div>
                                         </div>
@@ -386,7 +386,7 @@ $loadEvents = function () {
                                                     nos2x
                                                 </a>
                                                 <div class="text-sm">
-                                                    Browser-Erweiterung für Chrome Browser. Multi-Account fähig.
+                                                    Browser-Erweiterung für Chrome Browser. Multi-Key fähig.
                                                 </div>
                                             </div>
                                         </div>
@@ -407,7 +407,7 @@ $loadEvents = function () {
                                                     nos2x-fox
                                                 </a>
                                                 <div class="text-sm">
-                                                    Browser-Erweiterung für Firefox Browser. Multi-Account fähig.
+                                                    Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
                                                 </div>
                                             </div>
                                         </div>
