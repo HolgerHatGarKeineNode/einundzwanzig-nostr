@@ -342,7 +342,7 @@ $loadEvents = function () {
                                         <!-- Left side -->
                                         <div class="flex items-start space-x-3 md:space-x-4">
                                             <div>
-                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="jhttps://github.com/greenart7c3/Amber">
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://github.com/greenart7c3/Amber">
                                                     Amber
                                                 </a>
                                                 <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in der man alle Keys/nsecs verwalten kann.</div>
