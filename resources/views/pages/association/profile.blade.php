@@ -332,6 +332,95 @@ $loadEvents = function () {
                         <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
 
                         <section>
+
+                            <div class="space-y-2 mb-12">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="text-xl text-gray-500 dark:text-gray-400 italic">Empfohlene Nostr Login und Signer-Apps</div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                        <!-- Left side -->
+                                        <div class="flex items-start space-x-3 md:space-x-4">
+                                            <div>
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="jhttps://github.com/greenart7c3/Amber">
+                                                    Amber
+                                                </a>
+                                                <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in der man alle Accounts/nsecs verwalten kann.</div>
+                                            </div>
+                                        </div>
+                                        <!-- Right side -->
+                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                            <div class="text-xs inline-flex font-medium bg-green-500/20 text-green-700 rounded-full text-center px-2.5 py-1">
+                                                Android
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                        <!-- Left side -->
+                                        <div class="flex items-start space-x-3 md:space-x-4">
+                                            <div>
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://addons.mozilla.org/en-US/firefox/addon/alby/">
+                                                    Alby - Bitcoin Lightning Wallet & Nostr
+                                                </a>
+                                                <div class="text-sm">
+                                                    Browser-Erweiterung in die man seinen nsec eigeben kann. Pro Alby-Konto ein nsec.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Right side -->
+                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                            <div class="text-xs inline-flex font-medium bg-yellow-500/20 text-yellow-700 rounded-full text-center px-2.5 py-1">
+                                                Browser Chrome/Firefox
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                        <!-- Left side -->
+                                        <div class="flex items-start space-x-3 md:space-x-4">
+                                            <div>
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://chromewebstore.google.com/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp">
+                                                    nos2x
+                                                </a>
+                                                <div class="text-sm">
+                                                    Browser-Erweiterung für Chrome Browser. Multi-Account fähig.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Right side -->
+                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                            <div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">
+                                                Browser Chrome
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                        <!-- Left side -->
+                                        <div class="flex items-start space-x-3 md:space-x-4">
+                                            <div>
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
+                                                    nos2x-fox
+                                                </a>
+                                                <div class="text-sm">
+                                                    Browser-Erweiterung für Firefox Browser. Multi-Account fähig.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Right side -->
+                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                            <div class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full text-center px-2.5 py-1">
+                                                Browser Firefox
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
                                           x-show="!$store.nostr.user"/>
