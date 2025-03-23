@@ -26,7 +26,7 @@
                 </div>
             </a>
         </li>
-        <li class="{{ $currentRoute === 'association.election' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
+        {{--<li class="{{ $currentRoute === 'association.election' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
             <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
                href="{{ route('association.election', ['election' => date('Y')]) }}">
                 <div class="flex items-center">
@@ -35,7 +35,7 @@
                         class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Vorstands-Wahlen</span>
                 </div>
             </a>
-        </li>
+        </li>--}}
         <li class="{{ $currentRoute === 'association.projectSupport' ? $isCurrentRouteClass : $isNotCurrentRouteClass }}">
             <a class="block text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white truncate transition"
                href="{{ route('association.projectSupport') }}">

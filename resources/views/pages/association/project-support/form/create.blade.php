@@ -29,9 +29,6 @@ on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-        if ($this->currentPleb->association_status->value < 3) {
-            return $this->js('alert("Du bist hierzu nicht berechtigt.")');
-        }
         $this->isAllowed = true;
     },
     'nostrLoggedOut' => function () {

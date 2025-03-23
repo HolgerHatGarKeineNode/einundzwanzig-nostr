@@ -33,9 +33,6 @@ on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-        if ($this->currentPleb->association_status->value < 2) {
-            return $this->js('alert("Du bist hierzu nicht berechtigt.")');
-        }
         $this->isAllowed = true;
     },
     'nostrLoggedOut' => function () {
@@ -98,7 +95,7 @@ $delete = function ($id) {
                     </form>
 
                     <!-- Add meetup button -->
-                    @if($currentPleb && $currentPleb->association_status->value > 2)
+                    @if($currentPleb && $currentPleb->association_status->value > 1)
                         <x-button :href="route('association.projectSupport.create')" icon="plus"
                                   label="Projekt einreichen"/>
                     @endif

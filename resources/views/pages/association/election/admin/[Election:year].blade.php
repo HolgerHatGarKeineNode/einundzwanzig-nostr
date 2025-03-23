@@ -67,16 +67,17 @@ on([
 ]);
 
 on([
-    'nostrLoggedIn' => fn($pubkey)
-        => [
-        $this->currentPubkey = $pubkey,
+    'nostrLoggedIn' => function($pubkey) {
+        $this->currentPubkey = $pubkey;
         $allowedPubkeys = [
             '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
             '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-        ],
-        !in_array($this->currentPubkey, $allowedPubkeys, true) ?
-            $this->js('alert("Du bist hierzu nicht berechtigt.")') : $this->isAllowed = true,
-    ],
+        ];
+        if(in_array($this->currentPubkey, $allowedPubkeys, true)) {
+            $this->isAllowed = true;
+        }
+        dd($this->isAllowed);
+    },
     'echo:votes,.newVote' => fn()
         => [
         $this->loadEvents(),
@@ -186,7 +187,9 @@ $loadNostrEvents = function ($kinds) {
         ];
     @endphp
 
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="electionAdminCharts(@this)">
+    @if($isAllowed)
+
+        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="electionAdminCharts(@this)">
 
         <!-- Dashboard actions -->
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
@@ -236,6 +239,19 @@ $loadNostrEvents = function ($kinds) {
         </div>
 
     </div>
+
+    @else
+        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+            <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">Mitglieder</h3>
+                    <p class="mt-1 max-w">
+                        Du bist nicht berechtigt, Mitglieder zu bearbeiten.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @endvolt
 </x-layouts.app>

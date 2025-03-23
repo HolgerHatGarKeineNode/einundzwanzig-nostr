@@ -14,6 +14,7 @@
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    @include('components.layouts.partials.styles')
 </head>
 <body
     class="font-sans antialiased bg-gray-100 dark:bg-[#222222] text-gray-600 dark:text-gray-400"

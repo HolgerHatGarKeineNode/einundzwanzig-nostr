@@ -56,9 +56,6 @@ $getOtherVotes = function () {
 $handleNostrLoggedIn = function ($pubkey) {
     $this->currentPubkey = $pubkey;
     $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-    if ($this->currentPleb->association_status->value < 2) {
-        return $this->js('alert("Du bist hierzu nicht berechtigt.")');
-    }
     $this->isAllowed = true;
     $this->ownVoteExists = Vote::query()
         ->where('project_proposal_id', $this->projectProposal->id)

@@ -40,10 +40,9 @@ on([
             'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
             '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
         ];
-        if (!in_array($this->currentPubkey, $allowedPubkeys, true)) {
-            return $this->js('alert("Du bist nicht berechtigt, Mitglieder zu bearbeiten.")');
+        if (in_array($this->currentPubkey, $allowedPubkeys, true)) {
+            $this->isAllowed = true;
         }
-        $this->isAllowed = true;
     },
 ]);
 
