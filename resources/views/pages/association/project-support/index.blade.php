@@ -14,9 +14,10 @@ use function Livewire\Volt\{state, mount, on, computed, updated};
 
 name('association.projectSupport');
 
+state(['activeFilter' => 'all',])->url();
+
 state([
     'search' => '',
-    'activeFilter' => 'all',
     'projects' => fn()
         => \App\Models\ProjectProposal::query()
         ->with([
@@ -80,6 +81,10 @@ $confirmDelete = function ($id) {
     ]);
 };
 
+$setFilter = function ($filter) {
+    $this->activeFilter = $filter;
+};
+
 $delete = function ($id) {
     \App\Models\ProjectProposal::query()->findOrFail($id)->delete();
     $this->projects = \App\Models\ProjectProposal::query()
@@ -132,25 +137,25 @@ $delete = function ($id) {
             <div class="mb-5">
                 <ul class="flex flex-wrap -m-1">
                     <li class="m-1">
-                        <button wire:click="$set('activeFilter', 'all')"
+                        <button wire:click="setFilter('all')"
                                 class="inline-flex items-center justify-center text-sm font-medium leading-5 rounded-full px-3 py-1 border {{ $activeFilter === 'all' ? 'border-transparent shadow-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-800' : 'border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} transition">
                             Alle
                         </button>
                     </li>
                     <li class="m-1">
-                        <button wire:click="$set('activeFilter', 'new')"
+                        <button wire:click="setFilter('new')"
                                 class="inline-flex items-center justify-center text-sm font-medium leading-5 rounded-full px-3 py-1 border {{ $activeFilter === 'new' ? 'border-transparent shadow-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-800' : 'border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} transition">
                             Neu
                         </button>
                     </li>
                     <li class="m-1">
-                        <button wire:click="$set('activeFilter', 'supported')"
+                        <button wire:click="setFilter('supported')"
                                 class="inline-flex items-center justify-center text-sm font-medium leading-5 rounded-full px-3 py-1 border {{ $activeFilter === 'supported' ? 'border-transparent shadow-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-800' : 'border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} transition">
                             Unterstützt
                         </button>
                     </li>
                     <li class="m-1">
-                        <button wire:click="$set('activeFilter', 'rejected')"
+                        <button wire:click="setFilter('rejected')"
                                 class="inline-flex items-center justify-center text-sm font-medium leading-5 rounded-full px-3 py-1 border {{ $activeFilter === 'rejected' ? 'border-transparent shadow-sm bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-800' : 'border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} transition">
                             Abgelehnt
                         </button>

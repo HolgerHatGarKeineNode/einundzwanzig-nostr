@@ -66,36 +66,35 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 'avatar',
                 fn($model,
                 )
-                    => '<img class="w-8 h-8 shrink-0 grow-0 rounded-full" onerror="this.onerror=null; this.src=\'https://robohash.org/test\'";" src="' . asset(
+                    => '<img class="w-8 h-8 shrink-0 grow-0 rounded-full" onerror="this.onerror=null; this.src=\'https://robohash.org/test\'";" src="'.asset(
                         $model->profile?->picture,
-                    ) . '">',
+                    ).'">',
             )
             ->add(
                 'for',
                 fn($model,
                 )
-                    => $model->application_for ? '<div class="m-1.5"><div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">' . AssociationStatus::from(
+                    => $model->application_for ? '<div class="m-1.5"><div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">'.AssociationStatus::from(
                         $model->application_for,
-                    )->label() . '</div></div>' : '',
+                    )->label().'</div></div>' : '',
             )
             ->add(
                 'payment',
                 fn(EinundzwanzigPleb $model)
-                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first(
-                )->paid ? '<span class="text-green-500">' . number_format(
+                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first()->paid ? '<span class="text-green-500">'.number_format(
                         $model->paymentEvents->first()->amount,
                         0,
                         ',',
                         '.',
-                    ) . '</span>' : 'keine Zahlung vorhanden',
+                    ).'</span>' : 'keine Zahlung vorhanden',
             )
             ->add('npub_export', fn(EinundzwanzigPleb $model) => $model->npub)
             ->add(
                 'npub',
                 fn(EinundzwanzigPleb $model)
-                    => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://nostrudel.ninja/u/' . e(
+                    => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://nostrudel.ninja/u/'.e(
                         $model->npub,
-                    ) . '">Nostr Profile</a>',
+                    ).'">Nostr Profile</a>',
             )
             ->add('association_status')
             ->add('association_status_name', fn(EinundzwanzigPleb $model) => $model->association_status->name)
@@ -110,7 +109,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                         AssociationStatus::HONORARY => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-blue-500/20 text-blue-700',
                         default => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 text-red-700',
                     };
-                    return '<span class="' . $class . '">' . $model->association_status->label() . '</span>';
+                    return '<span class="'.$class.'">'.$model->association_status->label().'</span>';
                 },
             )
             ->add(
@@ -140,7 +139,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                 ->visibleInExport(visible: false)
                 ->sortable(),
 
-            Column::make('Beitrag ' . date('Y'), 'payment')
+            Column::make('Beitrag '.date('Y'), 'payment')
                 ->visibleInExport(visible: false),
 
             Column::make('Bewirbt sich für', 'for', 'application_for')
@@ -181,7 +180,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->findOrFail($rowId);
         $this->dialog()->confirm([
             'title' => 'Bist du sicher?',
-            'description' => 'Möchtest du ' . $pleb->profile->name . ' wirklich akzeptieren?',
+            'description' => 'Möchtest du '.$pleb->profile->name.' wirklich akzeptieren?',
             'acceptLabel' => 'Ja, akzeptieren',
             'method' => 'acceptPleb',
             'params' => $rowId,
@@ -196,7 +195,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->findOrFail($rowId);
         $this->dialog()->confirm([
             'title' => 'Bist du sicher?',
-            'description' => 'Möchtest du ' . $pleb->profile->name . ' wirklich löschen?',
+            'description' => 'Möchtest du '.$pleb->profile->name.' wirklich löschen?',
             'acceptLabel' => 'Ja, lösche',
             'method' => 'deletePleb',
             'params' => $rowId,
