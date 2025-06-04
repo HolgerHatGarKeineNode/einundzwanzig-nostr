@@ -10,7 +10,7 @@ use swentel\nostr\Subscription\Subscription;
 use WireUi\Actions\Notification;
 
 use function Laravel\Folio\{middleware, name};
-use function Livewire\Volt\{state, mount, on, computed};
+use function Livewire\Volt\{state, mount, on, computed, updated};
 
 name('association.projectSupport');
 
@@ -30,15 +30,28 @@ state([
     'currentPleb' => null,
 ]);
 
+updated([
+    'search' => function () {
+        $this->projects = \App\Models\ProjectProposal::query()
+            ->with([
+                'einundzwanzigPleb.profile',
+                'votes',
+            ])
+            ->where(function ($query) {
+                $query
+                    ->where('name', 'ilike', '%'.$this->search.'%')
+                    ->orWhere('description', 'ilike', '%'.$this->search.'%')
+                    ->orWhereHas('einundzwanzigPleb.profile', function ($q) {
+                        $q->where('name', 'ilike', '%'.$this->search.'%');
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+    },
+]);
+
 $projects = computed(function () {
-    return $this->projects
-        ->when($this->search, function ($collection) {
-            return $collection->filter(function ($project) {
-                return str_contains(strtolower($project->name), strtolower($this->search)) ||
-                    str_contains(strtolower($project->description), strtolower($this->search)) ||
-                    str_contains(strtolower($project->einundzwanzigPleb->profile->name), strtolower($this->search));
-            });
-        });
+    return $this->projects;
 });
 
 on([
