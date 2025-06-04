@@ -93,7 +93,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->add(
                 'npub',
                 fn(EinundzwanzigPleb $model)
-                    => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://next.nostrudel.ninja/#/u/' . e(
+                    => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://nostrudel.ninja/u/' . e(
                         $model->npub,
                     ) . '">Nostr Profile</a>',
             )
