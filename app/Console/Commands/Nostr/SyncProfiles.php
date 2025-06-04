@@ -15,7 +15,7 @@ class SyncProfiles extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:profiles';
+    protected $signature = 'sync:profiles {--all : Fetch all plebs}';
 
     /**
      * The console command description.
@@ -29,11 +29,26 @@ class SyncProfiles extends Command
      */
     public function handle()
     {
-        $plebs = EinundzwanzigPleb::query()
-            ->whereDoesntHave('profile')
-            ->get();
-        if ($plebs->count() > 0) {
+        $query = EinundzwanzigPleb::query();
+
+        if (!$this->option('all')) {
+            $query->whereDoesntHave('profile');
+        }
+
+        $plebs = $query->get();
+        $count = $plebs->count();
+
+        $this->info("\n🔄 Syncing profiles...");
+
+        if ($count > 0) {
+            $bar = $this->output->createProgressBar($count);
+            $bar->start();
             $this->fetchProfile($plebs->pluck('npub')->toArray());
+
+            $bar->finish();
+            $this->info("\n✅ Successfully synced $count profiles!");
+        } else {
+            $this->info("⚡ No profiles to sync!");
         }
     }
 }
