@@ -669,8 +669,7 @@ $loadEvents = function () {
                                                                     class="btn dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
                                                                 >
                                                                     <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
-                                                                    Die Zahlungsfunktion der Mitgliedsbeiträge wird
-                                                                    derzeit entwickelt.
+                                                                    Unser Nostr-Relay konnte derzeit nicht erreicht werden, um eine Zahlung zu initialisieren. Bitte versuche es später noch einmal.
                                                                 </button>
                                                             </div>
                                                         @endif
