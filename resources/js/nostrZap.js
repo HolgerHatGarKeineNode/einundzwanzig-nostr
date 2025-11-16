@@ -10,13 +10,13 @@ export default (livewireComponent) => ({
     async zap(message, sender, amountToPay, env) {
         const config = {
             production: {
-                relayUrl: 'wss://simple-relay.steuernsindraub21.xyz',
+                relayUrl: 'wss://simple-relay.codingarena.top',
             },
             staging: {
-                relayUrl: 'wss://simple-test-relay.steuernsindraub21.xyz',
+                relayUrl: 'wss://simple-test-relay.codingarena.top',
             },
             local: {
-                relayUrl: 'wss://simple-test-relay.steuernsindraub21.xyz',
+                relayUrl: 'wss://simple-test-relay.codingarena.top',
             },
         };
         const relayUrl = config[env]?.relayUrl || config['local'].relayUrl;
