@@ -125,7 +125,7 @@ $delete = function ($id) {
                     </form>
 
                     <!-- Add meetup button -->
-                    @if($currentPleb && $currentPleb->association_status->value > 1)
+                    @if($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists())
                         <x-button :href="route('association.projectSupport.create')" icon="plus"
                                   label="Projekt einreichen"/>
                     @endif
