@@ -15,7 +15,7 @@
         "flatpickr": "^4.6.13",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0",
-        "nostr-login": "^1.6.6",
+        "nostr-login": "^1.7.12",
         "nostr-tools": "^2.7.2",
         "postcss": "^8.4.41",
         "pusher-js": "^8.4.0-rc2",
