@@ -1,21 +1,18 @@
 <?php
 
-use Livewire\Volt\Component;
-
+use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
-use swentel\nostr\Key\Key;
 use swentel\nostr\Message\EventMessage;
 use swentel\nostr\Message\RequestMessage;
 use swentel\nostr\Relay\Relay;
 use swentel\nostr\Relay\RelaySet;
 use swentel\nostr\Request\Request;
-use swentel\nostr\Subscription\Subscription;
-use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Sign\Sign;
+use swentel\nostr\Subscription\Subscription;
 use WireUi\Actions\Notification;
 
-use function Livewire\Volt\{computed, mount, state, with, on, form, updated};
-use function Laravel\Folio\{middleware, name};
+use function Laravel\Folio\{name};
+use function Livewire\Volt\{form, mount, on, state, updated};
 
 name('association.profile');
 
@@ -126,11 +123,11 @@ $pay = function ($comment) {
         ->where('year', date('Y'))
         ->first();
     if ($paymentEvent->btc_pay_invoice) {
-        return redirect('https://pay.einundzwanzig.space/i/' . $paymentEvent->btc_pay_invoice);
+        return redirect('https://pay.einundzwanzig.space/i/'.$paymentEvent->btc_pay_invoice);
     }
     try {
         $response = Http::withHeaders([
-            'Authorization' => 'token ' . config('services.btc_pay.api_key'),
+            'Authorization' => 'token '.config('services.btc_pay.api_key'),
         ])->post(
             'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices',
             [
@@ -138,7 +135,7 @@ $pay = function ($comment) {
                 'metadata' => [
                     'orderId' => $comment,
                     'orderUrl' => url()->route('association.profile'),
-                    'itemDesc' => 'Mitgliedsbeitrag ' . date('Y') . ' von nostr:' . $this->currentPleb->npub,
+                    'itemDesc' => 'Mitgliedsbeitrag '.date('Y').' von nostr:'.$this->currentPleb->npub,
                     'posData' => [
                         'event' => $paymentEvent->event_id,
                         'pubkey' => $this->currentPleb->pubkey,
@@ -160,7 +157,7 @@ $pay = function ($comment) {
     } catch (Exception $e) {
         $notification = new Notification($this);
         $notification->error(
-            'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: ' . $e->getMessage(),
+            'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: '.$e->getMessage(),
         );
     }
 };
@@ -172,10 +169,10 @@ $listenForPayment = function () {
         ->first();
     if ($paymentEvent->btc_pay_invoice) {
         $response = Http::withHeaders([
-            'Authorization' => 'token ' . config('services.btc_pay.api_key'),
+            'Authorization' => 'token '.config('services.btc_pay.api_key'),
         ])
             ->get(
-                'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/' . $paymentEvent->btc_pay_invoice,
+                'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/'.$paymentEvent->btc_pay_invoice,
             );
         if ($response->json()['status'] === 'Expired') {
             $paymentEvent->btc_pay_invoice = null;
@@ -215,12 +212,12 @@ $createPaymentEvent = function () {
     $note = new NostrEvent();
     $note->setKind(32121);
     $note->setContent(
-        'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr ' . date(
+        'Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr '.date(
             'Y',
-        ) . '. Bitte bezahle den Betrag von ' . number_format($this->amountToPay, 0, ',', '.') . ' Satoshis.',
+        ).'. Bitte bezahle den Betrag von '.number_format($this->amountToPay, 0, ',', '.').' Satoshis.',
     );
     $note->setTags([
-        ['d', $this->currentPleb->pubkey . ',' . date('Y')],
+        ['d', $this->currentPleb->pubkey.','.date('Y')],
         ['zap', 'daf83d92768b5d0005373f83e30d4203c0b747c170449e02fea611a0da125ee6', config('services.relay'), '1'],
     ]);
     $signer = new Sign();
@@ -261,8 +258,8 @@ $loadEvents = function () {
     $response = $request->send();
 
     $this->events = collect($response[config('services.relay')])
-        ->map(function($event) {
-            if(!isset($event->event)) {
+        ->map(function ($event) {
+            if (!isset($event->event)) {
                 return false;
             }
             return [
@@ -361,93 +358,112 @@ $loadEvents = function () {
 
                         <section>
 
-                            <div class="space-y-2 mb-12">
-                                <div class="flex justify-between items-center mb-4">
-                                    <div class="text-xl text-gray-500 dark:text-gray-400 italic">Empfohlene Nostr Login und Signer-Apps</div>
-                                </div>
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
-                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
-                                        <!-- Left side -->
-                                        <div class="flex items-start space-x-3 md:space-x-4">
-                                            <div>
-                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://github.com/greenart7c3/Amber">
-                                                    Amber
-                                                </a>
-                                                <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in der man alle Keys/nsecs verwalten kann.</div>
-                                            </div>
-                                        </div>
-                                        <!-- Right side -->
-                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
-                                            <div class="text-xs inline-flex font-medium bg-green-500/20 text-green-700 rounded-full text-center px-2.5 py-1">
-                                                Android
-                                            </div>
+                            @if(!$currentPleb)
+                                <div class="space-y-2 mb-12">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div class="text-xl text-gray-500 dark:text-gray-400 italic">Empfohlene Nostr
+                                            Login und Signer-Apps
                                         </div>
                                     </div>
-                                </div>
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
-                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
-                                        <!-- Left side -->
-                                        <div class="flex items-start space-x-3 md:space-x-4">
-                                            <div>
-                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://addons.mozilla.org/en-US/firefox/addon/alby/">
-                                                    Alby - Bitcoin Lightning Wallet & Nostr
-                                                </a>
-                                                <div class="text-sm">
-                                                    Browser-Erweiterung in die man seinen Key/nsec eingeben kann. Pro Alby-Konto ein nsec.
+                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                        <div
+                                            class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                            <!-- Left side -->
+                                            <div class="flex items-start space-x-3 md:space-x-4">
+                                                <div>
+                                                    <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
+                                                       href="https://github.com/greenart7c3/Amber">
+                                                        Amber
+                                                    </a>
+                                                    <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in
+                                                        der man alle Keys/nsecs verwalten kann.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right side -->
+                                            <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                                <div
+                                                    class="text-xs inline-flex font-medium bg-green-500/20 text-green-700 rounded-full text-center px-2.5 py-1">
+                                                    Android
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Right side -->
-                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
-                                            <div class="text-xs inline-flex font-medium bg-yellow-500/20 text-yellow-700 rounded-full text-center px-2.5 py-1">
-                                                Browser Chrome/Firefox
-                                            </div>
-                                        </div>
                                     </div>
-                                </div>
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
-                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
-                                        <!-- Left side -->
-                                        <div class="flex items-start space-x-3 md:space-x-4">
-                                            <div>
-                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://chromewebstore.google.com/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp">
-                                                    nos2x
-                                                </a>
-                                                <div class="text-sm">
-                                                    Browser-Erweiterung für Chrome Browser. Multi-Key fähig.
+                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                        <div
+                                            class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                            <!-- Left side -->
+                                            <div class="flex items-start space-x-3 md:space-x-4">
+                                                <div>
+                                                    <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
+                                                       href="https://addons.mozilla.org/en-US/firefox/addon/alby/">
+                                                        Alby - Bitcoin Lightning Wallet & Nostr
+                                                    </a>
+                                                    <div class="text-sm">
+                                                        Browser-Erweiterung in die man seinen Key/nsec eingeben kann.
+                                                        Pro Alby-Konto ein nsec.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right side -->
+                                            <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                                <div
+                                                    class="text-xs inline-flex font-medium bg-yellow-500/20 text-yellow-700 rounded-full text-center px-2.5 py-1">
+                                                    Browser Chrome/Firefox
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Right side -->
-                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
-                                            <div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">
-                                                Browser Chrome
-                                            </div>
-                                        </div>
                                     </div>
-                                </div>
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
-                                    <div class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
-                                        <!-- Left side -->
-                                        <div class="flex items-start space-x-3 md:space-x-4">
-                                            <div>
-                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100" href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
-                                                    nos2x-fox
-                                                </a>
-                                                <div class="text-sm">
-                                                    Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
+                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                        <div
+                                            class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                            <!-- Left side -->
+                                            <div class="flex items-start space-x-3 md:space-x-4">
+                                                <div>
+                                                    <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
+                                                       href="https://chromewebstore.google.com/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp">
+                                                        nos2x
+                                                    </a>
+                                                    <div class="text-sm">
+                                                        Browser-Erweiterung für Chrome Browser. Multi-Key fähig.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right side -->
+                                            <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                                <div
+                                                    class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">
+                                                    Browser Chrome
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Right side -->
-                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
-                                            <div class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full text-center px-2.5 py-1">
-                                                Browser Firefox
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                        <div
+                                            class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
+                                            <!-- Left side -->
+                                            <div class="flex items-start space-x-3 md:space-x-4">
+                                                <div>
+                                                    <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
+                                                       href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
+                                                        nos2x-fox
+                                                    </a>
+                                                    <div class="text-sm">
+                                                        Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right side -->
+                                            <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                                <div
+                                                    class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full text-center px-2.5 py-1">
+                                                    Browser Firefox
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 {{-- https://v.nostr.build/bomfuwLnOTIDrP4y.mp4 --}}
@@ -622,7 +638,7 @@ $loadEvents = function () {
                                         class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
                                         <div class="flex w-full justify-between items-start">
                                             <div class="flex">
-                                                <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
+                                                <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
                                                      width="16"
                                                      height="16" viewBox="0 0 16 16">
                                                     <path
@@ -695,7 +711,9 @@ $loadEvents = function () {
                                                                     class="btn dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
                                                                 >
                                                                     <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
-                                                                    Unser Nostr-Relay konnte derzeit nicht erreicht werden, um eine Zahlung zu initialisieren. Bitte versuche es später noch einmal.
+                                                                    Unser Nostr-Relay konnte derzeit nicht erreicht
+                                                                    werden, um eine Zahlung zu initialisieren. Bitte
+                                                                    versuche es später noch einmal.
                                                                 </button>
                                                             </div>
                                                         @endif
