@@ -35,8 +35,34 @@ state([
 
 form(\App\Livewire\Forms\ApplicationForm::class);
 
+mount(function () {
+    if (\App\Support\NostrAuth::check()) {
+        $this->currentPubkey = \App\Support\NostrAuth::pubkey();
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
+            ->with([
+                'paymentEvents' => fn($query)
+                    => $query->where('year', date('Y')),
+            ])
+            ->where('pubkey', $this->currentPubkey)->first();
+        $this->email = $this->currentPleb->email;
+        $this->no = $this->currentPleb->no_email;
+        $this->showEmail = !$this->no;
+        if ($this->currentPleb->association_status === \App\Enums\AssociationStatus::ACTIVE) {
+            $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+        }
+        if ($this->currentPleb->paymentEvents->count() < 1) {
+            $this->createPaymentEvent();
+            $this->currentPleb->load('paymentEvents');
+        }
+        $this->loadEvents();
+        $this->listenForPayment();
+    }
+});
+
 on([
     'nostrLoggedIn' => function ($pubkey) {
+        \App\Support\NostrAuth::login($pubkey);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
             ->with([
@@ -58,6 +84,8 @@ on([
         $this->listenForPayment();
     },
     'nostrLoggedOut' => function () {
+        \App\Support\NostrAuth::logout();
+
         $this->currentPubkey = null;
         $this->currentPleb = null;
         $this->yearsPaid = [];
@@ -422,8 +450,6 @@ $loadEvents = function () {
                             </div>
 
                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
-                                          x-show="!$store.nostr.user"/>
                                 {{-- https://v.nostr.build/bomfuwLnOTIDrP4y.mp4 --}}
                                 <template x-if="$store.nostr.user">
                                     <div class="flex items">

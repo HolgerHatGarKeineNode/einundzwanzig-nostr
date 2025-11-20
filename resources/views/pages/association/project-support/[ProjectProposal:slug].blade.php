@@ -28,6 +28,13 @@ state([
     'otherVotes' => fn() => $this->getOtherVotes(),
 ]);
 
+mount(function () {
+    if (\App\Support\NostrAuth::check()) {
+        $this->currentPubkey = \App\Support\NostrAuth::pubkey();
+        $this->handleNostrLoggedIn($this->currentPubkey);
+    }
+});
+
 on([
     'nostrLoggedIn' => fn($pubkey) => $this->handleNostrLoggedIn($pubkey),
     'nostrLoggedOut' => fn() => $this->handleNostrLoggedOut(),

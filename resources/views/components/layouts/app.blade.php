@@ -69,8 +69,16 @@
                         {{--@include('components.layouts.partials.notification-buttons')--}}
 
 
-                        <x-button label="Mit Nostr verbinden" @click="openNostrLogin"
-                                  x-show="!$store.nostr.user"/>
+                        @if(\App\Support\NostrAuth::check())
+                            <form method="post" action="{{ route('logout') }}"
+                                  @submit="$dispatch('nostrLoggedOut')">
+                                @csrf
+                                <x-button secondary label="Logout" type="submit"/>
+                            </form>
+                        @else
+                            <x-button wire:key="loginBtn" label="Mit Nostr verbinden" @click="openNostrLogin"
+                                      x-show="!$store.nostr.user"/>
+                        @endif
 
                         <!-- Info button -->
                         <div class="relative inline-flex" x-data="{ open: false }">

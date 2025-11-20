@@ -31,6 +31,17 @@ state([
     'currentPleb' => null,
 ]);
 
+mount(function () {
+    if (\App\Support\NostrAuth::check()) {
+        $this->currentPubkey = \App\Support\NostrAuth::pubkey();
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $this->currentPubkey)->first();
+        if (in_array($this->currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
+            $this->canEdit = true;
+        }
+        $this->isAllowed = true;
+    }
+});
+
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;

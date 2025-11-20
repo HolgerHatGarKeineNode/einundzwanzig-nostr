@@ -25,6 +25,14 @@ state([
 
 usesFileUploads();
 
+mount(function () {
+    if (\App\Support\NostrAuth::check()) {
+        $this->currentPubkey = \App\Support\NostrAuth::pubkey();
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $this->currentPubkey)->first();
+        $this->isAllowed = true;
+    }
+});
+
 on([
     'nostrLoggedIn' => function ($pubkey) {
         $this->currentPubkey = $pubkey;
