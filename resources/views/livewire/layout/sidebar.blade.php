@@ -20,7 +20,7 @@ mount(function() {
         $isNotCurrentSubItem = 'block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate';
     @endphp
 
-        <!-- Sidebar backdrop (mobile only) -->
+    <!-- Sidebar backdrop (mobile only) -->
     <div
         class="fixed inset-0 bg-gray-900 bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200"
         :class="sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'"
@@ -57,7 +57,7 @@ mount(function() {
             $activeItemClass = 'block text-amber-500 transition truncate';
         @endphp
 
-            <!-- Links -->
+        <!-- Links -->
         <div class="space-y-8">
             {{--@include('components.layouts.navigation.meetups')--}}
             @include('components.layouts.navigation.association')
