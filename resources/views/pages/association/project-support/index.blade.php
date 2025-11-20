@@ -65,6 +65,7 @@ mount(function () {
 
 on([
     'nostrLoggedIn' => function ($pubkey) {
+        \App\Support\NostrAuth::login($pubkey);
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
         $this->isAllowed = true;
