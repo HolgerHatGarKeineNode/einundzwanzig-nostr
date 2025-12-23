@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use App\Models\Profile;
-use Illuminate\Support\Facades\Log;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
 use swentel\nostr\Message\RequestMessage;
@@ -13,7 +12,6 @@ use swentel\nostr\Subscription\Subscription;
 
 trait NostrFetcherTrait
 {
-
     public function fetchProfile($npubs)
     {
         $hex = collect([]);
@@ -58,14 +56,16 @@ trait NostrFetcherTrait
                 $response = $request->send();
                 $data = $response[$relayUrl];
                 if (!empty($data)) {
+                    \Log::info('Successfully fetched data from relay: '.$relayUrl);
                     break; // Exit the loop if data is not empty
                 }
             } catch (\Exception $e) {
-                // Log the exception or handle it if needed
+                \Log::warning('Failed to fetch from relay '.$relayUrl.': '.$e->getMessage());
             }
         }
 
         if (empty($data)) {
+            \Log::warning('No data found from any relay');
             return;
         }
         foreach ($data as $item) {
@@ -87,9 +87,11 @@ trait NostrFetcherTrait
                             'deleted' => $result['deleted'] ?? false,
                         ],
                     );
+                    \Log::info('Profile updated/created for pubkey: '.$item->event->pubkey);
                 }
             } catch (\JsonException $e) {
-                throw new \RuntimeException('Error decoding JSON: ' . $e->getMessage());
+                \Log::error('Error decoding JSON: '.$e->getMessage());
+                throw new \RuntimeException('Error decoding JSON: '.$e->getMessage());
             }
         }
     }

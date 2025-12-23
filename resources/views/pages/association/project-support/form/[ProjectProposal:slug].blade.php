@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Forms\ProjectProposalForm;
+use App\Models\ProjectProposal;
+use App\Support\NostrAuth;
 use Livewire\Volt\Component;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
@@ -24,24 +26,21 @@ state([
     'currentPleb' => null,
 ]);
 
-mount(function ($projectProposal) {
-    $this->form->fill($projectProposal->toArray());
-    $this->image = $projectProposal->getFirstMedia('main');
-});
-
 usesFileUploads();
 
-mount(function () {
-    if (\App\Support\NostrAuth::check()) {
-        $this->currentPubkey = \App\Support\NostrAuth::pubkey();
+mount(function (ProjectProposal $projectProposal) {
+    if (NostrAuth::check()) {
+        $this->currentPubkey = NostrAuth::pubkey();
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $this->currentPubkey)->first();
         $this->isAllowed = true;
+        $this->form->fill($projectProposal->toArray());
+        $this->image = $projectProposal->getFirstMedia('main');
     }
 });
 
 on([
     'nostrLoggedIn' => function ($pubkey) {
-        \App\Support\NostrAuth::login($pubkey);
+        NostrAuth::login($pubkey);
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
         $this->isAllowed = true;
@@ -77,7 +76,7 @@ $save = function () {
     @volt
     <div>
         @if($isAllowed)
-            <div  class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+            <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <form class="space-y-8 divide-y divide-gray-700 pb-24">
                     <div class="space-y-8 divide-y divide-gray-700 sm:space-y-5">
                         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
@@ -90,7 +89,8 @@ $save = function () {
                                     @endif
                                     @if (isset($projectProposal) && $projectProposal->getFirstMediaUrl('main'))
                                         <div class="text-gray-200">{{ __('Current picture') }}:</div>
-                                        <img class="h-48 object-contain" src="{{ $projectProposal->getFirstMediaUrl('main') }}">
+                                        <img class="h-48 object-contain"
+                                             src="{{ $projectProposal->getFirstMediaUrl('main') }}">
                                     @endif
                                 </div>
                                 <input class="text-gray-200" type="file" wire:model="image">
@@ -156,7 +156,8 @@ $save = function () {
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">Projekt-Unterstützung</h3>
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
+                            Projekt-Unterstützung</h3>
                         <p class="mt-1 max-w">
                             Du bist nicht berechtigt, die Projekt-Unterstützungen zu bearbeiten.
                         </p>
