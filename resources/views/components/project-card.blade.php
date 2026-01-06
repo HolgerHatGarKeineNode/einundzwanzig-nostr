@@ -51,7 +51,7 @@
     <div class="grow p-5 flex flex-col">
         <div class="grow">
             <div class="text-sm font-semibold text-amber-500 uppercase mb-2">
-                Eingereicht von: {{ $project->einundzwanzigPleb->profile->name }}
+                Eingereicht von: {{ $project->einundzwanzigPleb->profile?->name ?? str($project->einundzwanzigPleb->npub)->limit(32) }}
             </div>
             <div class="inline-flex mb-2">
                 <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">
