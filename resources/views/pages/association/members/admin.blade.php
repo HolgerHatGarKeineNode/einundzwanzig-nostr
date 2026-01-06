@@ -32,6 +32,7 @@ mount(function () {
             '7acf30cf60b85c62b8f654556cc21e4016df8f5604b3b6892794f88bb80d7a1d',
             'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
             '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
+            'acbcec475a1a4f9481939ecfbd1c3d111f5b5a474a39ae039bbc720fdd305bec',
         ];
         if (in_array($this->currentPubkey, $allowedPubkeys, true)) {
             $this->isAllowed = true;
@@ -58,6 +59,7 @@ on([
             '7acf30cf60b85c62b8f654556cc21e4016df8f5604b3b6892794f88bb80d7a1d',
             'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
             '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
+            'acbcec475a1a4f9481939ecfbd1c3d111f5b5a474a39ae039bbc720fdd305bec',
         ];
         if (in_array($this->currentPubkey, $allowedPubkeys, true)) {
             $this->isAllowed = true;
