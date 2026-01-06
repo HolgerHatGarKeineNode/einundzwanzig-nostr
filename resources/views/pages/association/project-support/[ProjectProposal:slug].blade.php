@@ -145,7 +145,7 @@ $handleNotApprove = function () {
                             <div class="flex items-center sm:mr-4">
                                 <a class="block mr-2 shrink-0" href="#0">
                                     <img class="rounded-full"
-                                         src="{{ $projectProposal->einundzwanzigPleb->profile->picture }}"
+                                         src="{{ $projectProposal->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
                                          width="32" height="32" alt="User 04">
                                 </a>
                                 <div class="text-sm whitespace-nowrap">Eingereicht von

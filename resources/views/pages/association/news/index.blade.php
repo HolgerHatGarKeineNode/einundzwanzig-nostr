@@ -181,9 +181,9 @@ $deleteNow = function ($id) {
                                                 <!-- Avatar -->
                                                 <div class="shrink-0 mt-1.5">
                                                     <img class="w-8 h-8 rounded-full"
-                                                         src="{{ $post->einundzwanzigPleb->profile->picture }}"
+                                                         src="{{ $post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
                                                          width="32" height="32"
-                                                         alt="{{ $post->einundzwanzigPleb->profile->name }}">
+                                                         alt="{{ $post->einundzwanzigPleb->profile?->name }}">
                                                 </div>
                                                 <!-- Content -->
                                                 <div class="grow">
