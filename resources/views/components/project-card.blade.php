@@ -30,7 +30,7 @@
                  src="{{ $project->getFirstMediaUrl('main') }}" alt="Meetup 01">
             <button class="absolute top-0 right-0 mt-4 mr-4">
                 <img class="rounded-full h-8 w-8"
-                     src="{{ $project->einundzwanzigPleb->profile->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                     src="{{ $project->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
                      alt="">
             </button>
         </a>
@@ -42,7 +42,7 @@
                  src="{{ $project->getFirstMediaUrl('main') }}" alt="Meetup 01">
             <button class="absolute top-0 right-0 mt-4 mr-4">
                 <img class="rounded-full h-8 w-8"
-                     src="{{ $project->einundzwanzigPleb->profile->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                     src="{{ $project->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
                      alt="">
             </button>
         </div>
