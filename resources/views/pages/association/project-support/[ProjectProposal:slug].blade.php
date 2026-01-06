@@ -150,7 +150,7 @@ $handleNotApprove = function () {
                                 </a>
                                 <div class="text-sm whitespace-nowrap">Eingereicht von
                                     <div
-                                        class="font-semibold text-gray-800 dark:text-gray-100">{{ $projectProposal->einundzwanzigPleb?->profile->name ?? str($projectProposal->einundzwanzigPleb)->limit(32) }}</div>
+                                        class="font-semibold text-gray-800 dark:text-gray-100">{{ $projectProposal->einundzwanzigPleb?->profile->name ?? str($projectProposal->einundzwanzigPleb->npub)->limit(32) }}</div>
                                 </div>
                             </div>
                             <!-- Right side -->
