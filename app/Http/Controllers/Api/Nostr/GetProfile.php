@@ -24,8 +24,14 @@ class GetProfile extends Controller
             'npub' => (new Key)->convertPublicKeyToBech32($key),
         ]);
 
-        return Profile::query()
+        $profile = Profile::query()
             ->where('pubkey', $key)
             ->first();
+
+        if (!$profile) {
+            return response()->json(['message' => 'Profile not found'], 200);
+        }
+
+        return $profile;
     }
 }

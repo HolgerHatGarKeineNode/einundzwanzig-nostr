@@ -40,11 +40,10 @@ trait NostrFetcherTrait
         $requestMessage = new RequestMessage($subscriptionId, $filters);
 
         $relayUrls = [
-            'wss://relay.nostr.band',
+            'wss://relay.primal.net',
             'wss://purplepag.es',
             'wss://nostr.wine',
             'wss://relay.damus.io',
-            'wss://nostr.einundzwanzig.space',
         ];
 
         $data = null;
