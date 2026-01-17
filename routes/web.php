@@ -38,7 +38,7 @@ Route::post('logout', function () {
 })->name('logout');
 
 // Association Routes
-Route::livewire('/association/profile', Profile::name('association.profile'));
+Route::livewire('/association/profile', Profile::class)->name('association.profile');
 
 Route::livewire('/association/election', ElectionIndex::class)->name('association.elections');
 Route::livewire('/association/election/{election:year}', ElectionShow::class)->name('association.election');

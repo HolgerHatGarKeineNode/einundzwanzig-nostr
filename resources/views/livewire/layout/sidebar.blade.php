@@ -1,15 +1,16 @@
 <?php
 
-use function Livewire\Volt\state;
-use function Livewire\Volt\mount;
+use Livewire\Component;
 
-state(['currentRoute' => '']);
+new class extends Component {
+    public $currentRoute = '';
 
-mount(function() {
-    $currentLivewireRouteName = request()->route()->getName();
-    $this->currentRoute = $currentLivewireRouteName;
-});
-
+    public function mount(): void
+    {
+        $currentLivewireRouteName = request()->route()->getName();
+        $this->currentRoute = $currentLivewireRouteName;
+    }
+};
 ?>
 
 <div class="min-w-fit">
