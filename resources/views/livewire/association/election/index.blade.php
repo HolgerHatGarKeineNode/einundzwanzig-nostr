@@ -1,23 +1,23 @@
 <x-layouts.app title="{{ __('Wahlen') }}">
     <div>
-        <?php if($isAllowed): ?>
+        @if($isAllowed)
             <div class="relative flex h-full">
-                <?php foreach($elections as $election): ?>
-                    <div class="w-full sm:w-1/3 p-4">
+                 @foreach($elections as $election)
+                    <div class="w-full sm:w-1/3 p-4" wire:key="election-{{ $loop->index }}">
                         <div class="shadow-lg rounded-lg overflow-hidden">
-                            <?php echo e($election['year']); ?>
+                            {{ $election['year'] }}
                         </div>
                         <div class="shadow-lg rounded-lg overflow-hidden">
-                            <x-textarea wire:model="elections.<?php echo e($loop->index); ?>.candidates" rows="25"
+                            <x-textarea wire:model="elections.{{ $loop->index }}.candidates" rows="25"
                                         label="candidates" placeholder=""/>
                         </div>
                         <div class="py-2">
-                            <x-button label="Speichern" wire:click="saveElection(<?php echo e($loop->index); ?>)"/>
+                            <x-button label="Speichern" wire:click="saveElection({{ $loop->index }})" wire:loading.attr="disabled"/>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                @endforeach
             </div>
-        <?php else: ?>
+        @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
@@ -28,6 +28,6 @@
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        @endif
     </div>
 </x-layouts.app>

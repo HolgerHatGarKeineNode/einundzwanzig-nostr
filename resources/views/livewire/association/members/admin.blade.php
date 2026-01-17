@@ -1,10 +1,10 @@
 <x-layouts.app title="{{ __('Mitglieder') }}">
     <div>
-        <?php if($isAllowed): ?>
+        @if($isAllowed)
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <livewire:einundzwanzig-pleb-table/>
             </div>
-        <?php else: ?>
+        @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
@@ -15,6 +15,6 @@
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        @endif
     </div>
 </x-layouts.app>

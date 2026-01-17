@@ -23,9 +23,7 @@
                             <div>
                                 Beschreibung: {{ $event['content'] }}
                             </div>
-                            <div>
-                                @dump($event)
-                            </div>
+
                         </div>
                     </div>
                 </li>

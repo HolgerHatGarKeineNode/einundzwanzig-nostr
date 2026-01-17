@@ -2,69 +2,11 @@
     :seo="new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'Wahlen ' . $election->year, description: 'Wahlen des Vereins im Jahr ' . $election->year)"
 >
     <div>
-        <?php if($isAllowed): ?>
+        @if($isAllowed)
             <div x-cloak class="relative flex h-full" x-data="nostrApp(@this)"
                  wire:poll.600000ms="checkElection">
 
-                <?php
-                    $positions = [
-                        'presidency' => ['icon' => 'fa-crown', 'title' => 'Präsidium'],
-                        'board' => ['icon' => 'fa-users', 'title' => 'Vizepräsidium'],
-                    ];
-                    $loadedEvents = collect($events)
-                        ->map(function($event) {
-                            $profile = \App\Models\Profile::query()
-                                ->where('pubkey', $event['pubkey'])
-                                ->first()
-                                ?->toArray();
-                            $votedFor = \App\Models\Profile::query()
-                                ->where('pubkey', str($event['content'])->before(',')->toString())
-                                ->first()
-                                ?->toArray();
-
-                            return [
-                                'id' => $event['id'],
-                                'kind' => $event['kind'],
-                                'content' => $event['content'],
-                                'pubkey' => $event['pubkey'],
-                                'tags' => $event['tags'],
-                                'created_at' => $event['created_at'],
-                                'profile' => $profile,
-                                'votedFor' => $votedFor,
-                                'type' => str($event['content'])->after(',')->toString(),
-                            ];
-                        })
-                        ->sortByDesc('created_at')
-                        ->unique(fn ($event) => $event['pubkey'] . $event['type'])
-                        ->values();
-                    $loadedBoardEvents = collect($boardEvents)
-                        ->map(function($event) {
-                            $profile = \App\Models\Profile::query()
-                                ->where('pubkey', $event['pubkey'])
-                                ->first()
-                                ?->toArray();
-                            $votedFor = \App\Models\Profile::query()
-                                ->where('pubkey', str($event['content'])->before(',')->toString())
-                                ->first()
-                                ?->toArray();
-
-                            return [
-                                'id' => $event['id'],
-                                'kind' => $event['kind'],
-                                'content' => $event['content'],
-                                'pubkey' => $event['pubkey'],
-                                'tags' => $event['tags'],
-                                'created_at' => $event['created_at'],
-                                'profile' => $profile,
-                                'votedFor' => $votedFor,
-                                'type' => str($event['content'])->after(',')->toString(),
-                            ];
-                        })
-                        ->sortByDesc('created_at')
-                        ->values();
-                ?>
-
-                    <!-- Inbox sidebar -->
+                <!-- Inbox sidebar -->
                 <div id="inbox-sidebar"
                      class="absolute z-20 top-0 bottom-0 w-full md:w-auto md:static md:top-auto md:bottom-auto -mr-px md:translate-x-0 transition-transform duration-200 ease-in-out"
                      :class="inboxSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
@@ -154,11 +96,11 @@
                                         Plebs
                                     </div>
                                     <ul class="mb-6">
-                                        <?php foreach($plebs as $pleb): ?>
+                                        @foreach($plebs as $pleb)
                                             <li class="-mx-2">
                                                 <div class="flex w-full p-2 rounded text-left">
                                                     <img class="w-8 h-8 rounded-full mr-2 bg-black"
-                                                         src="<?php echo e($pleb['profile']['picture'] ?? 'https://robohash.org/test'); ?>"
+                                                         src="{{ $pleb['profile']['picture'] ?? 'https://robohash.org/test' }}"
                                                          onerror="this.onerror=null; this.src='https://robohash.org/test';"
                                                          width="32"
                                                          height="32"
@@ -167,34 +109,34 @@
                                                         <div class="flex items-center justify-between mb-1.5">
                                                             <div class="truncate">
                                                     <span
-                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"><?php echo e($pleb['profile']['name'] ?? $pleb['pubkey']); ?></span>
+                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{{ $pleb['profile']['name'] ?? $pleb['pubkey'] }}</span>
                                                             </div>
                                                             <div class="text-xs text-gray-500 font-medium">
                                                                 <x-badge
-                                                                    color="<?php echo e(\App\Enums\AssociationStatus::from($pleb['association_status'])->color()); ?>"
-                                                                    label="<?php echo e(\App\Enums\AssociationStatus::from($pleb['association_status'])->label()); ?>"/>
+                                                                    :color="\App\Enums\AssociationStatus::from($pleb['association_status'])->color()"
+                                                                    :label="\App\Enums\AssociationStatus::from($pleb['association_status'])->label()"/>
                                                             </div>
                                                         </div>
                                                         <div
                                                             class="text-xs font-medium text-gray-800 dark:text-gray-100 truncate mb-0.5">
                                                             <div class="flex items-center space-x-2 h-5">
-                                                                <?php foreach($positions as $name => $p): ?>
-                                                                    <?php
-                                                                        $votedResult = $loadedEvents->filter(fn ($e) => $e['pubkey'] === $pleb['pubkey'])->firstWhere('type', $name);
-                                                                    ?>
+                                                                @foreach($positions as $name => $p)
+                                                                    @php
+                                                                        $votedResult = $this->loadedEvents->filter(fn ($e) => $e['pubkey'] === $pleb['pubkey'])->firstWhere('type', $name);
+                                                                    @endphp
                                                                     <div class="flex space-x-2"
-                                                                         wire:key="p_<?php echo e($name); ?>">
-                                                                        <?php if($votedResult): ?>
-                                                                            <i class="fa-sharp-duotone fa-solid <?php echo e($p['icon']); ?> w-4 h-4 fill-current text-green-500"></i>
-                                                                        <?php endif; ?>
+                                                                         wire:key="p_{{ $name }}">
+                                                                        @if($votedResult)
+                                                                            <i class="fa-sharp-duotone fa-solid {{ $p['icon'] }} w-4 h-4 fill-current text-green-500"></i>
+                                                                        @endif
                                                                     </div>
-                                                                <?php endforeach; ?>
+                                                                @endforeach
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </li>
-                                        <?php endforeach; ?>
+                                        @endforeach
                                     </ul>
                                 </div>
                             </div>
@@ -204,64 +146,7 @@
                 </div>
 
                 <!-- Inbox body -->
-                <?php if($currentPubkey): ?>
-
-                    <?php
-                        $electionConfig = collect(json_decode($election->candidates, true, 512, JSON_THROW_ON_ERROR))
-                        ->map(function ($c) use ($loadedEvents, $currentPubkey) {
-                            $candidates = \App\Models\Profile::query()
-                                ->whereIn('pubkey', $c['c'])
-                                ->get()
-                                ->map(function ($p) use ($loadedEvents, $c, $currentPubkey) {
-                                    $votedClass = ' bg-green-500/20 text-green-700';
-                                    $notVotedClass = ' bg-gray-500/20 text-gray-100';
-                                    $hasVoted = $loadedEvents
-                                        ->filter(fn($e) => $e['type'] === $c['type'] && $e['pubkey'] === $currentPubkey)
-                                        ->firstWhere('votedFor.pubkey', $p->pubkey);
-
-                                    return [
-                                        'pubkey' => $p->pubkey,
-                                        'name' => $p->name,
-                                        'picture' => $p->picture,
-                                        'votedClass' => $hasVoted ? $votedClass : $notVotedClass,
-                                    ];
-                                });
-
-                            return [
-                                'type' => $c['type'],
-                                'c' => $c['c'],
-                                'candidates' => $candidates,
-                            ];
-                        });
-                        $electionConfigBoard = collect(json_decode($election->candidates, true, 512, JSON_THROW_ON_ERROR))
-                        ->map(function ($c) use ($loadedBoardEvents, $currentPubkey) {
-                            $candidates = \App\Models\Profile::query()
-                                ->whereIn('pubkey', $c['c'])
-                                ->get()
-                                ->map(function ($p) use ($loadedBoardEvents, $c, $currentPubkey) {
-                                    $votedClass = ' bg-green-500/20 text-green-700';
-                                    $notVotedClass = ' bg-gray-500/20 text-gray-100';
-                                    $hasVoted = $loadedBoardEvents
-                                        ->filter(fn($e) => $e['type'] === $c['type'] && $e['pubkey'] === $currentPubkey)
-                                        ->firstWhere('votedFor.pubkey', $p->pubkey);
-
-                                    return [
-                                        'pubkey' => $p->pubkey,
-                                        'name' => $p->name,
-                                        'picture' => $p->picture,
-                                        'votedClass' => $hasVoted ? $votedClass : $notVotedClass,
-                                        'hasVoted' => $hasVoted,
-                                    ];
-                                });
-
-                            return [
-                                'type' => $c['type'],
-                                'c' => $c['c'],
-                                'candidates' => $candidates,
-                            ];
-                        });
-                    ?>
-
+                @if($currentPubkey)
                     <div class="grow flex flex-col md:translate-x-0 transition-transform duration-300 ease-in-out"
                          :class="inboxSidebarOpen ? 'translate-x-1/3' : 'translate-x-0'">
 
@@ -272,12 +157,12 @@
                                 <div
                                     class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
                                     <div>
-                                        <?php if($isNotClosed): ?>
+                                        @if($isNotClosed)
                                             <x-badge success
-                                                     label="Die Wahl ist geöffnet bis zum <?php echo e($election->end_time?->timezone('Europe/Berlin')->format('d.m.Y H:i')); ?>"/>
-                                        <?php else: ?>
+                                                     label="Die Wahl ist geöffnet bis zum {{ $election->end_time?->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
+                                        @else
                                             <x-badge negative label="Die Wahl ist geschlossen"/>
-                                        <?php endif; ?>
+                                        @endif
                                     </div>
                                     <div>
                                         <x-button secondary
@@ -311,52 +196,49 @@
                                     <h1 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
                                         Wahl des Präsidiums
                                     </h1>
-                                    <?php
-                                        $president = $positions['presidency'];
-                                        $board = $positions['board'];
-                                    ?>
                                     <div class="grid sm:grid-cols-2 gap-6">
                                         <div
                                             class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
                                             <div class="flex flex-col h-full p-5">
                                                 <header>
                                                     <div class="flex items-center justify-between">
-                                                        <i class="fa-sharp-duotone fa-solid <?php echo e($president['icon']); ?> w-9 h-9 fill-current text-white"></i>
+                                                        <i class="fa-sharp-duotone fa-solid {{ $positions['presidency']['icon'] }} w-9 h-9 fill-current text-white"></i>
                                                     </div>
                                                 </header>
                                                 <div class="grow mt-2">
                                                     <div
                                                         class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
-                                                        <h2 class="text-xl leading-snug font-semibold"><?php echo e($president['title']); ?></h2>
+                                                        <h2 class="text-xl leading-snug font-semibold">{{ $positions['presidency']['title'] }}</h2>
                                                     </div>
                                                     <div class="text-sm">
-                                                        <?php
-                                                            $votedResult = $loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', 'presidency');
-                                                        ?>
-                                                        <?php if($votedResult): ?>
-                                                            <span>Du hast "<?php echo e($votedResult['votedFor']['name'] ?? 'error'); ?>" gewählt</span>
-                                                        <?php else: ?>
+                                                        @php
+                                                            $votedResult = $this->loadedEvents->filter(fn ($event) => $event['pubkey'] === $currentPubkey)->firstWhere('type', 'presidency');
+                                                            $votedName = $votedResult['votedFor']['name'] ?? 'error';
+                                                        @endphp
+                                                        @if($votedResult)
+                                                            <span>Du hast "{{ $votedName }}" gewählt</span>
+                                                        @else
                                                             <span>Wähle deinen Kandidaten für das Präsidium.</span>
-                                                        <?php endif; ?>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <footer class="mt-5">
                                                     <div class="grid sm:grid-cols-2 gap-2">
-                                                        <?php foreach($electionConfig->firstWhere('type', 'presidency')['candidates'] ?? [] as $c): ?>
+                                                        @foreach($this->electionConfig->firstWhere('type', 'presidency')['candidates'] ?? [] as $c)
                                                             <div
-                                                                <?php if($isNotClosed): ?>wire:click="vote('<?php echo e($c['pubkey']); ?>', 'presidency')"
-                                                                <?php endif; ?>
-                                                                class="<?php echo e($c['votedClass']); ?> cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                                @if($isNotClosed)wire:click="vote('{{ $c['pubkey'] }}', 'presidency')"
+                                                                @endif
+                                                                class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
                                                                 <div class="flex items-center">
                                                                     <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                                         src="<?php echo e($c['picture'] ?? 'https://robohash.org/' . $c['pubkey']); ?>"
-                                                                         onerror="this.onerror=null; this.src='https://robohash.org/<?php echo e($c['pubkey']); ?>';"
+                                                                         src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                         onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
                                                                          width="24" height="24"
-                                                                         alt="<?php echo e($c['name']); ?>"/>
-                                                                    <?php echo e($c['name']); ?>
+                                                                         alt="{{ $c['name'] }}"/>
+                                                                    {{ $c['name'] }}
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach; ?>
+                                                        @endforeach
                                                     </div>
                                                 </footer>
                                             </div>
@@ -378,21 +260,21 @@
                                                 </div>
                                                 <footer class="mt-5">
                                                     <div class="grid sm:grid-cols-4 gap-2">
-                                                        <?php foreach($electionConfigBoard->firstWhere('type', 'board')['candidates'] ?? [] as $c): ?>
+                                                        @foreach($this->electionConfigBoard->firstWhere('type', 'board')['candidates'] ?? [] as $c)
                                                             <div
-                                                                <?php if($isNotClosed && !$c['hasVoted']): ?>wire:click="vote('<?php echo e($c['pubkey']); ?>', 'board', true)"
-                                                                <?php endif; ?>
-                                                                class="<?php echo e($c['votedClass']); ?> cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
+                                                                @if($isNotClosed && !$c['hasVoted'])wire:click="vote('{{ $c['pubkey'] }}', 'board', true)"
+                                                                @endif
+                                                                class="{{ $c['votedClass'] }} cursor-pointer text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1">
                                                                 <div class="flex items-center">
                                                                     <img class="w-6 h-6 rounded-full mr-2 bg-black"
-                                                                         src="<?php echo e($c['picture'] ?? 'https://robohash.org/' . $c['pubkey']); ?>"
-                                                                         onerror="this.onerror=null; this.src='https://robohash.org/<?php echo e($c['pubkey']); ?>';"
+                                                                         src="{{ $c['picture'] ?? 'https://robohash.org/' . $c['pubkey'] }}"
+                                                                         onerror="this.onerror=null; this.src='https://robohash.org/{{ $c['pubkey'] }}';"
                                                                          width="24" height="24"
-                                                                         alt="<?php echo e($c['name']); ?>"/>
-                                                                    <?php echo e($c['name']); ?>
+                                                                         alt="{{ $c['name'] }}"/>
+                                                                    {{ $c['name'] }}
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach; ?>
+                                                        @endforeach
                                                     </div>
                                                 </footer>
                                             </div>
@@ -408,7 +290,7 @@
                                 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                                     <header class="px-5 py-4">
                                         <h2 class="font-semibold text-gray-800 dark:text-gray-100">Präsidium Log <span
-                                                class="text-gray-400 dark:text-gray-500 font-medium"><?php echo e($loadedEvents->count()); ?></span>
+                                                class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedEvents) }}</span>
                                         </h2>
                                     </header>
                                     <div>
@@ -442,29 +324,29 @@
                                                 </thead>
                                                 <!-- Table body -->
                                                 <tbody class="text-sm">
-                                                <?php foreach($loadedEvents as $event): ?>
+                                                @foreach($this->loadedEvents as $event)
                                                     <tr>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                             <div
-                                                                class="font-medium"><?php echo e(\Illuminate\Support\Str::limit($event['id'], 10)); ?></div>
+                                                                class="font-medium">{{ Str::limit($event['id'], 10) }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['kind']); ?></div>
+                                                            <div>{{ $event['kind'] }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['profile']['name'] ?? ''); ?></div>
+                                                            <div>{{ $event['profile']['name'] ?? '' }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['created_at']); ?></div>
+                                                            <div>{{ $event['created_at'] }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['votedFor']['name'] ?? ''); ?></div>
+                                                            <div>{{ $event['votedFor']['name'] ?? '' }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['type']); ?></div>
+                                                            <div>{{ $event['type'] }}</div>
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                                @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
@@ -475,7 +357,7 @@
                                 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
                                     <header class="px-5 py-4">
                                         <h2 class="font-semibold text-gray-800 dark:text-gray-100">Board Log <span
-                                                class="text-gray-400 dark:text-gray-500 font-medium"><?php echo e($loadedBoardEvents->count()); ?></span>
+                                                class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedBoardEvents) }}</span>
                                         </h2>
                                     </header>
                                     <div>
@@ -509,29 +391,29 @@
                                                 </thead>
                                                 <!-- Table body -->
                                                 <tbody class="text-sm">
-                                                <?php foreach($loadedBoardEvents as $event): ?>
+                                                @foreach($this->loadedBoardEvents as $event)
                                                     <tr>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                             <div
-                                                                class="font-medium"><?php echo e(\Illuminate\Support\Str::limit($event['id'], 10)); ?></div>
+                                                                class="font-medium">{{ Str::limit($event['id'], 10) }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['kind']); ?></div>
+                                                            <div>{{ $event['kind'] }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['profile']['name'] ?? ''); ?></div>
+                                                            <div>{{ $event['profile']['name'] ?? '' }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['created_at']); ?></div>
+                                                            <div>{{ $event['created_at'] }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['votedFor']['name'] ?? ''); ?></div>
+                                                            <div>{{ $event['votedFor']['name'] ?? '' }}</div>
                                                         </td>
                                                         <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
-                                                            <div><?php echo e($event['type']); ?></div>
+                                                            <div>{{ $event['type'] }}</div>
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+                                                @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
@@ -542,10 +424,10 @@
                         </div>
 
                     </div>
-                <?php endif; ?>
+                @endif
 
             </div>
-        <?php else: ?>
+        @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
@@ -556,7 +438,7 @@
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        @endif
 
     </div>
 </x-layouts.app>

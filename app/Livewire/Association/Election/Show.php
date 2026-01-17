@@ -4,7 +4,9 @@ namespace App\Livewire\Association\Election;
 
 use App\Models\EinundzwanzigPleb;
 use App\Models\Election;
+use App\Models\Profile;
 use App\Support\NostrAuth;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
@@ -39,11 +41,148 @@ final class Show extends Component
 
     public bool $isNotClosed = true;
 
+    public array $positions = [
+        'presidency' => ['icon' => 'fa-crown', 'title' => 'Präsidium'],
+        'board' => ['icon' => 'fa-users', 'title' => 'Vizepräsidium'],
+    ];
+
     protected $listeners = [
         'nostrLoggedIn' => 'handleNostrLoggedIn',
         'nostrLoggedOut' => 'handleNostrLoggedOut',
         'echo:votes,.newVote' => 'handleNewVote',
     ];
+
+    #[Computed]
+    public function loadedEvents(): array
+    {
+        return collect($this->events)
+            ->map(function ($event) {
+                $profile = Profile::query()
+                    ->where('pubkey', $event['pubkey'])
+                    ->first()
+                    ?->toArray();
+                $votedFor = Profile::query()
+                    ->where('pubkey', str($event['content'])->before(',')->toString())
+                    ->first()
+                    ?->toArray();
+
+                return [
+                    'id' => $event['id'],
+                    'kind' => $event['kind'],
+                    'content' => $event['content'],
+                    'pubkey' => $event['pubkey'],
+                    'tags' => $event['tags'],
+                    'created_at' => $event['created_at'],
+                    'profile' => $profile,
+                    'votedFor' => $votedFor,
+                    'type' => str($event['content'])->after(',')->toString(),
+                ];
+            })
+            ->sortByDesc('created_at')
+            ->unique(fn ($event) => $event['pubkey'].$event['type'])
+            ->values()
+            ->toArray();
+    }
+
+    #[Computed]
+    public function loadedBoardEvents(): array
+    {
+        return collect($this->boardEvents)
+            ->map(function ($event) {
+                $profile = Profile::query()
+                    ->where('pubkey', $event['pubkey'])
+                    ->first()
+                    ?->toArray();
+                $votedFor = Profile::query()
+                    ->where('pubkey', str($event['content'])->before(',')->toString())
+                    ->first()
+                    ?->toArray();
+
+                return [
+                    'id' => $event['id'],
+                    'kind' => $event['kind'],
+                    'content' => $event['content'],
+                    'pubkey' => $event['pubkey'],
+                    'tags' => $event['tags'],
+                    'created_at' => $event['created_at'],
+                    'profile' => $profile,
+                    'votedFor' => $votedFor,
+                    'type' => str($event['content'])->after(',')->toString(),
+                ];
+            })
+            ->sortByDesc('created_at')
+            ->values()
+            ->toArray();
+    }
+
+    #[Computed]
+    public function electionConfig(): array
+    {
+        $loadedEvents = $this->loadedEvents();
+
+        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+            ->map(function ($c) use ($loadedEvents) {
+                $candidates = Profile::query()
+                    ->whereIn('pubkey', $c['c'])
+                    ->get()
+                    ->map(function ($p) use ($loadedEvents, $c) {
+                        $votedClass = ' bg-green-500/20 text-green-700';
+                        $notVotedClass = ' bg-gray-500/20 text-gray-100';
+                        $hasVoted = $loadedEvents
+                            ->filter(fn ($e) => $e['type'] === $c['type'] && $e['pubkey'] === $this->currentPubkey)
+                            ->firstWhere('votedFor.pubkey', $p->pubkey);
+
+                        return [
+                            'pubkey' => $p->pubkey,
+                            'name' => $p->name,
+                            'picture' => $p->picture,
+                            'votedClass' => $hasVoted ? $votedClass : $notVotedClass,
+                        ];
+                    });
+
+                return [
+                    'type' => $c['type'],
+                    'c' => $c['c'],
+                    'candidates' => $candidates,
+                ];
+            })
+            ->toArray();
+    }
+
+    #[Computed]
+    public function electionConfigBoard(): array
+    {
+        $loadedBoardEvents = $this->loadedBoardEvents();
+
+        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+            ->map(function ($c) use ($loadedBoardEvents) {
+                $candidates = Profile::query()
+                    ->whereIn('pubkey', $c['c'])
+                    ->get()
+                    ->map(function ($p) use ($loadedBoardEvents, $c) {
+                        $votedClass = ' bg-green-500/20 text-green-700';
+                        $notVotedClass = ' bg-gray-500/20 text-gray-100';
+                        $hasVoted = $loadedBoardEvents
+                            ->filter(fn ($e) => $e['type'] === $c['type'] && $e['pubkey'] === $this->currentPubkey)
+                            ->firstWhere('votedFor.pubkey', $p->pubkey);
+
+                        return [
+                            'pubkey' => $p->pubkey,
+                            'name' => $p->name,
+                            'picture' => $p->picture,
+                            'votedClass' => $hasVoted ? $votedClass : $notVotedClass,
+                            'hasVoted' => $hasVoted,
+                        ];
+                    });
+
+                return [
+                    'type' => $c['type'],
+                    'c' => $c['c'],
+                    'candidates' => $candidates,
+                ];
+            })
+            ->toArray();
+    }
 
     public function mount(Election $election): void
     {

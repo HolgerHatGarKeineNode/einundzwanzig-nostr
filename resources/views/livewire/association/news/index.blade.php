@@ -2,7 +2,7 @@
     :seo="new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'News', description: 'Die News des Vereins.')"
 >
     <div>
-        <?php if($isAllowed): ?>
+        @if($isAllowed)
             <div class="px-4 sm:px-6 lg:px-8 py-8 md:py-0 w-full max-w-9xl mx-auto">
 
                 <div class="xl:flex">
@@ -26,7 +26,6 @@
 
                                     </div>
 
-
                                     <!-- Links -->
                                     <div
                                         class="flex flex-nowrap overflow-x-scroll no-scrollbar md:block md:overflow-auto px-4 md:space-y-3 -mx-4">
@@ -37,17 +36,17 @@
                                                 Menu
                                             </div>
                                             <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
-                                                <?php foreach(\App\Enums\NewsCategory::selectOptions() as $category): ?>
+                                                @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
                                                     <li class="mr-0.5 md:mr-0 md:mb-0.5"
-                                                        wire:key="category_<?php echo e($category['value']); ?>">
+                                                        wire:key="category_{{ $category['value'] }}">
                                                         <div
                                                             class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-white dark:bg-gray-800">
-                                                            <i class="fa-sharp-duotone fa-solid fa-<?php echo e($category['icon']); ?> shrink-0 fill-current text-amber-500 mr-2"></i>
+                                                            <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current text-amber-500 mr-2"></i>
                                                             <span
-                                                                class="text-sm font-medium text-amber-500"><?php echo e($category['label']); ?></span>
+                                                                class="text-sm font-medium text-amber-500">{{ $category['label'] }}</span>
                                                         </div>
                                                     </li>
-                                                <?php endforeach; ?>
+                                                @endforeach
                                             </ul>
                                         </div>
                                     </div>
@@ -60,27 +59,25 @@
                             <div class="md:py-8">
 
                                 <div class="space-y-2">
-                                    <?php $__empty_1 = true; ?>
-                                    <?php foreach($news as $post): ?>
-                                        <?php $__empty_1 = false; ?>
-                                        <article wire:key="post_<?php echo e($post->id); ?>"
+                                    @forelse($news as $post)
+                                        <article wire:key="post_{{ $post->id }}"
                                                  class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
                                             <div class="flex flex-start space-x-4">
                                                 <!-- Avatar -->
                                                 <div class="shrink-0 mt-1.5">
                                                     <img class="w-8 h-8 rounded-full"
-                                                         src="<?php echo e($post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg')); ?>"
+                                                         src="{{ $post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
                                                          width="32" height="32"
-                                                         alt="<?php echo e($post->einundzwanzigPleb->profile?->name); ?>">
+                                                         alt="{{ $post->einundzwanzigPleb->profile?->name }}">
                                                 </div>
                                                 <!-- Content -->
                                                 <div class="grow">
                                                     <!-- Title -->
                                                     <h2 class="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                                        <?php echo e($post->name); ?>
+                                                        {{ $post->name }}
                                                     </h2>
                                                     <p class="mb-6">
-                                                        <?php echo e($post->description); ?>
+                                                        {{ $post->description }}
                                                     </p>
                                                     <!-- Footer -->
                                                     <footer class="flex flex-wrap text-sm">
@@ -95,14 +92,14 @@
                                                                         <path
                                                                             d="M15.686 5.708 10.291.313c-.4-.4-.999-.4-1.399 0s-.4 1 0 1.399l.6.6-6.794 3.696-1-1C1.299 4.61.7 4.61.3 5.009c-.4.4-.4 1 0 1.4l1.498 1.498 2.398 2.398L.6 14.001 2 15.4l3.696-3.697L9.692 15.7c.5.5 1.199.2 1.398 0 .4-.4.4-1 0-1.4l-.999-.998 3.697-6.695.6.6c.599.6 1.199.2 1.398 0 .3-.4.3-1.1-.1-1.499Zm-7.193 6.095L4.196 7.507l6.695-3.697 1.298 1.299-3.696 6.694Z"></path>
                                                                     </svg>
-                                                                    <?php echo e($post->einundzwanzigPleb->profile->name); ?>
+                                                                    {{ $post->einundzwanzigPleb->profile->name }}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div
                                                             class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
                                                             <span
-                                                                class="text-gray-500"><?php echo e($post->created_at->format('d.m.Y')); ?></span>
+                                                                class="text-gray-500">{{ $post->created_at->format('d.m.Y') }}</span>
                                                         </div>
                                                     </footer>
                                                 </div>
@@ -114,21 +111,21 @@
                                                     :href="url()->temporarySignedRoute('dl', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
                                                     label="Öffnen"
                                                     primary icon="cloud-arrow-down"/>
-                                                <?php if($canEdit): ?>
+                                                @if($canEdit)
                                                     <x-button
                                                         xs
-                                                        wire:click="delete(<?php echo e($post->id); ?>)"
+                                                        wire:click="delete({{ $post->id }})"
+                                                        wire:loading.attr="disabled"
                                                         label="Löschen"
                                                         negative icon="trash"/>
-                                                <?php endif; ?>
+                                                @endif
                                             </div>
                                         </article>
-                                    <?php endforeach; ?>
-                                    <?php if($__empty_1): ?>
+                                    @empty
                                         <article class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
                                             <p>Keine News vorhanden.</p>
                                         </article>
-                                    <?php endif; ?>
+                                    @endforelse
                                 </div>
 
                             </div>
@@ -145,43 +142,36 @@
                                 <!-- Blocks -->
                                 <div class="space-y-4">
 
-                                    <?php if($canEdit): ?>
+                                    @if($canEdit)
                                         <div class="bg-white dark:bg-gray-800 p-4 rounded-xl">
                                             <div
                                                 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-4">
                                                 News anlegen
                                             </div>
                                             <div class="mt-4 flex flex-col space-y-2">
-                                                <div>
-                                                    <input class="text-gray-200" type="file" wire:model="file">
-                                                    <?php $__errorArgs = ['file'];
-$__bag = $errors->getBag($__errorProps ?? 'default');
-if ($__bag->has($__errorArgs)) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs); ?>
-                                                        <span class="text-red-500"><?php echo e($message); ?></span>
-                                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                                </div>
-                                                <div>
-                                                    <x-native-select
-                                                        wire:model="form.category"
-                                                        label="Kategorie"
-                                                        placeholder="Wähle Kategorie"
-                                                        :options="\App\Enums\NewsCategory::selectOptions()"
-                                                        option-label="label" option-value="value"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <x-input label="Titel" wire:model="form.name"/>
-                                                </div>
-                                                <div>
-                                                    <x-textarea
-                                                        description="optional"
-                                                        label="Beschreibung" wire:model="form.description"/>
-                                                </div>
+                                <div wire:dirty>
+                                    <input class="text-gray-200" type="file" wire:model="file">
+                                    @error('file')
+                                        <span class="text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div wire:dirty>
+                                    <x-native-select
+                                        wire:model="form.category"
+                                        label="Kategorie"
+                                        placeholder="Wähle Kategorie"
+                                        :options="\App\Enums\NewsCategory::selectOptions()"
+                                        option-label="label" option-value="value"
+                                    />
+                                </div>
+                                <div wire:dirty>
+                                    <x-input label="Titel" wire:model="form.name"/>
+                                </div>
+                                <div wire:dirty>
+                                    <x-textarea
+                                        description="optional"
+                                        label="Beschreibung" wire:model="form.description"/>
+                                </div>
                                                 <button
                                                     wire:click="save"
                                                     class="btn-sm w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
@@ -189,7 +179,7 @@ unset($__errorArgs, $__bag); ?>
                                                 </button>
                                             </div>
                                         </div>
-                                    <?php endif; ?>
+                                    @endif
 
                                 </div>
                             </div>
@@ -199,7 +189,7 @@ unset($__errorArgs, $__bag); ?>
                 </div>
 
             </div>
-        <?php else: ?>
+        @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
@@ -212,6 +202,6 @@ unset($__errorArgs, $__bag); ?>
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
+        @endif
     </div>
 </x-layouts.app>

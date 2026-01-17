@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Process;
 use Livewire\Component;
 
 final class Changelog extends Component
@@ -10,7 +11,9 @@ final class Changelog extends Component
 
     public function mount(): void
     {
-        $output = shell_exec('git log -n1000 --pretty=format:"%H|%s|%an|%ad" --date=format:"%Y-%m-%d %H:%M:%S"');
+        $process = Process::fromShellCommandline('git log -n1000 --pretty=format:"%H|%s|%an|%ad" --date=format:"%Y-%m-%d %H:%M:%S"');
+        $process->run();
+        $output = $process->getOutput();
         $lines = explode("\n", trim($output));
         $entries = [];
 

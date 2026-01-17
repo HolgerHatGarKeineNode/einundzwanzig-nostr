@@ -199,10 +199,10 @@
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
                                     <div class="sm:w-1/2 flex flex-col space-y-2">
                                         <div class="flex items-center space-x-2">
-                                            <div>
-                                                <x-checkbox wire:model="form.check"
-                                                            label="Ich stimme den Vereins-Statuten zu"/>
-                                            </div>
+                                             <div wire:dirty>
+                                                 <x-checkbox wire:model="form.check"
+                                                             label="Ich stimme den Vereins-Statuten zu"/>
+                                             </div>
                                             <div>
                                                 <a href="https://einundzwanzig.space/verein/" target="_blank"
                                                    class="text-amber-500">Statuten</a>
@@ -238,9 +238,10 @@
                                                 </div>
                                                 <div
                                                     class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
-                                                    <x-toggle xl warning
-                                                              wire:model.live="no"
-                                                              label="NEIN">
+                                                     <x-toggle xl warning
+                                                               wire:model.live="no"
+                                                               wire:dirty
+                                                               label="NEIN">
                                                         <x-slot name="description">
                                                             <span class="py-2 text-amber-500">Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</span>
                                                         </x-slot>
@@ -249,9 +250,9 @@
                                                 @if($showEmail)
                                                     <div wire:key="showEmail"
                                                          class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                                        <x-input wire:model.live.debounce="fax" label="Fax-Nummer"/>
-                                                        <x-input wire:model.live.debounce="email"
-                                                                 label="E-Mail Adresse"/>
+                                                        <x-input wire:model.live.debounce="fax" wire:dirty label="Fax-Nummer"/>
+                                                        <x-input wire:model.live.debounce="email" wire:dirty
+                                                                  label="E-Mail Adresse"/>
                                                     </div>
                                                     <div wire:key="showSave" class="flex space-x-2 mt-2">
                                                         <x-button wire:click="saveEmail" label="Speichern"/>
