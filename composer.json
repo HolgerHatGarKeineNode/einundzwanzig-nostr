@@ -19,10 +19,9 @@
         "laravel/sail": "^1.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.5",
-        "livewire/volt": "^1.6",
+        "livewire/livewire": "^4.0",
         "openspout/openspout": "^4.24",
-        "power-components/livewire-powergrid": "^5.10",
+        "power-components/livewire-powergrid": "^6.7",
         "ralphjsmit/laravel-seo": "^1.6",
         "sentry/sentry-laravel": "^4.9",
         "simplesoftwareio/simple-qrcode": "^4.2",
@@ -40,6 +39,8 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^1.8",
+        "laravel/pail": "^1.2",
         "laravel/pint": "^1.13",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
@@ -64,7 +65,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan boost:update --ansi"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -73,6 +75,10 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#c4b5fd,#fb7185,#fdba74\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"yarn run dev\" --names=server,queue,logs,vite --kill-others"
         ]
     },
     "extra": {
