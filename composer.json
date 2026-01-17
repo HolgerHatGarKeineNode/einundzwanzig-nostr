@@ -8,21 +8,19 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "akuechler/laravel-geoly": "^1.0",
         "archtechx/enums": "^1.1",
         "calebporzio/sushi": "^2.5",
-        "laravel/folio": "^1.1",
-        "laravel/framework": "^11.9",
-        "laravel/pulse": "^1.2",
+        "laravel/framework": "^12.0",
         "laravel/reverb": "^1.0",
         "laravel/sail": "^1.31",
-        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^4.0",
         "openspout/openspout": "^4.24",
         "power-components/livewire-powergrid": "^6.7",
-        "ralphjsmit/laravel-seo": "^1.6",
+        "pusher/pusher-php-server": "^7.2.2",
+        "ralphjsmit/laravel-seo": "^1.7",
         "sentry/sentry-laravel": "^4.9",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/image": "^3.7",
@@ -32,10 +30,10 @@
         "spatie/laravel-markdown": "^2.5",
         "spatie/laravel-medialibrary": "^11.9",
         "spatie/laravel-sluggable": "^3.6",
-        "spatie/laravel-tags": "^4.6",
+        "spatie/laravel-tags": "^4.9.2",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
         "swentel/nostr-php": "^1.4",
-        "wireui/wireui": "^2.1"
+        "wireui/wireui": "^2.5.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -43,9 +41,9 @@
         "laravel/pail": "^1.2",
         "laravel/pint": "^1.13",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.0",
-        "pestphp/pest": "^2.35",
-        "pestphp/pest-plugin-laravel": "^2.4"
+        "nunomaduro/collision": "^8.8.2",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {
