@@ -36,7 +36,7 @@
         <flux:navbar class="-mb-px max-lg:hidden">
             @if(\App\Support\NostrAuth::check())
                 <flux:navbar.item icon="rss" :href="route('association.news')" :current="request()->routeIs('association.news')">News</flux:navbar.item>
-                <flux:navbar.item icon="identification" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Profil</flux:navbar.item>
+                <flux:navbar.item icon="identification" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Mitgliederstatus</flux:navbar.item>
                 <flux:navbar.item icon="heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:navbar.item>
 
                 <flux:dropdown position="bottom">

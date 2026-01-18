@@ -76,7 +76,7 @@ it('handles nostr logout', function () {
 it('denies access to create when not authenticated', function () {
     Livewire::test('association.project-support.form.create')
         ->assertSet('isAllowed', false)
-        ->assertSee('Du bist nicht berechtigt, eine Projektförderung anzulegen.');
+        ->assertSee('Projektförderung kann nicht angelegt werden');
 });
 
 it('denies access to create when pleb has not paid', function () {
@@ -199,7 +199,7 @@ it('denies access to show when not authenticated', function () {
 
     Livewire::test('association.project-support.show', ['project' => $project])
         ->assertSet('isAllowed', false)
-        ->assertSee('Du bist nicht berechtigt, die Projektförderung einzusehen.');
+        ->assertSee('Zugriff auf Projektförderung nicht möglich');
 });
 
 it('grants access to show when authenticated', function () {

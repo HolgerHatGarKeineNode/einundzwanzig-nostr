@@ -11,7 +11,7 @@ it('denies access to unauthorized users', function () {
 
     Livewire::test('association.members.admin')
         ->assertSet('isAllowed', false)
-        ->assertSee('Du bist nicht berechtigt, Mitglieder zu bearbeiten.');
+        ->assertSee('Mitglieder können nicht bearbeitet werden');
 });
 
 it('grants access to authorized pubkeys', function () {

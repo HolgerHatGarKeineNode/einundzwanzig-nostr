@@ -90,16 +90,16 @@ class extends Component {
         </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <flux:card>
-                <div class="px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                        Projektförderung
-                    </h3>
-                    <p class="mt-1 max-w">
-                        Du bist nicht berechtigt, die Projektförderung einzusehen.
-                    </p>
-                </flux:card>
-            </div>
+            <flux:callout variant="warning" icon="exclamation-circle">
+                <flux:heading>Zugriff auf Projektförderung nicht möglich</flux:heading>
+                <p>
+                    @if(!NostrAuth::check())
+                        Bitte melde dich zunächst mit Nostr an, um Zugriff auf die Projektförderung zu erhalten.
+                    @else
+                        Du benötigst eine gültige Nostr-Authentifizierung, um diese Projektförderung einzusehen.
+                    @endif
+                </p>
+            </flux:callout>
         </div>
     @endif
 </div>

@@ -118,16 +118,21 @@ class extends Component {
         </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
-                <div class="px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
-                        Projektförderung
-                    </h3>
-                    <p class="mt-1 max-w">
-                        Du bist nicht berechtigt, die Projektförderung zu bearbeiten.
-                    </p>
-                </div>
-            </div>
+            <flux:callout variant="warning" icon="exclamation-circle">
+                <flux:heading>Projektförderung kann nicht bearbeitet werden</flux:heading>
+                <p>Um diese Projektförderung zu bearbeiten, musst du entweder:</p>
+                <ul class="list-disc ml-5 mt-2 space-y-1">
+                    <li>Der Ersteller dieser Projektförderung sein</li>
+                    <li>Ein Mitglied des aktuellen Vorstands sein</li>
+                </ul>
+                <p class="mt-3">
+                    @if(!NostrAuth::check())
+                        Bitte melde dich zunächst mit Nostr an.
+                    @else
+                        Bitte kontaktiere den Vorstand, wenn du denkst, dass du berechtigt sein solltest.
+                    @endif
+                </p>
+            </flux:callout>
         </div>
     @endif
 </div>

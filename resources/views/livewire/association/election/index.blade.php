@@ -94,14 +94,19 @@ new class extends Component {
         </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
-                <div class="px-4 py-5 sm:px-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">Einstellungen</h3>
-                    <p class="mt-1 max-w">
-                        Du bist nicht berechtigt, die Einstellungen zu bearbeiten.
-                    </p>
-                </div>
-            </div>
+            <flux:callout variant="warning" icon="exclamation-circle">
+                <flux:heading>Einstellungen können nicht bearbeitet werden</flux:heading>
+                <p>
+                    Zugriff auf die Wahl-Einstellungen ist nur für spezielle autorisierte Benutzer möglich.
+                </p>
+                <p class="mt-3">
+                    @if(!NostrAuth::check())
+                        Bitte melde dich zunächst mit Nostr an.
+                    @else
+                        Dein Benutzer-Account ist nicht für diese Funktion autorisiert. Bitte kontaktiere den Vorstand, wenn du Zugriff benötigst.
+                    @endif
+                </p>
+            </flux:callout>
         </div>
     @endif
 </div>
