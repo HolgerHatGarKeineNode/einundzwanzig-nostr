@@ -166,24 +166,25 @@ new class extends Component {
                 <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
             @endforeach
         </div>
+
+        <!-- Confirmation modal -->
+        <flux:modal name="delete-project" class="min-w-88">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Projektunterstützung löschen</flux:heading>
+                    <flux:text class="mt-2">
+                        <p>Bist du sicher, dass du diese Projektunterstützung löschen möchtest?</p>
+                        <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                    </flux:text>
+                </div>
+                <div class="flex gap-2">
+                    <flux:spacer/>
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Abbrechen</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" wire:click="delete" variant="danger">Ja, löschen</flux:button>
+                </div>
+            </div>
+        </flux:modal>
     </div>
-    <!-- Confirmation modal -->
-    <flux:modal name="delete-project" class="min-w-88">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Projektunterstützung löschen</flux:heading>
-                <flux:text class="mt-2">
-                    <p>Bist du sicher, dass du diese Projektunterstützung löschen möchtest?</p>
-                    <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
-                </flux:text>
-            </div>
-            <div class="flex gap-2">
-                <flux:spacer/>
-                <flux:modal.close>
-                    <flux:button variant="ghost">Abbrechen</flux:button>
-                </flux:modal.close>
-                <flux:button type="submit" wire:click="delete" variant="danger">Ja, löschen</flux:button>
-            </div>
-        </div>
-    </flux:modal>
 </div>
