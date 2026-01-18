@@ -164,58 +164,54 @@ class EinundzwanzigPlebTable extends PowerGridComponent
         return [];
     }
 
+    public ?int $confirmAcceptId = null;
+
+    public ?int $confirmDeleteId = null;
+
     #[\Livewire\Attributes\On('accept')]
     public function accept($rowId): void
     {
-        $pleb = EinundzwanzigPleb::query()
-            ->with('profile')
-            ->findOrFail($rowId);
-        $this->dialog()->confirm([
-            'title' => 'Bist du sicher?',
-            'description' => 'Möchtest du '.$pleb->profile->name.' wirklich akzeptieren?',
-            'acceptLabel' => 'Ja, akzeptieren',
-            'method' => 'acceptPleb',
-            'params' => $rowId,
-        ]);
+        $this->confirmAcceptId = $rowId;
+        $this->modal('confirm-accept-pleb')->show();
     }
 
     #[\Livewire\Attributes\On('delete')]
     public function delete($rowId): void
     {
-        $pleb = EinundzwanzigPleb::query()
-            ->with('profile')
-            ->findOrFail($rowId);
-        $this->dialog()->confirm([
-            'title' => 'Bist du sicher?',
-            'description' => 'Möchtest du '.$pleb->profile->name.' wirklich löschen?',
-            'acceptLabel' => 'Ja, lösche',
-            'method' => 'deletePleb',
-            'params' => $rowId,
-        ]);
+        $this->confirmDeleteId = $rowId;
+        $this->modal('confirm-delete-pleb')->show();
     }
 
-    public function acceptPleb($rowId)
+    public function acceptPleb(): void
     {
-        $pleb = EinundzwanzigPleb::query()->findOrFail($rowId);
-        $for = $pleb->application_for;
-        $text = $pleb->application_text;
-        $pleb->association_status = AssociationStatus::from($for);
-        $pleb->application_for = null;
-        $pleb->archived_application_text = $text;
-        $pleb->application_text = null;
-        $pleb->save();
+        if ($this->confirmAcceptId) {
+            $pleb = EinundzwanzigPleb::query()->findOrFail($this->confirmAcceptId);
+            $for = $pleb->application_for;
+            $text = $pleb->application_text;
+            $pleb->association_status = AssociationStatus::from($for);
+            $pleb->application_for = null;
+            $pleb->archived_application_text = $text;
+            $pleb->application_text = null;
+            $pleb->save();
 
-        $this->fillData();
+            $this->confirmAcceptId = null;
+            $this->modal('confirm-accept-pleb')->close();
+            $this->fillData();
+        }
     }
 
-    public function deletePleb($rowId)
+    public function deletePleb(): void
     {
-        $pleb = EinundzwanzigPleb::query()->findOrFail($rowId);
-        $pleb->application_for = null;
-        $pleb->application_text = null;
-        $pleb->save();
+        if ($this->confirmDeleteId) {
+            $pleb = EinundzwanzigPleb::query()->findOrFail($this->confirmDeleteId);
+            $pleb->application_for = null;
+            $pleb->application_text = null;
+            $pleb->save();
 
-        $this->fillData();
+            $this->confirmDeleteId = null;
+            $this->modal('confirm-delete-pleb')->close();
+            $this->fillData();
+        }
     }
 
     public function actions(EinundzwanzigPleb $row): array
@@ -224,16 +220,12 @@ class EinundzwanzigPlebTable extends PowerGridComponent
             Button::add('delete')
                 ->slot('Löschen')
                 ->id()
-                ->class(
-                    'btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-red-500',
-                )
+                ->class('px-3 py-1.5 text-sm font-medium rounded-md border transition-colors bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950')
                 ->dispatch('delete', ['rowId' => $row->id]),
             Button::add('accept')
                 ->slot('Akzeptieren')
                 ->id()
-                ->class(
-                    'btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500',
-                )
+                ->class('px-3 py-1.5 text-sm font-medium rounded-md border transition-colors bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950')
                 ->dispatch('accept', ['rowId' => $row->id]),
         ];
     }

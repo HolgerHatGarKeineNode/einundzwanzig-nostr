@@ -86,4 +86,40 @@ new class extends Component {
             </flux:callout>
         </div>
     @endif
+
+    <flux:modal name="confirm-accept-pleb" class="min-w-88">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Mitglied akzeptieren</flux:heading>
+                <flux:subheading class="mt-2">
+                    Bist du sicher, dass du dieses Mitglied akzeptieren möchtest?
+                </flux:subheading>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer/>
+                <flux:modal.close>
+                    <flux:button variant="ghost">Abbrechen</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="acceptPleb" variant="primary">Ja, akzeptieren</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="confirm-delete-pleb" class="min-w-88">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Bewerbung ablehnen</flux:heading>
+                <flux:subheading class="mt-2">
+                    Bist du sicher, dass du diese Bewerbung ablehnen möchtest?
+                </flux:subheading>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer/>
+                <flux:modal.close>
+                    <flux:button variant="ghost">Abbrechen</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="deletePleb" variant="danger">Ja, ablehnen</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
