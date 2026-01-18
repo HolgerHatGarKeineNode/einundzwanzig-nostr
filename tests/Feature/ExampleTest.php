@@ -1,7 +1,8 @@
 <?php
 
-it('returns a successful response', function () {
-    $response = $this->get('/');
+use Livewire\Livewire;
 
-    $response->assertStatus(200);
+it('returns a successful response', function () {
+    Livewire::test('association.profile')
+        ->assertStatus(200);
 });

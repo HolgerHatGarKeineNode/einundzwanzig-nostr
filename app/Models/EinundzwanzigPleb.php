@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use App\Enums\AssociationStatus;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use ParagonIE\CipherSweet\BlindIndex;
 use ParagonIE\CipherSweet\EncryptedRow;
 use Spatie\LaravelCipherSweet\Concerns\UsesCipherSweet;
 use Spatie\LaravelCipherSweet\Contracts\CipherSweetEncrypted;
 
-class EinundzwanzigPleb extends Model implements CipherSweetEncrypted
+class EinundzwanzigPleb extends Authenticatable implements CipherSweetEncrypted
 {
+    use HasFactory;
     use UsesCipherSweet;
 
     protected $guarded = [];
