@@ -320,14 +320,6 @@ new class extends Component {
         \App\Support\Broadcast::on('votes')->as('newVote')->sendNow();
     }
 
-    public function render()
-    {
-        return view('livewire.association.election.show')
-            ->layout('layouts.app')
-            ->with([
-                'seo' => new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'Wahlen ' . $this->election->year, description: 'Wahlen des Vereins im Jahr ' . $this->election->year)
-            ]);
-    }
 };
 ?>
 

@@ -6,8 +6,6 @@ use App\Support\NostrAuth;
 use Livewire\Component;
 
 new class extends Component {
-    public $layout = 'layouts.app';
-    public $title = __('Wahlen');
 
     public bool $isAllowed = false;
 

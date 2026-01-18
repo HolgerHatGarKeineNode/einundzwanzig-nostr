@@ -10,6 +10,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.3.29
 - laravel/framework (LARAVEL) - v12
+- laravel/nightwatch (NIGHTWATCH) - v1
 - laravel/prompts (PROMPTS) - v0
 - laravel/reverb (REVERB) - v1
 - laravel/sail (SAIL) - v1
@@ -18,7 +19,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pint (PINT) - v1
 - pestphp/pest (PEST) - v3
 - phpunit/phpunit (PHPUNIT) - v11
-- laravel-echo (ECHO) - v1
+- laravel-echo (ECHO) - v2
 - tailwindcss (TAILWINDCSS) - v3
 
 ## Conventions

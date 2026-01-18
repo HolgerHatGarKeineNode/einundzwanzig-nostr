@@ -61,12 +61,6 @@ new class extends Component {
         }
     }
 
-    public function render()
-    {
-        return view('livewire.association.members.admin')
-            ->layout('layouts.app')
-            ->title(__('Mitglieder'));
-    }
 };
 ?>
 

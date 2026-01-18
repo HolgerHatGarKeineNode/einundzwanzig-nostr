@@ -1,4 +1,53 @@
-<x-layouts.app title="{{ __('Projektförderung anlegen') }}">
+<?php
+
+use App\Models\ProjectProposal;
+use App\Support\NostrAuth;
+use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+
+new
+#[Layout('layouts.app')]
+#[Title('Projektförderung anlegen')]
+class extends Component {
+    public array $form = [
+        'name' => '',
+        'description' => '',
+    ];
+
+    public bool $isAllowed = false;
+
+    public function mount(): void
+    {
+        if (NostrAuth::check()) {
+            $currentPubkey = NostrAuth::pubkey();
+            $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
+
+            if ($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists()) {
+                $this->isAllowed = true;
+            }
+        }
+    }
+
+    public function save(): void
+    {
+        $this->validate([
+            'form.name' => 'required|string|max:255',
+            'form.description' => 'required|string',
+        ]);
+
+        ProjectProposal::query()->create([
+            'name' => $this->form['name'],
+            'description' => $this->form['description'],
+            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id,
+        ]);
+
+        $this->redirectRoute('association.projectSupport');
+    }
+};
+?>
+
+<x-layouts.app>
     <div>
         @if($isAllowed)
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">

@@ -97,14 +97,6 @@ new class extends Component {
         $this->loadProjects();
     }
 
-    public function render()
-    {
-        return view('livewire.association.project-support')
-            ->layout('layouts.app')
-            ->with([
-                'seo' => new \RalphJSmit\Laravel\SEO\Support\SEOData(title: 'Projekt Unterstützungen', description: 'Einundzwanzig Projektunterstützungen')
-            ]);
-    }
 };
 ?>
 
