@@ -20,30 +20,21 @@ Route::post('logout', function () {
 })->name('logout');
 
 // Association Routes
-Route::livewire('/association/profile', 'association.⚡profile')->name('association.profile');
+Route::livewire('/association/profile', 'association.profile')->name('association.profile');
 
-Route::livewire('/association/election', 'association.election.⚡index')->name('association.elections');
-Route::livewire('/association/election/{election:year}', 'association.election.⚡show')->name('association.election');
-Route::livewire('/association/election/admin/{election:year}', 'association.election.⚡admin')->name('association.election.admin');
+Route::livewire('/association/election', 'association.election.index')->name('association.elections');
+Route::livewire('/association/election/{election:year}', 'association.election.show')->name('association.election');
+Route::livewire('/association/election/admin/{election:year}', 'association.election.admin')->name('association.election.admin');
 
-Route::livewire('/association/members/admin', 'association.members.⚡admin')->name('association.members.admin');
+Route::livewire('/association/members/admin', 'association.members.admin')->name('association.members.admin');
 
-Route::livewire('/association/news', 'association.⚡news')->name('association.news');
+Route::livewire('/association/news', 'association.news')->name('association.news');
 
-Route::livewire('/association/project-support', 'association.project-support.⚡index')->name('association.projectSupport');
-Route::livewire('/association/project-support/create', 'association.project-support.form.⚡create')->name('association.projectSupport.create');
-Route::livewire('/association/project-support/{projectProposal:slug}', 'association.project-support.⚡show')->name('association.projectSupport.item');
-Route::livewire('/association/project-support/edit/{projectProposal:slug}', 'association.project-support.form.⚡edit')->name('association.projectSupport.edit');
-
-// Einundzwanzig Feed
-Route::livewire('/einundzwanzig-feed', 'einundzwanzig-feed.⚡index')->name('einundzwanzig-feed');
-
-// Meetups
-Route::livewire('/meetups/grid', 'meetups.⚡grid')->name('meetups.grid');
-Route::livewire('/meetups/mockup', 'meetups.⚡mockup')->name('meetups.mockup');
-Route::livewire('/meetups/table', 'meetups.⚡table')->name('meetups.table');
-Route::livewire('/meetups/worldmap', 'meetups.⚡worldmap')->name('meetups.worldmap');
+Route::livewire('/association/project-support', 'association.project-support.index')->name('association.projectSupport');
+Route::livewire('/association/project-support/create', 'association.project-support.form.create')->name('association.projectSupport.create');
+Route::livewire('/association/project-support/{projectProposal:slug}', 'association.project-support.show')->name('association.projectSupport.item');
+Route::livewire('/association/project-support/edit/{projectProposal:slug}', 'association.project-support.form.edit')->name('association.projectSupport.edit');
 
 // Other pages
-Route::livewire('/changelog', '⚡changelog')->name('changelog');
-Route::livewire('/welcome', '⚡welcome')->name('welcome');
+Route::livewire('/changelog', 'changelog')->name('changelog');
+Route::livewire('/welcome', 'welcome')->name('welcome');
