@@ -17,6 +17,8 @@
         "laravel/reverb": "^1.0",
         "laravel/sail": "^1.31",
         "laravel/tinker": "^2.9",
+        "livewire/flux": "^2.10",
+        "livewire/flux-pro": "^2.10",
         "livewire/livewire": "^4.0",
         "openspout/openspout": "^4.24",
         "power-components/livewire-powergrid": "^6.7",
@@ -33,8 +35,7 @@
         "spatie/laravel-sluggable": "^3.6",
         "spatie/laravel-tags": "^4.9.2",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
-        "swentel/nostr-php": "^1.4",
-        "wireui/wireui": "^2.5.1"
+         "swentel/nostr-php": "^1.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -95,5 +96,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "flux-pro",
+        "type": "composer",
+        "url": "https://composer.fluxui.dev"
+    }]
 }

@@ -27,7 +27,13 @@ class extends Component {
             $currentPubkey = NostrAuth::pubkey();
             $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
 
-            if ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id) {
+            if (
+                (
+                    $currentPleb
+                    && $currentPleb->id === $project->einundzwanzig_pleb_id
+                )
+                || in_array($currentPleb->npub, config('einundzwanzig.config.current_board'))
+            ) {
                 $this->isAllowed = true;
                 $this->form = [
                     'name' => $project->name,
@@ -76,23 +82,22 @@ class extends Component {
                         </h2>
                         <div class="space-y-4">
                             <div wire:dirty>
-                                <x-input label="Name" wire:model="form.name"/>
-                                @error('form.name')
-                                <span class="text-red-500">{{ $message }}</span>
-                                @enderror
+                                <flux:field>
+                                    <flux:label>Name</flux:label>
+                                    <flux:input wire:model="form.name" placeholder="Projektname" />
+                                    <flux:error name="form.name" />
+                                </flux:field>
                             </div>
                             <div wire:dirty>
-                                <x-textarea label="Beschreibung" wire:model="form.description"/>
-                                @error('form.description')
-                                <span class="text-red-500">{{ $message }}</span>
-                                @enderror
+                                <flux:field>
+                                    <flux:label>Beschreibung</flux:label>
+                                    <flux:textarea wire:model="form.description" rows="6" placeholder="Projektbeschreibung..." />
+                                    <flux:error name="form.description" />
+                                </flux:field>
                             </div>
-                            <button
-                                wire:click="update"
-                                wire:loading.attr="disabled"
-                                class="w-full btn-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                            <flux:button wire:click="update" wire:loading.attr="disabled" variant="primary" class="w-full">
                                 Speichern
-                            </button>
+                            </flux:button>
                         </div>
                     </div>
                 </div>

@@ -9,19 +9,15 @@ use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Detail;
 use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
-use PowerComponents\LivewirePowerGrid\PowerGrid;
-use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
-use PowerComponents\LivewirePowerGrid\Traits\WithExport;
-use WireUi\Traits\WireUiActions;
 
-final class EinundzwanzigPlebTable extends PowerGridComponent
+class EinundzwanzigPlebTable extends PowerGridComponent
 {
-    use WireUiActions;
-    use WithExport;
+    public string $sortField = 'association_status';
+
+    public string $sortDirection = 'desc';
 
     public string $sortField = 'association_status';
 
@@ -49,8 +45,7 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return EinundzwanzigPleb::query()
             ->with([
                 'profile',
-                'paymentEvents' => fn($query)
-                    => $query
+                'paymentEvents' => fn ($query) => $query
                     ->where('year', date('Y'))
                     ->where('paid', true),
             ])
@@ -64,41 +59,37 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
             ->add('pubkey')
             ->add(
                 'avatar',
-                fn($model,
-                )
-                    => '<img class="w-8 h-8 shrink-0 grow-0 rounded-full" onerror="this.onerror=null; this.src=\'https://robohash.org/test\'";" src="'.asset(
-                        $model->profile?->picture,
-                    ).'">',
+                fn ($model,
+                ) => '<img class="w-8 h-8 shrink-0 grow-0 rounded-full" onerror="this.onerror=null; this.src=\'https://robohash.org/test\'";" src="'.asset(
+                    $model->profile?->picture,
+                ).'">',
             )
             ->add(
                 'for',
-                fn($model,
-                )
-                    => $model->application_for ? '<div class="m-1.5"><div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">'.AssociationStatus::from(
-                        $model->application_for,
-                    )->label().'</div></div>' : '',
+                fn ($model,
+                ) => $model->application_for ? '<div class="m-1.5"><div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full text-center px-2.5 py-1">'.AssociationStatus::from(
+                    $model->application_for,
+                )->label().'</div></div>' : '',
             )
             ->add(
                 'payment',
-                fn(EinundzwanzigPleb $model)
-                    => $model->paymentEvents->count() > 0 && $model->paymentEvents->first()->paid ? '<span class="text-green-500">'.number_format(
-                        $model->paymentEvents->first()->amount,
-                        0,
-                        ',',
-                        '.',
-                    ).'</span>' : 'keine Zahlung vorhanden',
+                fn (EinundzwanzigPleb $model) => $model->paymentEvents->count() > 0 && $model->paymentEvents->first()->paid ? '<span class="text-green-500">'.number_format(
+                    $model->paymentEvents->first()->amount,
+                    0,
+                    ',',
+                    '.',
+                ).'</span>' : 'keine Zahlung vorhanden',
             )
-            ->add('npub_export', fn(EinundzwanzigPleb $model) => $model->npub)
+            ->add('npub_export', fn (EinundzwanzigPleb $model) => $model->npub)
             ->add(
                 'npub',
-                fn(EinundzwanzigPleb $model)
-                    => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://nostrudel.ninja/u/'.e(
-                        $model->npub,
-                    ).'">Nostr Profile</a>',
+                fn (EinundzwanzigPleb $model) => '<a target="_blank" class="btn-xs bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white" href="https://nostrudel.ninja/u/'.e(
+                    $model->npub,
+                ).'">Nostr Profile</a>',
             )
             ->add('association_status')
-            ->add('association_status_name', fn(EinundzwanzigPleb $model) => $model->association_status->name)
-            ->add('paid_export', fn(EinundzwanzigPleb $model) => $model->paymentEvents->first()?->amount)
+            ->add('association_status_name', fn (EinundzwanzigPleb $model) => $model->association_status->name)
+            ->add('paid_export', fn (EinundzwanzigPleb $model) => $model->paymentEvents->first()?->amount)
             ->add(
                 'association_status_formatted',
                 function (EinundzwanzigPleb $model) {
@@ -109,13 +100,13 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
                         AssociationStatus::HONORARY => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 bg-blue-500/20 text-blue-700',
                         default => 'text-xs inline-flex font-medium rounded-full text-center px-2.5 py-1 text-red-700',
                     };
+
                     return '<span class="'.$class.'">'.$model->association_status->label().'</span>';
                 },
             )
             ->add(
                 'name_lower',
-                fn(EinundzwanzigPleb $model)
-                    => strtolower(
+                fn (EinundzwanzigPleb $model) => strtolower(
                     e($model->profile?->name ?: $model->profile?->display_name ?? ''),
                 ),
             );
@@ -251,9 +242,8 @@ final class EinundzwanzigPlebTable extends PowerGridComponent
         return [
             // Hide button edit for ID 1
             Rule::button('accept')
-                ->when(fn($row) => $row->application_for === null)
+                ->when(fn ($row) => $row->application_for === null)
                 ->hide(),
         ];
     }
-
 }

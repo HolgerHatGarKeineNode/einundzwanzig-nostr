@@ -70,14 +70,18 @@
 
 
                         @if(\App\Support\NostrAuth::check())
-                            <form method="post" action="{{ route('logout') }}"
-                                  @submit="$dispatch('nostrLoggedOut')">
-                                @csrf
-                                <x-button secondary label="Logout" type="submit"/>
-                            </form>
-                        @else
-                            <x-button wire:key="loginBtn" label="Mit Nostr verbinden" @click="openNostrLogin"
-                                      x-show="!$store.nostr.user"/>
+                             <form method="post" action="{{ route('logout') }}"
+                                   @submit="$dispatch('nostrLoggedOut')">
+                                 @csrf
+                                 <flux:button secondary type="submit">
+                                    Logout
+                                 </flux:button>
+                             </form>
+                         @else
+                             <flux:button wire:key="loginBtn" @click="openNostrLogin"
+                                       x-show="!$store.nostr.user">
+                                Mit Nostr verbinden
+                             </flux:button>
                         @endif
 
                         <!-- Info button -->

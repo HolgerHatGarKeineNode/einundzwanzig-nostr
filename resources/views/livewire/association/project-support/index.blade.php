@@ -118,14 +118,15 @@ new class extends Component {
 
                     <!-- Search form -->
                     <form class="relative">
-                        <x-input type="search" wire:model.live.debounce="search"
-                                 placeholder="Suche"/>
+                        <flux:input type="search" wire:model.live.debounce="search"
+                                 placeholder="Suche" icon="magnifying-glass"/>
                     </form>
-
+ 
                     <!-- Add meetup button -->
                     @if($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists())
-                        <x-button :href="route('association.projectSupport.create')" icon="plus"
-                                  label="Projekt einreichen"/>
+                        <flux:button :href="route('association.projectSupport.create')" icon="plus" variant="primary">
+                            Projekt einreichen
+                        </flux:button>
                     @endif
                 </div>
 

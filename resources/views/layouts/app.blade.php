@@ -3,11 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {!! seo($seo ?? null) !!}
+    {!! seo($seo ?? null) !}
 
     <title>{{ $title ?? 'Page Title' }}</title>
     @livewireStyles
-    @wireUiScripts
     @stack('scripts')
     @vite(['resources/js/app.js','resources/css/app.css'])
     @googlefonts
@@ -15,183 +14,92 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     @include('components.layouts.partials.styles')
+    @fluxAppearance
 </head>
-<body
-    class="font-sans antialiased bg-gray-100 dark:bg-[#222222] text-gray-600 dark:text-gray-400"
-    :class="{ 'sidebar-expanded': sidebarExpanded }"
-    x-data="{ sidebarOpen: false, sidebarExpanded: localStorage.getItem('sidebar-expanded') == 'true', inboxSidebarOpen: false }"
-    x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebar-expanded', value))"
+<body class="min-h-screen bg-white dark:bg-zinc-800 antialiased"
+    x-data="nostrLogin"
 >
-<x-dialog />
-<x-notifications />
-<script>
-    if (localStorage.getItem('sidebar-expanded') == 'true') {
-        document.querySelector('body').classList.add('sidebar-expanded');
-    } else {
-        document.querySelector('body').classList.remove('sidebar-expanded');
-    }
-</script>
-<div x-data="nostrLogin"
-     class="flex h-[100dvh] overflow-hidden">
-    <livewire:layout.sidebar/>
-    <div
-        class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-        <!-- Site header -->
-        <header
-            class="sticky top-0 before:absolute before:inset-0 before:backdrop-blur-md before:bg-white/90 dark:before:bg-[#222222]/90 lg:before:bg-[#222222]/90 dark:lg:before:bg-[#222222]/90 before:-z-10 max-lg:shadow-sm z-30">
-            <div class="px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16 lg:border-b border-gray-200 dark:border-gray-700/60">
+    <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-                    <!-- Header: Left side -->
-                    <div class="flex">
-                        <!-- Hamburger button -->
-                        <button
-                            class="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 lg:hidden"
-                            @click.stop="sidebarOpen = !sidebarOpen"
-                            aria-controls="sidebar"
-                            :aria-expanded="sidebarOpen"
-                        >
-                            <span class="sr-only">Open sidebar</span>
-                            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="4" y="5" width="16" height="2"/>
-                                <rect x="4" y="11" width="16" height="2"/>
-                                <rect x="4" y="17" width="16" height="2"/>
-                            </svg>
-                        </button>
+        <flux:brand href="/" name="Einundzwanzig" class="max-lg:hidden dark:hidden">
+            <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
+        </flux:brand>
+        <flux:brand href="/" name="Einundzwanzig" class="max-lg:hidden! hidden dark:flex">
+            <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
+        </flux:brand>
 
-                    </div>
+        <flux:navbar class="-mb-px max-lg:hidden">
+            @if(\App\Support\NostrAuth::check())
+                <flux:navbar.item icon="rss" :href="route('association.news')" {{ request()->routeIs('association.news') ? 'current' : '' }}>News</flux:navbar.item>
+                <flux:navbar.item icon="id-card-clip" :href="route('association.profile')" {{ request()->routeIs('association.profile') ? 'current' : '' }}>Profil</flux:navbar.item>
+                <flux:navbar.item icon="hand-heart" :href="route('association.projectSupport')" {{ request()->routeIs('association.projectSupport') ? 'current' : '' }}>Projekt-Unterstützungen</flux:navbar.item>
+            @endif
+        </flux:navbar>
 
-                    <!-- Header: Right side -->
-                    <div class="flex items-center space-x-3">
+        <flux:spacer />
 
-                        {{--@include('components.layouts.partials.search-button')--}}
+        <flux:navbar class="me-4">
+            <flux:dropdown position="bottom" align="end" class="max-lg:hidden">
+                <flux:navbar.item icon:trailing="information-circle">Info</flux:navbar.item>
 
-                        {{--@include('components.layouts.partials.notification-buttons')--}}
+                <flux:menu>
+                    <flux:menu.item href="https://gitworkshop.dev/r/naddr1qvzqqqrhnypzqzklvar4enzu53t06vpzu3h465nwkzhk9p9ls4y5crwhs3lnu5pnqy88wumn8ghj7mn0wvhxcmmv9uqpxetfde6kuer6wasku7nfvukkummnw3eqdgsn8w/issues" target="_blank">Issues/Feedback</flux:menu.item>
+                    <flux:menu.item :href="route('changelog')">Changelog</flux:menu.item>
+                    <flux:menu.item href="https://github.com/HolgerHatGarkeineNode/einundzwanzig-nostr" target="_blank">Github</flux:menu.item>
+                    <flux:menu.item href="https://einundzwanzig.space/kontakt/" target="_blank">Impressum</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
 
+            @if(\App\Support\NostrAuth::check())
+                <form method="post" action="{{ route('logout') }}" @submit="$dispatch('nostrLoggedOut')">
+                    @csrf
+                    <flux:navbar.item type="submit" icon="arrow-right-start-on-rectangle">Logout</flux:navbar.item>
+                </form>
+            @else
+                <flux:navbar.item icon="user" wire:key="loginBtn" @click="openNostrLogin">Mit Nostr verbinden</flux:navbar.item>
+            @endif
+        </flux:navbar>
+    </flux:header>
 
-                        @if(\App\Support\NostrAuth::check())
-                            <form method="post" action="{{ route('logout') }}"
-                                  @submit="$dispatch('nostrLoggedOut')">
-                                @csrf
-                                <x-button secondary label="Logout" type="submit"/>
-                            </form>
-                        @else
-                            <x-button wire:key="loginBtn" label="Mit Nostr verbinden" @click="openNostrLogin"
-                                      x-show="!$store.nostr.user"/>
-                        @endif
+    <flux:sidebar sticky collapsible="mobile" class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
+        <flux:sidebar.header>
+            <flux:sidebar.brand
+                href="/"
+                name="Einundzwanzig"
+            >
+                <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
+            </flux:sidebar.brand>
 
-                        <!-- Info button -->
-                        <div class="relative inline-flex" x-data="{ open: false }">
-                            <button
-                                class="w-8 h-8 flex items-center justify-center hover:bg-[#1B1B1B] lg:hover:bg-[#1B1B1B] dark:hover:bg-[#1B1B1B]/50 dark:lg:hover:bg-[#1B1B1B] rounded-full"
-                                :class="{ 'bg-gray-200 dark:bg-[#1B1B1B]': open }"
-                                aria-haspopup="true"
-                                @click.prevent="open = !open"
-                                :aria-expanded="open"
-                            >
-                                <span class="sr-only">Info</span>
-                                <svg class="fill-current text-gray-500/80 dark:text-gray-400/80" width="16" height="16"
-                                     viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M9 7.5a1 1 0 1 0-2 0v4a1 1 0 1 0 2 0v-4ZM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>
-                                    <path fill-rule="evenodd"
-                                          d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm6-8A6 6 0 1 1 2 8a6 6 0 0 1 12 0Z"/>
-                                </svg>
-                            </button>
-                            <div
-                                class="origin-top-right z-10 absolute top-full right-0 min-w-44 bg-white dark:bg-[#1B1B1B] border border-gray-200 dark:border-[#1B1B1B]/60 py-1.5 rounded-lg shadow-lg overflow-hidden mt-1"
-                                @click.outside="open = false"
-                                @keydown.escape.window="open = false"
-                                x-show="open"
-                                x-transition:enter="transition ease-out duration-200 transform"
-                                x-transition:enter-start="opacity-0 -translate-y-2"
-                                x-transition:enter-end="opacity-100 translate-y-0"
-                                x-transition:leave="transition ease-out duration-200"
-                                x-transition:leave-start="opacity-100"
-                                x-transition:leave-end="opacity-0"
-                                x-cloak
-                            >
-                                <div
-                                    class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase pt-1.5 pb-2 px-3">
-                                    Information
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           target="_blank"
-                                           href="https://gitworkshop.dev/r/naddr1qvzqqqrhnypzqzklvar4enzu53t06vpzu3h465nwkzhk9p9ls4y5crwhs3lnu5pnqy88wumn8ghj7mn0wvhxcmmv9uqpxetfde6kuer6wasku7nfvukkummnw3eqdgsn8w/issues"
-                                           @click="open = false" @focus="open = true"
-                                           @focusout="open = false">
-                                            <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
-                                            <span>Issues/Feedback</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="{{ route('changelog') }}" @click="open = false" @focus="open = true"
-                                           @focusout="open = false">
-                                            <i class="fa-sharp-duotone fa-solid fa-code w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
-                                            <span>Changelog</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="https://github.com/HolgerHatGarKeineNode/einundzwanzig-nostr"
-                                           target="_blank" @click="open = false" @focus="open = true"
-                                           @focusout="open = false">
-                                            <i class="fa-brands fa-github w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
-                                            <span>Github</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="font-medium text-sm text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center py-1 px-3"
-                                           href="https://einundzwanzig.space/kontakt/" target="_blank"
-                                           @click="open = false" @focus="open = true"
-                                           @focusout="open = false">
-                                            <i class="fa-sharp-duotone fa-solid fa-info w-3 h-3 fill-current text-amber-500 shrink-0 mr-2"></i>
-                                            <span>Impressum</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+            <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not(in-data-flux-sidebar-collapsed-desktop):-mr-2" />
+        </flux:sidebar.header>
 
-                        {{--@include('components.layouts.partials.dark-mode-toggle')--}}
+        <flux:sidebar.nav>
+            @if(\App\Support\NostrAuth::check())
+                <flux:sidebar.item icon="rss" :href="route('association.news')" {{ request()->routeIs('association.news') ? 'current' : '' }}>News</flux:sidebar.item>
+                <flux:sidebar.item icon="id-card-clip" :href="route('association.profile')" {{ request()->routeIs('association.profile') ? 'current' : '' }}>Meine Mitgliedschaft</flux:sidebar.item>
+                <flux:sidebar.item icon="hand-heart" :href="route('association.projectSupport')" {{ request()->routeIs('association.projectSupport') ? 'current' : '' }}>Projekt-Unterstützungen</flux:sidebar.item>
+            @endif
 
-                        <!-- Divider -->
-                        {{--<hr class="w-px h-6 bg-gray-200 dark:bg-gray-700/60 border-none"/>--}}
+            @include('components.layouts.navigation.admin')
+        </flux:sidebar.nav>
+    </flux:sidebar>
 
-                        {{--@include('components.layouts.partials.user-button')--}}
+    <flux:main container>
+        {{ $slot }}
+    </flux:main>
 
-                    </div>
-
-                </div>
-            </div>
-        </header>
-        <main class="grow">
-            {{ $slot }}
-        </main>
-    </div>
-</div>
-@livewireScriptConfig
-<script>
-    window.wnjParams = {
-        position: 'bottom',
-        // The only accepted value is 'bottom', default is top
-        accent: 'orange',
-        // Supported values: cyan (default), green, purple, red, orange, neutral, stone
-        startHidden: false,
-        // If the host page has a button that call `getPublicKey` to start a
-        // login procedure, the minimized widget can be hidden until connected
-        compactMode: false,
-        // Show the minimized widget in a compact form
-        disableOverflowFix: false,
-        // If the host page on mobile has an horizontal scrolling, the floating
-        // element/modal are pushed to the extreme right/bottom and exit the
-        // viewport. A style is injected in the html/body elements fix this.
-        // This option permit to disable this default behavior
-    }
-</script>
-<script src="{{ asset('dist/window.nostr.min.js.js') }}"></script>
+    @fluxScripts
+    @livewireScriptConfig
+    <script>
+        window.wnjParams = {
+            position: 'bottom',
+            accent: 'orange',
+            startHidden: false,
+            compactMode: false,
+            disableOverflowFix: false,
+        }
+    </script>
+    <script src="{{ asset('dist/window.nostr.min.js.js') }}"></script>
 </body>
 </html>

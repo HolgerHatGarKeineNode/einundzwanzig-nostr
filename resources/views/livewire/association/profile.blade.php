@@ -503,19 +503,22 @@ new class extends Component {
                                         sich bitte direkt an den Vorstand.</a>
                                 </h4>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
-                                    <div class="sm:w-1/2 flex flex-col space-y-2">
-                                        <div class="flex items-center space-x-2">
-                                             <div wire:dirty>
-                                                 <x-checkbox wire:model="form.check"
-                                                             label="Ich stimme den Vereins-Statuten zu"/>
-                                             </div>
+                                     <div class="sm:w-1/2 flex flex-col space-y-2">
+                                         <div class="flex items-center space-x-2">
+                                              <div wire:dirty>
+                                                  <flux:field variant="inline">
+                                                      <flux:checkbox wire:model="form.check" label="Ich stimme den Vereins-Statuten zu"/>
+                                                      <flux:error name="form.check" />
+                                                  </flux:field>
+                                              </div>
                                             <div>
                                                 <a href="https://einundzwanzig.space/verein/" target="_blank"
                                                    class="text-amber-500">Statuten</a>
                                             </div>
                                         </div>
-                                        <x-button label="Mit deinem aktuellen Nostr-Profil Mitglied werden"
-                                                  wire:click="save({{ AssociationStatus::PASSIVE() }})"/>
+                                         <flux:button wire:click="save({{ AssociationStatus::PASSIVE() }})">
+                                            Mit deinem aktuellen Nostr-Profil Mitglied werden
+                                        </flux:button>
                                     </div>
                                 </div>
                             @endif
@@ -543,25 +546,35 @@ new class extends Component {
                                                     diese Adresse AES-256 verschlüsselt in der Datenbank ab.
                                                 </div>
                                                 <div
-                                                    class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
-                                                     <x-toggle xl warning
-                                                               wire:model.live="no"
-                                                               wire:dirty
-                                                               label="NEIN">
-                                                        <x-slot name="description">
-                                                            <span class="py-2 text-amber-500">Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</span>
-                                                        </x-slot>
-                                                    </x-toggle>
+                                                     class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
+                                                      <flux:field variant="inline" xl>
+                                                            <flux:label>NEIN</flux:label>
+                                                            <flux:description>Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</flux:description>
+                                                            <flux:switch
+                                                                wire:model.live="no"
+                                                                wire:dirty
+                                                            />
+                                                            <flux:error name="no" />
+                                                        </flux:field>
                                                 </div>
                                                 @if($showEmail)
                                                     <div wire:key="showEmail"
                                                          class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                                        <x-input wire:model.live.debounce="fax" wire:dirty label="Fax-Nummer"/>
-                                                        <x-input wire:model.live.debounce="email" wire:dirty
-                                                                  label="E-Mail Adresse"/>
+                                                         <flux:field>
+                                                            <flux:label>Fax-Nummer</flux:label>
+                                                            <flux:input wire:model.live.debounce="fax" wire:dirty placeholder="Fax-Nummer"/>
+                                                            <flux:error name="fax" />
+                                                        </flux:field>
+                                                        <flux:field>
+                                                            <flux:label>E-Mail Adresse</flux:label>
+                                                            <flux:input type="email" wire:model.live.debounce="email" wire:dirty placeholder="E-Mail Adresse"/>
+                                                            <flux:error name="email" />
+                                                        </flux:field>
                                                     </div>
                                                     <div wire:key="showSave" class="flex space-x-2 mt-2">
-                                                        <x-button wire:click="saveEmail" label="Speichern"/>
+                                                        <flux:button wire:click="saveEmail" wire:loading.attr="disabled">
+                                                        Speichern
+                                                    </flux:button>
                                                     </div>
                                                 @endif
                                             </div>

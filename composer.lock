@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ce22785474454dbae00168baafb6ccf",
+    "content-hash": "39a9ce519dbfeb237966b7441b59a562",
     "packages": [
         {
             "name": "akuechler/laravel-geoly",
@@ -3024,6 +3024,145 @@
                 }
             ],
             "time": "2026-01-15T06:54:53+00:00"
+        },
+        {
+            "name": "livewire/flux",
+            "version": "v2.10.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/livewire/flux.git",
+                "reference": "e7a93989788429bb6c0a908a056d22ea3a6c7975"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/e7a93989788429bb6c0a908a056d22ea3a6c7975",
+                "reference": "e7a93989788429bb6c0a908a056d22ea3a6c7975",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/view": "^10.0|^11.0|^12.0",
+                "laravel/prompts": "^0.1|^0.2|^0.3",
+                "livewire/livewire": "^3.7.3|^4.0",
+                "php": "^8.1",
+                "symfony/console": "^6.0|^7.0"
+            },
+            "conflict": {
+                "livewire/blaze": "<1.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Flux": "Flux\\Flux"
+                    },
+                    "providers": [
+                        "Flux\\FluxServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Flux\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Caleb Porzio",
+                    "email": "calebporzio@gmail.com"
+                }
+            ],
+            "description": "The official UI component library for Livewire.",
+            "keywords": [
+                "components",
+                "flux",
+                "laravel",
+                "livewire",
+                "ui"
+            ],
+            "support": {
+                "issues": "https://github.com/livewire/flux/issues",
+                "source": "https://github.com/livewire/flux/tree/v2.10.2"
+            },
+            "time": "2025-12-19T02:11:45+00:00"
+        },
+        {
+            "name": "livewire/flux-pro",
+            "version": "2.10.2",
+            "dist": {
+                "type": "zip",
+                "url": "https://composer.fluxui.dev/download/a0a0798f-1cf8-4999-8f57-8688c21f2d59/flux-pro-2.10.2.zip",
+                "reference": "9440435e467c4bb775efbc2c510ec7dea61e17d7",
+                "shasum": "177bf08ae75c628c96a1a3a4fd1e788b1b798e1d"
+            },
+            "require": {
+                "illuminate/console": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/view": "^10.0|^11.0|^12.0",
+                "laravel/prompts": "^0.1.24|^0.2|^0.3",
+                "livewire/flux": "2.10.2|dev-main",
+                "livewire/livewire": "^3.7.3|^4.0",
+                "php": "^8.1",
+                "symfony/console": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "livewire/volt": "*",
+                "orchestra/testbench": "^10.8"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Flux": "FluxPro\\FluxPro"
+                    },
+                    "providers": [
+                        "FluxPro\\FluxProServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "FluxPro\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "App\\": "workbench/app/"
+                }
+            },
+            "scripts": {
+                "serve": [
+                    "Composer\\Config::disableProcessTimeout",
+                    "@php vendor/bin/testbench workbench:build --ansi",
+                    "@php vendor/bin/testbench serve --port 3000 --ansi"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Caleb Porzio",
+                    "email": "calebporzio@gmail.com"
+                }
+            ],
+            "description": "The pro version of Flux, the official UI component library for Livewire.",
+            "keywords": [
+                "components",
+                "flux",
+                "laravel",
+                "livewire",
+                "ui"
+            ],
+            "time": "2025-12-19T02:22:27+00:00"
         },
         {
             "name": "livewire/livewire",
@@ -10924,135 +11063,6 @@
                 }
             ],
             "time": "2024-11-21T01:49:47+00:00"
-        },
-        {
-            "name": "wireui/heroicons",
-            "version": "v2.9.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wireui/heroicons.git",
-                "reference": "ccd2ab94293d6f231271c0847c1db34305313c6f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wireui/heroicons/zipball/ccd2ab94293d6f231271c0847c1db34305313c6f",
-                "reference": "ccd2ab94293d6f231271c0847c1db34305313c6f",
-                "shasum": ""
-            },
-            "require": {
-                "laravel/framework": "^9.16|^10.0|^11.0|^12.0",
-                "php": "^8.1|^8.2|^8.3|^8.4"
-            },
-            "require-dev": {
-                "larastan/larastan": "^3.0",
-                "laravel/pint": "^1.6",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^3.0"
-            },
-            "type": "library",
-            "extra": {
-                "aliases": [],
-                "laravel": {
-                    "providers": [
-                        "WireUi\\Heroicons\\HeroiconsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "WireUi\\Heroicons\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pedro Oliveira",
-                    "email": "pedrolivertwd@gmail.com"
-                }
-            ],
-            "description": "The Tailwind Heroicons for laravel blade by WireUI",
-            "keywords": [
-                "blade components",
-                "blade heroicons",
-                "laravel components",
-                "livewire icons",
-                "livewire icons components",
-                "wireui"
-            ],
-            "support": {
-                "issues": "https://github.com/wireui/heroicons/issues",
-                "source": "https://github.com/wireui/heroicons/tree/v2.9.0"
-            },
-            "time": "2025-03-02T22:06:22+00:00"
-        },
-        {
-            "name": "wireui/wireui",
-            "version": "v2.5.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wireui/wireui.git",
-                "reference": "e4d966689eb840986281f5237149b2480eacf87c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wireui/wireui/zipball/e4d966689eb840986281f5237149b2480eacf87c",
-                "reference": "e4d966689eb840986281f5237149b2480eacf87c",
-                "shasum": ""
-            },
-            "require": {
-                "laravel/framework": "^10.0|^11.0|^12.0",
-                "php": "^8.2|^8.3|^8.4|^8.5",
-                "wireui/heroicons": "^2.8"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.19",
-                "livewire/livewire": "^3.6",
-                "orchestra/testbench": "^10.0",
-                "orchestra/testbench-dusk": "^10.0",
-                "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0",
-                "pestphp/pest-plugin-livewire": "^4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": [],
-                    "providers": [
-                        "WireUi\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "WireUi\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pedro Oliveira",
-                    "email": "pedrolivertwd@gmail.com"
-                }
-            ],
-            "description": "TallStack components",
-            "keywords": [
-                "blade components",
-                "laravel components",
-                "livewire components",
-                "livewire-ui",
-                "wireui"
-            ],
-            "support": {
-                "issues": "https://github.com/wireui/wireui/issues",
-                "source": "https://github.com/wireui/wireui/tree/v2.5.1"
-            },
-            "time": "2025-11-10T04:46:35+00:00"
         }
     ],
     "packages-dev": [

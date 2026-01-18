@@ -78,11 +78,16 @@ new class extends Component {
                         {{ $election['year'] }}
                     </div>
                     <div class="shadow-lg rounded-lg overflow-hidden">
-                        <x-textarea wire:model="elections.{{ $loop->index }}.candidates" rows="25"
-                                    label="candidates" placeholder=""/>
+                        <flux:field>
+                            <flux:label>Kandidaten</flux:label>
+                            <flux:textarea wire:model="elections.{{ $loop->index }}.candidates" rows="25" placeholder="Kandidaten..."/>
+                            <flux:error name="elections.{{ $loop->index }}.candidates" />
+                        </flux:field>
                     </div>
                     <div class="py-2">
-                        <x-button label="Speichern" wire:click="saveElection({{ $loop->index }})" wire:loading.attr="disabled"/>
+                        <flux:button wire:click="saveElection({{ $loop->index }})" wire:loading.attr="disabled">
+                            Speichern
+                        </flux:button>
                     </div>
                 </div>
             @endforeach

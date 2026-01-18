@@ -202,19 +202,22 @@ class extends Component {
                                             </div>
                                         </div>
                                         <div class="mt-2 flex justify-end w-full space-x-2">
-                                            <x-button
+                                            <flux:button
                                                 xs
                                                 target="_blank"
                                                 :href="url()->temporarySignedRoute('dl', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
-                                                label="Öffnen"
-                                                primary icon="cloud-arrow-down"/>
+                                                icon="cloud-arrow-down">
+                                                Öffnen
+                                            </flux:button>
                                             @if($canEdit)
-                                                <x-button
+                                                <flux:button
                                                     xs
+                                                    negative
                                                     wire:click="delete({{ $post->id }})"
                                                     wire:loading.attr="disabled"
-                                                    label="Löschen"
-                                                    negative icon="trash"/>
+                                                    icon="trash">
+                                                    Löschen
+                                                </flux:button>
                                             @endif
                                         </div>
                                     </article>
@@ -253,27 +256,40 @@ class extends Component {
                                                 @enderror
                                             </div>
                                             <div wire:dirty>
-                                                <x-native-select
-                                                    wire:model="form.category"
-                                                    label="Kategorie"
-                                                    placeholder="Wähle Kategorie"
-                                                    :options="\App\Enums\NewsCategory::selectOptions()"
-                                                    option-label="label" option-value="value"
-                                                />
+                                                <flux:field>
+                                                    <flux:label>Kategorie</flux:label>
+                                                    <flux:select
+                                                        wire:model="form.category"
+                                                        placeholder="Wähle Kategorie"
+                                                    >
+                                                        @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
+                                                            <flux:select.option
+                                                                :label="$category['label']"
+                                                                :value="$category['value']"
+                                                            />
+                                                        @endforeach
+                                                    </flux:select>
+                                                    <flux:error name="form.category" />
+                                                </flux:field>
                                             </div>
                                             <div wire:dirty>
-                                                <x-input label="Titel" wire:model="form.name"/>
+                                                <flux:field>
+                                                    <flux:label>Titel</flux:label>
+                                                    <flux:input wire:model="form.name" placeholder="News-Titel" />
+                                                    <flux:error name="form.name" />
+                                                </flux:field>
                                             </div>
                                             <div wire:dirty>
-                                                <x-textarea
-                                                    description="optional"
-                                                    label="Beschreibung" wire:model="form.description"/>
+                                                <flux:field>
+                                                    <flux:label>Beschreibung</flux:label>
+                                                    <flux:description>optional</flux:description>
+                                                    <flux:textarea wire:model="form.description" rows="4" placeholder="Beschreibung..." />
+                                                    <flux:error name="form.description" />
+                                                </flux:field>
                                             </div>
-                                            <button
-                                                wire:click="save"
-                                                class="btn-sm w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                            <flux:button wire:click="save" class="w-full">
                                                 Hinzufügen
-                                            </button>
+                                            </flux:button>
                                         </div>
                                     </div>
                                 @endif

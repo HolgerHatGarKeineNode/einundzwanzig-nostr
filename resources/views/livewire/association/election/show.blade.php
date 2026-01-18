@@ -475,19 +475,19 @@ new class extends Component {
                             <div
                                 class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
                                 <div
-                                    class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
-                                    <div>
-                                        @if($isNotClosed)
-                                            <x-badge success
-                                                     label="Die Wahl ist geöffnet bis zum {{ $election->end_time?->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
-                                        @else
-                                            <x-badge negative label="Die Wahl ist geschlossen"/>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <x-button secondary
-                                                  :href="route('association.election.admin', ['election' => $election])"
-                                                  label="Wahl-Admin"/>
+                                     class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
+                                     <div>
+                                         @if($isNotClosed)
+                                             <flux:badge color="success" label="Die Wahl ist geöffnet bis zum {{ $election->end_time?->timezone('Europe/Berlin')->format('d.m.Y H:i') }}"/>
+                                         @else
+                                             <flux:badge color="danger" label="Die Wahl ist geschlossen"/>
+                                         @endif
+                                     </div>
+                                     <div>
+                                         <flux:button secondary
+                                                   :href="route('association.election.admin', ['election' => $election])"
+                                                   label="Wahl-Admin">
+                                        </flux:button>
                                     </div>
                                 </div>
                             </div>

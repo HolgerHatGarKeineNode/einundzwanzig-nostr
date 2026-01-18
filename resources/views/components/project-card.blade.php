@@ -88,26 +88,30 @@
             @if(
                 ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
                 || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
-                )
-                <x-button
+                 )
+                <flux:button
                     icon="trash"
                     xs
                     negative
                     wire:click="confirmDelete({{ $project->id }})"
-                    label="Löschen"/>
-                <x-button
+                    wire:loading.attr="disabled">
+                    Löschen
+                </flux:button>
+                <flux:button
                     icon="pencil"
                     xs
                     secondary
-                    :href="route('association.projectSupport.edit', ['projectProposal' => $project])"
-                    label="Editieren"/>
+                    :href="route('association.projectSupport.edit', ['projectProposal' => $project])">
+                    Editieren
+                </flux:button>
             @endif
             @if(($currentPleb && $currentPleb->association_status->value > 2) || $project->accepted)
-                <x-button
+                <flux:button
                     icon="folder-open"
                     xs
-                    :href="route('association.projectSupport.item', ['projectProposal' => $project])"
-                    label="Öffnen"/>
+                    :href="route('association.projectSupport.item', ['projectProposal' => $project])">
+                    Öffnen
+                </flux:button>
             @endif
         </div>
         <div class="py-2">
