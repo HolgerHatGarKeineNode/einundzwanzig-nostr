@@ -6,6 +6,4 @@ use ArchTech\Enums\Meta\MetaProperty;
 use Attribute;
 
 #[Attribute]
-class Label extends MetaProperty
-{
-}
+class Label extends MetaProperty {}

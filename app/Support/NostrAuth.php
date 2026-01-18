@@ -3,8 +3,8 @@
 namespace App\Support;
 
 use App\Auth\NostrUser;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class NostrAuth
 {

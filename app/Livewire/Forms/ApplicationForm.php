@@ -9,6 +9,7 @@ class ApplicationForm extends Form
 {
     #[Validate('nullable|string')]
     public $reason = '';
+
     #[Validate('boolean')]
     public $check = false;
 }

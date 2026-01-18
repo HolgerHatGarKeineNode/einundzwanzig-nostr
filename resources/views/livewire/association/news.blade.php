@@ -4,9 +4,9 @@ use App\Enums\NewsCategory;
 use App\Models\Notification;
 use App\Support\NostrAuth;
 use Illuminate\Support\Collection;
-use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 new
@@ -35,8 +35,11 @@ class extends Component {
             $currentPubkey = NostrAuth::pubkey();
             $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
 
-            if ($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year',
-                    date('Y'))->where('paid', true)->exists()) {
+            if (
+                $currentPleb
+                && $currentPleb->association_status->value > 1
+                && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists()
+            ) {
                 $this->isAllowed = true;
             }
 
@@ -158,8 +161,8 @@ class extends Component {
                             <div class="space-y-2">
                                 @forelse($news as $post)
                                     <article wire:key="post_{{ $post->id }}"
-                                             class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
-                                        <div class="flex flex-start space-x-4">
+                                    <article wire:key="post_{{ $post->id }}"
+                                    <flux:card>
                                             <!-- Avatar -->
                                             <div class="shrink-0 mt-1.5">
                                                 <img class="w-8 h-8 rounded-full"
@@ -220,11 +223,11 @@ class extends Component {
                                                 </flux:button>
                                             @endif
                                         </div>
-                                    </article>
+                                    </flux:card>
                                 @empty
-                                    <article class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
+                                    <flux:card>
                                         <p>Keine News vorhanden.</p>
-                                    </article>
+                                    </flux:card>
                                 @endforelse
                             </div>
 
@@ -243,7 +246,7 @@ class extends Component {
                             <div class="space-y-4">
 
                                 @if($canEdit)
-                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl">
+                                    <flux:card>
                                         <div
                                             class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-4">
                                             News anlegen
@@ -269,29 +272,30 @@ class extends Component {
                                                             />
                                                         @endforeach
                                                     </flux:select>
-                                                    <flux:error name="form.category" />
+                                                    <flux:error name="form.category"/>
                                                 </flux:field>
                                             </div>
                                             <div wire:dirty>
                                                 <flux:field>
                                                     <flux:label>Titel</flux:label>
-                                                    <flux:input wire:model="form.name" placeholder="News-Titel" />
-                                                    <flux:error name="form.name" />
+                                                    <flux:input wire:model="form.name" placeholder="News-Titel"/>
+                                                    <flux:error name="form.name"/>
                                                 </flux:field>
                                             </div>
                                             <div wire:dirty>
                                                 <flux:field>
                                                     <flux:label>Beschreibung</flux:label>
                                                     <flux:description>optional</flux:description>
-                                                    <flux:textarea wire:model="form.description" rows="4" placeholder="Beschreibung..." />
-                                                    <flux:error name="form.description" />
+                                                    <flux:textarea wire:model="form.description" rows="4"
+                                                                   placeholder="Beschreibung..."/>
+                                                    <flux:error name="form.description"/>
                                                 </flux:field>
                                             </div>
                                             <flux:button wire:click="save" class="w-full">
                                                 Hinzufügen
                                             </flux:button>
                                         </div>
-                                    </div>
+                                    </flux:card>
                                 @endif
 
                             </div>
@@ -304,7 +308,7 @@ class extends Component {
         </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
+            <flux:card>
                 <div class="px-4 py-5 sm:px-6">
                     <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
                         News
@@ -312,7 +316,7 @@ class extends Component {
                     <p class="mt-1 max-w">
                         Du bist nicht berechtigt, die News einzusehen.
                     </p>
-                </div>
+                </flux:card>
             </div>
         </div>
     @endif

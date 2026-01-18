@@ -15,7 +15,7 @@ trait NostrEventRendererTrait
         $profile = Profile::query()->where('pubkey', $event->pubkey)->first();
         if ($profile && $profile->name) {
             $name = $profile->name;
-        } elseif ($profile && !empty($profile->display_name)) {
+        } elseif ($profile && ! empty($profile->display_name)) {
             $name = $profile->display_name;
         } else {
             $name = 'Anonymous';
@@ -30,7 +30,7 @@ trait NostrEventRendererTrait
             'event_id' => $event->event_id,
         ], [
             'html' => $content,
-            'profile_image' => $profile && $profile->picture !== '' ? $profile->picture : 'https://robohash.org/' . $profile->pubkey,
+            'profile_image' => $profile && $profile->picture !== '' ? $profile->picture : 'https://robohash.org/'.$profile->pubkey,
             'profile_name' => $name,
         ]);
     }
@@ -57,7 +57,7 @@ trait NostrEventRendererTrait
             $profile = Profile::query()->where('pubkey', $pubkey)->first();
             if ($profile && $profile->name) {
                 $name = $profile->name;
-            } elseif ($profile && !empty($profile->display_name)) {
+            } elseif ($profile && ! empty($profile->display_name)) {
                 $name = $profile->display_name;
             } else {
                 $name = 'Anonymous';

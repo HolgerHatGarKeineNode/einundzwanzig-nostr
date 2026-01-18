@@ -22,6 +22,7 @@ trait NostrFetcherTrait
                     'hex' => $item,
                     'npub' => (new Key)->convertPublicKeyToBech32($item),
                 ]);
+
                 continue;
             }
             $hex->push([
@@ -30,10 +31,10 @@ trait NostrFetcherTrait
             ]);
         }
 
-        $subscription = new Subscription();
+        $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
 
-        $filter1 = new Filter();
+        $filter1 = new Filter;
         $filter1->setKinds([0]); // You can add multiple kind numbers
         $filter1->setAuthors($hex->pluck('hex')->toArray()); // You can add multiple author ids
         $filters = [$filter1];
@@ -54,7 +55,7 @@ trait NostrFetcherTrait
             try {
                 $response = $request->send();
                 $data = $response[$relayUrl];
-                if (!empty($data)) {
+                if (! empty($data)) {
                     \Log::info('Successfully fetched data from relay: '.$relayUrl);
                     break; // Exit the loop if data is not empty
                 }
@@ -65,6 +66,7 @@ trait NostrFetcherTrait
 
         if (empty($data)) {
             \Log::warning('No data found from any relay');
+
             return;
         }
         foreach ($data as $item) {
@@ -94,5 +96,4 @@ trait NostrFetcherTrait
             }
         }
     }
-
 }

@@ -13,12 +13,12 @@ use ArchTech\Enums\Values;
 #[Meta(Label::class, Color::class)]
 enum AssociationStatus: int
 {
-    use InvokableCases;
-    use Names;
-    use Values;
-    use Options;
-    use Metadata;
     use From;
+    use InvokableCases;
+    use Metadata;
+    use Names;
+    use Options;
+    use Values;
 
     #[Label('kein Mitglied')] #[Color('cyan')]
     case DEFAULT = 1;
@@ -33,7 +33,7 @@ enum AssociationStatus: int
     {
         return collect(self::options())
             ->map(
-                fn(
+                fn (
                     $option,
                     $name
                 ) => [

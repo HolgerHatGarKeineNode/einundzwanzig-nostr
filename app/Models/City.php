@@ -12,8 +12,8 @@ use Spatie\Sluggable\SlugOptions;
 
 class City extends Model
 {
-    use HasSlug;
     use Geoly;
+    use HasSlug;
 
     protected $connection = 'einundzwanzig';
 
@@ -51,9 +51,9 @@ class City extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-                          ->generateSlugsFrom(['country.code', 'name'])
-                          ->saveSlugsTo('slug')
-                          ->usingLanguage(Cookie::get('lang', config('app.locale')));
+            ->generateSlugsFrom(['country.code', 'name'])
+            ->saveSlugsTo('slug')
+            ->usingLanguage(Cookie::get('lang', config('app.locale')));
     }
 
     public function createdBy(): BelongsTo

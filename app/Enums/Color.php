@@ -6,6 +6,4 @@ use ArchTech\Enums\Meta\MetaProperty;
 use Attribute;
 
 #[Attribute]
-class Color extends MetaProperty
-{
-}
+class Color extends MetaProperty {}

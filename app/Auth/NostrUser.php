@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class NostrUser implements Authenticatable
 {
     protected string $pubkey;
+
     protected ?object $pleb;
 
     public function __construct(string $pubkey)

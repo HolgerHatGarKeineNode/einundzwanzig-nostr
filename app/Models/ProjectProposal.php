@@ -15,17 +15,19 @@ use Spatie\Sluggable\SlugOptions;
 
 class ProjectProposal extends Model implements HasMedia
 {
-    use InteractsWithMedia;
     use HasSlug;
+    use InteractsWithMedia;
 
     /**
      * The attributes that aren't mass assignable.
+     *
      * @var array
      */
     protected $guarded = [];
 
     /**
      * The attributes that should be cast to native types.
+     *
      * @var array
      */
     protected $casts = [
@@ -33,10 +35,7 @@ class ProjectProposal extends Model implements HasMedia
         'einundzwanzig_pleb_id' => 'integer',
     ];
 
-    protected static function booted()
-    {
-
-    }
+    protected static function booted() {}
 
     public function getSlugOptions(): SlugOptions
     {
@@ -46,7 +45,7 @@ class ProjectProposal extends Model implements HasMedia
             ->usingLanguage(Cookie::get('lang', config('app.locale')));
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')

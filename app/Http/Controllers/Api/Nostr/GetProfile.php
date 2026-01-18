@@ -15,7 +15,7 @@ class GetProfile extends Controller
 
     public function __invoke($key, Request $request)
     {
-        if (!Profile::query()->where('pubkey', $key)->exists()) {
+        if (! Profile::query()->where('pubkey', $key)->exists()) {
             $this->fetchProfile([$key]);
         }
 
@@ -28,7 +28,7 @@ class GetProfile extends Controller
             ->where('pubkey', $key)
             ->first();
 
-        if (!$profile) {
+        if (! $profile) {
             return response()->json(['message' => 'Profile not found'], 200);
         }
 

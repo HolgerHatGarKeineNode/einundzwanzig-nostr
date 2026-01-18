@@ -13,12 +13,12 @@ use ArchTech\Enums\Values;
 #[Meta(Label::class, Color::class, Icon::class)]
 enum NewsCategory: int
 {
-    use InvokableCases;
-    use Names;
-    use Values;
-    use Options;
-    use Metadata;
     use From;
+    use InvokableCases;
+    use Metadata;
+    use Names;
+    use Options;
+    use Values;
 
     #[Label('Organisation')] #[Color('cyan')] #[Icon('file-lines')]
     case ORGANISATION = 1;
@@ -27,7 +27,7 @@ enum NewsCategory: int
     {
         return collect(self::options())
             ->map(
-                fn(
+                fn (
                     $option,
                     $name
                 ) => [

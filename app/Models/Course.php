@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Image\Enums\Fit;
-use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -15,8 +14,8 @@ use Spatie\Tags\HasTags;
 
 class Course extends Model implements HasMedia
 {
-    use InteractsWithMedia;
     use HasTags;
+    use InteractsWithMedia;
 
     protected $connection = 'einundzwanzig';
 
@@ -46,25 +45,25 @@ class Course extends Model implements HasMedia
         });
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this
             ->addMediaConversion('preview')
             ->fit(Fit::Crop, 300, 300)
             ->nonQueued();
         $this->addMediaConversion('thumb')
-             ->fit(Fit::Crop, 130, 130)
-             ->width(130)
-             ->height(130);
+            ->fit(Fit::Crop, 130, 130)
+            ->width(130)
+            ->height(130);
     }
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('logo')
-             ->singleFile()
-             ->useFallbackUrl(asset('img/einundzwanzig.png'));
+            ->singleFile()
+            ->useFallbackUrl(asset('img/einundzwanzig.png'));
         $this->addMediaCollection('images')
-             ->useFallbackUrl(asset('img/einundzwanzig.png'));
+            ->useFallbackUrl(asset('img/einundzwanzig.png'));
     }
 
     public function createdBy(): BelongsTo

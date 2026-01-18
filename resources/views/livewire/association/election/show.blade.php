@@ -518,9 +518,9 @@ new class extends Component {
                                     </h1>
                                     <div class="grid sm:grid-cols-2 gap-6">
                                         <div
-                                            class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                                            <div class="flex flex-col h-full p-5">
-                                                <header>
+                                        <div class="grid sm:grid-cols-2 gap-6">
+                                        <flux:card>
+<header>
                                                     <div class="flex items-center justify-between">
                                                         <i class="fa-sharp-duotone fa-solid {{ $positions['presidency']['icon'] }} w-9 h-9 fill-current text-white"></i>
                                                     </div>
@@ -562,7 +562,7 @@ new class extends Component {
                                                     </div>
                                                 </footer>
                                             </div>
-                                        </div>
+                                        </flux:card>
                                     </div>
 
                                     <h1 class="mt-6 text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
@@ -571,8 +571,8 @@ new class extends Component {
                                     <div class="grid gap-6">
 
                                         <div
-                                            class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                                            <div class="flex flex-col h-full p-5">
+                                        <flux:card>
+<div class="flex flex-col h-full p-5">
                                                 <div class="grow mt-2">
                                                     <div class="text-sm">
                                                         <span>Klicke auf den Kandidaten, um seine Position als Vorstandsmitglied zu bestätigen.</span>
@@ -597,7 +597,7 @@ new class extends Component {
                                                         @endforeach
                                                     </div>
                                                 </footer>
-                                            </div>
+                                        </flux:card>
                                         </div>
 
                                     </div>
@@ -607,7 +607,7 @@ new class extends Component {
 
                             <!-- Log events -->
                             <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
+                                <flux:card mb-8>
                                     <header class="px-5 py-4">
                                         <h2 class="font-semibold text-gray-800 dark:text-gray-100">Präsidium Log <span
                                                 class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedEvents) }}</span>
@@ -671,10 +671,10 @@ new class extends Component {
                                             </table>
                                         </div>
                                     </div>
-                                </div>
+                            </flux:card>
                             </div>
                             <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl mb-8">
+                                <flux:card mb-8>
                                     <header class="px-5 py-4">
                                         <h2 class="font-semibold text-gray-800 dark:text-gray-100">Board Log <span
                                                 class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedBoardEvents) }}</span>
@@ -738,7 +738,7 @@ new class extends Component {
                                             </table>
                                         </div>
                                     </div>
-                                </div>
+                            </flux:card>
                             </div>
 
                         </div>
@@ -749,13 +749,13 @@ new class extends Component {
             </div>
         @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-                <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
+                <flux:card>
                     <div class="px-4 py-5 sm:px-6">
                         <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">Wahlen</h3>
                         <p class="mt-1 max-w">
                             Du bist nicht berechtigt, die Wahlen einzusehen.
                         </p>
-                    </div>
+                    </flux:card>
                 </div>
             </div>
         @endif

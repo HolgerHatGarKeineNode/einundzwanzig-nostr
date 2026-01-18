@@ -38,10 +38,10 @@ class FetchEvents extends Command
         $plebs = \App\Models\EinundzwanzigPleb::query()
             ->get();
 
-        $subscription = new Subscription();
+        $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
 
-        $filter1 = new Filter();
+        $filter1 = new Filter;
         $filter1->setKinds([1]); // You can add multiple kind numbers
         $filter1->setAuthors($plebs->pluck('pubkey')->toArray()); // You can add multiple authors
         $filter1->setLimit(25); // Limit to fetch only a maximum of 25 events
@@ -54,7 +54,7 @@ class FetchEvents extends Command
             new Relay('wss://nostr.wine'),
             new Relay('wss://nos.lol'),
         ];
-        $relaySet = new RelaySet();
+        $relaySet = new RelaySet;
         $relaySet->setRelays($relays);
 
         $request = new Request($relaySet, $requestMessage);
@@ -64,7 +64,7 @@ class FetchEvents extends Command
 
         foreach ($response as $relay => $events) {
             foreach ($events as $event) {
-                if (!isset($uniqueEvents[$event->event->id])) {
+                if (! isset($uniqueEvents[$event->event->id])) {
                     $uniqueEvents[$event->event->id] = $event;
                 }
             }
@@ -97,6 +97,7 @@ class FetchEvents extends Command
                 }
             }
         }
+
         return null;
     }
 
@@ -104,11 +105,12 @@ class FetchEvents extends Command
     {
         foreach ($event->tags as $tag) {
             if ($tag[0] === 'e') {
-                if ((isset($tag[3]) && $tag[3] === 'reply') || (!isset($tag[3]) && isset($tag[2]) && $tag[2] === '')) {
+                if ((isset($tag[3]) && $tag[3] === 'reply') || (! isset($tag[3]) && isset($tag[2]) && $tag[2] === '')) {
                     return 'reply';
                 }
             }
         }
+
         return 'root';
     }
 }

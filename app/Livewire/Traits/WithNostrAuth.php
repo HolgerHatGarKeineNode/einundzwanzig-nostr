@@ -8,8 +8,11 @@ use Livewire\Attributes\On;
 trait WithNostrAuth
 {
     public ?string $currentPubkey = null;
+
     public ?object $currentPleb = null;
+
     public bool $isAllowed = false;
+
     public bool $canEdit = false;
 
     #[On('nostrLoggedIn')]

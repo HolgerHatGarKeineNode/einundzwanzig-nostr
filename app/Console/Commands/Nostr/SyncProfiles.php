@@ -31,7 +31,7 @@ class SyncProfiles extends Command
     {
         $query = EinundzwanzigPleb::query();
 
-        if (!$this->option('all')) {
+        if (! $this->option('all')) {
             $query->whereDoesntHave('profile');
         }
 
@@ -48,7 +48,7 @@ class SyncProfiles extends Command
             $bar->finish();
             $this->info("\n✅ Successfully synced $count profiles!");
         } else {
-            $this->info("⚡ No profiles to sync!");
+            $this->info('⚡ No profiles to sync!');
         }
     }
 }

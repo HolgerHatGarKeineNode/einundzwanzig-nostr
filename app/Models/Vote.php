@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Vote extends Model
 {
-
     /**
      * The attributes that aren't mass assignable.
      *

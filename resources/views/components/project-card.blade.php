@@ -21,8 +21,8 @@
 
 <article
     wire:key="project_{{ $project->id }}"
-    class="flex bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden">
-    <!-- Image -->
+    wire:key="project_{{ $project->id }}"
+    <flux:card class="flex overflow-hidden">
     @if(!$project->sats_paid)
         <a class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
            href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
@@ -124,5 +124,5 @@
             @endif
         </div>
     </div>
-</article>
+    </flux:card>
 @endif

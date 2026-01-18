@@ -319,7 +319,7 @@ new class extends Component {
 
         </div>
 
-        <div class="bg-white dark:bg-[#1B1B1B] shadow-sm rounded-xl mb-8">
+        <flux:card mb-8>
             <div class="flex flex-col md:flex-row md:-mr-px">
 
                 <!-- Sidebar -->
@@ -340,8 +340,7 @@ new class extends Component {
                                 </a>
                             </li>
                         </ul>
-                    </div>
-                </div>
+                                    </flux:card>
 
                 <!-- Panel -->
                 <div class="grow">
@@ -359,7 +358,7 @@ new class extends Component {
                                             Login und Signer-Apps
                                         </div>
                                     </div>
-                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    <flux:card>
                                         <div
                                             class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
                                             <!-- Left side -->
@@ -382,8 +381,8 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    </flux:card>
+                                    <flux:card>
                                         <div
                                             class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
                                             <!-- Left side -->
@@ -407,8 +406,8 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    </flux:card>
+                                    <flux:card>
                                         <div
                                             class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
                                             <!-- Left side -->
@@ -431,8 +430,8 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl px-5 py-4">
+                                    </flux:card>
+                                    <flux:card>
                                         <div
                                             class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
                                             <!-- Left side -->
@@ -454,7 +453,7 @@ new class extends Component {
                                                     Browser Firefox
                                                 </div>
                                             </div>
-                                        </div>
+                                    </flux:card>
                                     </div>
                                 </div>
                             @endif
@@ -476,8 +475,8 @@ new class extends Component {
                                 </template>
                                 @if($currentPubkey && $currentPleb->association_status->value < 2)
                                     <div
-                                        class="inline-flex min-w-80 px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-100">
-                                        <div class="flex w-full justify-between items-start">
+                                        <flux:card>
+<div class="flex w-full justify-between items-start">
                                             <div class="flex">
                                                 <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
                                                      width="16" height="16" viewBox="0 0 16 16">
@@ -486,7 +485,7 @@ new class extends Component {
                                                 </svg>
                                                 <div>Profil in der Datenbank vorhanden.</div>
                                             </div>
-                                        </div>
+                                        </flux:card>
                                     </div>
                                 @endif
                             </div>
@@ -524,8 +523,8 @@ new class extends Component {
                             @endif
                             @if($currentPubkey)
                                 <div
-                                    class="mt-6 inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
-                                    <div class="flex w-full justify-between items-start">
+<flux:card class="mt-6">
+<div class="flex w-full justify-between items-start">
                                         <div class="flex w-full">
                                             <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
                                                  width="16"
@@ -578,7 +577,7 @@ new class extends Component {
                                                     </div>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </flux:card>
                                     </div>
                                 </div>
                             @endif
@@ -588,8 +587,8 @@ new class extends Component {
                             @if($currentPleb && $currentPleb->association_status->value > 1)
                                 <div class="flex flex-col space-y-4">
                                     <div
-                                        class="inline-flex flex-col w-full max-w-lg px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
-                                        <div class="flex w-full justify-between items-start">
+<flux:card class="max-w-lg">
+<div class="flex w-full justify-between items-start">
                                             <div class="flex">
                                                 <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
                                                      width="16"
@@ -604,7 +603,7 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </flux:card>
                                 </div>
                             @endif
                         </section>
@@ -612,8 +611,8 @@ new class extends Component {
                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
                                 <div
-                                    class="inline-flex flex-col w-full px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-400">
-                                    <div class="flex w-full justify-between items-start">
+<flux:card>
+<div class="flex w-full justify-between items-start">
                                         <div class="flex">
                                             <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
                                                  height="16" viewBox="0 0 16 16">
@@ -717,9 +716,12 @@ new class extends Component {
                                                                     </td>
                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
                                                                         @if($payment->btc_pay_invoice)
-                                                                            <x-button target="_blank" xs
-                                                                                      label="Quittung"
-                                                                                      href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"/>
+                                                                            <flux:button href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"
+                                                                                       target="_blank"
+                                                                                       size="xs"
+                                                                                       variant="subtle">
+                                                                                Quittung
+                                                                            </flux:button>
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -731,7 +733,7 @@ new class extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </flux:card>
                             @endif
                         </section>
 

@@ -38,5 +38,4 @@ class EinundzwanzigPleb extends Model implements CipherSweetEncrypted
     {
         return $this->hasMany(PaymentEvent::class);
     }
-
 }

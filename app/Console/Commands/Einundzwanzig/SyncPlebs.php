@@ -36,7 +36,7 @@ class SyncPlebs extends Command
             $npub = str($pleb)->trim();
             EinundzwanzigPleb::updateOrCreate(
                 ['npub' => $npub],
-                ['pubkey' => (new Key())->convertToHex($npub)]
+                ['pubkey' => (new Key)->convertToHex($npub)]
             );
         }
     }

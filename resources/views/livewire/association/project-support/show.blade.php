@@ -48,8 +48,7 @@ class extends Component {
             <div class="md:flex">
                 <!-- Left column -->
                 <div class="w-full md:w-60 mb-4 md:mb-0">
-                    <div
-                        class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
+                    <flux:card>
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
                             Details
                         </h2>
@@ -73,26 +72,25 @@ class extends Component {
                                 </dd>
                             </div>
                         </dl>
-                    </div>
+                    </flux:card>
                 </div>
 
                 <!-- Right column -->
                 <div class="flex-1 md:ml-8">
-                    <div
-                        class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
+                    <flux:card>
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
                             Beschreibung
                         </h2>
                         <p class="text-sm text-gray-800 dark:text-gray-100">
                             {{ $project->description ?? 'Keine Beschreibung' }}
                         </p>
-                    </div>
+                    </flux:card>
                 </div>
             </div>
         </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <div class="bg-white dark:bg-[#1B1B1B] shadow overflow-hidden sm:rounded-lg">
+            <flux:card>
                 <div class="px-4 py-5 sm:px-6">
                     <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-200">
                         Projektförderung
@@ -100,7 +98,7 @@ class extends Component {
                     <p class="mt-1 max-w">
                         Du bist nicht berechtigt, die Projektförderung einzusehen.
                     </p>
-                </div>
+                </flux:card>
             </div>
         </div>
     @endif

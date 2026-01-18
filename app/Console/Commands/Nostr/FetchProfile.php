@@ -31,6 +31,7 @@ class FetchProfile extends Command
         $pubkey = $this->option('pubkey');
         if (empty($pubkey)) {
             $this->error('Please provide a pubkey');
+
             return;
         }
 
