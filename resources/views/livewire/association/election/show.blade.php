@@ -517,8 +517,6 @@ new class extends Component {
                                         Wahl des Präsidiums
                                     </h1>
                                     <div class="grid sm:grid-cols-2 gap-6">
-                                        <div
-                                        <div class="grid sm:grid-cols-2 gap-6">
                                         <flux:card>
 <header>
                                                     <div class="flex items-center justify-between">
@@ -565,12 +563,10 @@ new class extends Component {
                                         </flux:card>
                                     </div>
 
-                                    <h1 class="mt-6 text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                        <h1 class="mt-6 text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
                                         Wahl der übrigen Vorstandsmitglieder
                                     </h1>
                                     <div class="grid gap-6">
-
-                                        <div
                                         <flux:card>
 <div class="flex flex-col h-full p-5">
                                                 <div class="grow mt-2">
@@ -744,6 +740,7 @@ new class extends Component {
                         </div>
 
                     </div>
+                </div>
                 @endif
 
             </div>

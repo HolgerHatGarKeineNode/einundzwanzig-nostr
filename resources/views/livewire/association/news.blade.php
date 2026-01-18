@@ -160,9 +160,7 @@ class extends Component {
 
                             <div class="space-y-2">
                                 @forelse($news as $post)
-                                    <article wire:key="post_{{ $post->id }}"
-                                    <article wire:key="post_{{ $post->id }}"
-                                    <flux:card>
+                                    <flux:card wire:key="post_{{ $post->id }}">
                                             <!-- Avatar -->
                                             <div class="shrink-0 mt-1.5">
                                                 <img class="w-8 h-8 rounded-full"

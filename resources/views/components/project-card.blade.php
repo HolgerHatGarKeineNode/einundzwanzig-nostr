@@ -89,14 +89,15 @@
                 ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
                 || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
                  )
-                <flux:button
-                    icon="trash"
-                    xs
-                    negative
-                    wire:click="confirmDelete({{ $project->id }})"
-                    wire:loading.attr="disabled">
-                    Löschen
-                </flux:button>
+                <flux:modal.trigger name="delete-project">
+                    <flux:button
+                        icon="trash"
+                        xs
+                        negative
+                        wire:loading.attr="disabled">
+                        Löschen
+                    </flux:button>
+                </flux:modal.trigger>
                 <flux:button
                     icon="pencil"
                     xs

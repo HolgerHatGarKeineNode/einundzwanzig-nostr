@@ -4,6 +4,7 @@ use App\Enums\AssociationStatus;
 use App\Livewire\Forms\ApplicationForm;
 use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
+use Flux\Flux;
 use Livewire\Component;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
@@ -14,7 +15,6 @@ use swentel\nostr\Relay\RelaySet;
 use swentel\nostr\Request\Request;
 use swentel\nostr\Sign\Sign;
 use swentel\nostr\Subscription\Subscription;
-use WireUi\Actions\Notification;
 
 new class extends Component {
     public ApplicationForm $form;
@@ -132,8 +132,7 @@ new class extends Component {
         $this->currentPleb->update([
             'email' => $this->email,
         ]);
-        $notification = new Notification($this);
-        $notification->success('E-Mail Adresse gespeichert.');
+        Flux::toast('E-Mail Adresse gespeichert.');
     }
 
     public function pay($comment): \Illuminate\Http\RedirectResponse
@@ -175,9 +174,9 @@ new class extends Component {
 
             return redirect($response->json()['checkoutLink']);
         } catch (\Exception $e) {
-            $notification = new Notification($this);
-            $notification->error(
+            Flux::toast(
                 'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: '.$e->getMessage(),
+                variant: 'danger',
             );
 
             return redirect()->route('association.profile');
@@ -319,7 +318,7 @@ new class extends Component {
 
         </div>
 
-        <flux:card mb-8>
+        <flux:card>
             <div class="flex flex-col md:flex-row md:-mr-px">
 
                 <!-- Sidebar -->
@@ -340,7 +339,7 @@ new class extends Component {
                                 </a>
                             </li>
                         </ul>
-                                    </flux:card>
+                    </div>
 
                 <!-- Panel -->
                 <div class="grow">
@@ -349,7 +348,7 @@ new class extends Component {
                     <div class="p-6 space-y-6">
                         <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
 
-                        <section>
+                         <section>
 
                             @if(!$currentPleb)
                                 <div class="space-y-2 mb-12">
@@ -432,8 +431,6 @@ new class extends Component {
                                         </div>
                                     </flux:card>
                                     <flux:card>
-                                        <div
-                                            class="md:flex justify-between items-center space-y-4 md:space-y-0 space-x-2">
                                             <!-- Left side -->
                                             <div class="flex items-start space-x-3 md:space-x-4">
                                                 <div>
@@ -453,12 +450,10 @@ new class extends Component {
                                                     Browser Firefox
                                                 </div>
                                             </div>
-                                    </flux:card>
-                                    </div>
-                                </div>
-                            @endif
+                                      </flux:card>
+                             @endif
 
-                            <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                 <template x-if="$store.nostr.user">
                                     <div class="flex items">
                                         <img class="w-12 h-12 rounded-full"
@@ -473,10 +468,8 @@ new class extends Component {
                                         </div>
                                     </div>
                                 </template>
-                                @if($currentPubkey && $currentPleb->association_status->value < 2)
-                                    <div
+                                 @if($currentPubkey && $currentPleb->association_status->value < 2)
                                         <flux:card>
-<div class="flex w-full justify-between items-start">
                                             <div class="flex">
                                                 <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
                                                      width="16" height="16" viewBox="0 0 16 16">
@@ -486,13 +479,12 @@ new class extends Component {
                                                 <div>Profil in der Datenbank vorhanden.</div>
                                             </div>
                                         </flux:card>
-                                    </div>
-                                @endif
-                            </div>
+                                     </div>
+                                 @endif
+                             </div>
                         </section>
 
-                        <section>
-                            @if($currentPubkey && !$currentPleb->application_for && $currentPleb->association_status->value < 2)
+                         <section>
                                 <h3 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
                                     Einundzwanzig Mitglied werden
                                 </h3>
@@ -518,11 +510,9 @@ new class extends Component {
                                          <flux:button wire:click="save({{ AssociationStatus::PASSIVE() }})">
                                             Mit deinem aktuellen Nostr-Profil Mitglied werden
                                         </flux:button>
-                                    </div>
-                                </div>
-                            @endif
-                            @if($currentPubkey)
-                                <div
+                                     </div>
+                                  </div>
+                              @if($currentPubkey)
 <flux:card class="mt-6">
 <div class="flex w-full justify-between items-start">
                                         <div class="flex w-full">
@@ -570,22 +560,26 @@ new class extends Component {
                                                             <flux:error name="email" />
                                                         </flux:field>
                                                     </div>
-                                                    <div wire:key="showSave" class="flex space-x-2 mt-2">
+                                                     <div wire:key="showSave" class="flex space-x-2 mt-2">
                                                         <flux:button wire:click="saveEmail" wire:loading.attr="disabled">
                                                         Speichern
                                                     </flux:button>
                                                     </div>
                                                 @endif
-                                            </div>
-                                        </flux:card>
-                                    </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+@endif
+@endif
                                 </div>
-                            @endif
-                        </section>
+                            </div>
+                             @endif
+                         </section>
 
-                        <section>
-                            @if($currentPleb && $currentPleb->association_status->value > 1)
-                                <div class="flex flex-col space-y-4">
+                          <section>
+                             @if($currentPleb && $currentPleb->association_status->value > 1)
+                                 <div class="flex flex-col space-y-4">
                                     <div
 <flux:card class="max-w-lg">
 <div class="flex w-full justify-between items-start">
@@ -603,14 +597,13 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                    </flux:card>
-                                </div>
-                            @endif
-                        </section>
+                                     </flux:card>
+                                 </div>
+                             @endif
+                          </section>
 
-                        <section>
+                         <section>
                             @if($currentPleb && $currentPleb->association_status->value > 1)
-                                <div
 <flux:card>
 <div class="flex w-full justify-between items-start">
                                         <div class="flex">
@@ -626,47 +619,36 @@ new class extends Component {
                                                         Mitgliedsbeitrags: <span
                                                             class="break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
                                                     </p>
-                                                    <div>
-                                                        @php
-                                                            // latest event by created_at field of $events
-                                                            $latestEvent = collect($events)->sortByDesc('created_at')->first();
-                                                        @endphp
-                                                        @if(isset($latestEvent))
+                                                     <div>
+                                                         @if(isset($latestEvent))
                                                             <p>{{ $latestEvent['content'] }}</p>
                                                             <div class="mt-8">
                                                                 @if(!$currentYearIsPaid)
                                                                     <div class="flex justify-center">
-                                                                        <button
-                                                                            wire:click="pay('{{ date('Y') }}:{{ $currentPubkey }}')"
-                                                                            class="btn text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-green-500"
-                                                                        >
+                                                                        <flux:button wire:click="pay('{{ date('Y') }}:{{ $currentPubkey }}')" class="text-2xl">
                                                                             <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
                                                                             Pay {{ $amountToPay }} Sats
-                                                                        </button>
+                                                                        </flux:button>
                                                                     </div>
                                                                 @else
                                                                 @if($currentYearIsPaid)
                                                                     <div class="flex sm:justify-center">
-                                                                        <div
-                                                                            class="btn sm:text-2xl dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 text-green-500"
-                                                                        >
+                                                                        <flux:button disabled class="sm:text-2xl">
                                                                             <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
                                                                             aktuelles Jahr bezahlt
-                                                                        </div>
+                                                                        </flux:button>
                                                                     </div>
                                                                 @endif
                                                                 @endif
                                                             </div>
                                                         @else
                                                             <div class="flex sm:justify-center">
-                                                                <button
-                                                                    class="btn dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-amber-500"
-                                                                >
+                                                                <flux:button disabled>
                                                                     <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
                                                                     Unser Nostr-Relay konnte derzeit nicht erreicht
                                                                     werden, um eine Zahlung zu initialisieren. Bitte
                                                                     versuche es später noch einmal.
-                                                                </button>
+                                                                </flux:button>
                                                             </div>
                                                         @endif
                                                     </div>
@@ -693,49 +675,49 @@ new class extends Component {
                                                                 </th>
                                                             </tr>
                                                             </thead>
-                                                            <!-- Table body -->
-                                                            <tbody class="text-sm">
-                                                            @foreach($payments as $payment)
-                                                                <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
-                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                        <div
-                                                                            class="text-left font-medium text-gray-800 dark:text-gray-100">
-                                                                            <span class="sm:hidden">Sats:</span>
-                                                                            {{ $payment->amount }}
-                                                                        </div>
-                                                                    </td>
-                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                        <div
-                                                                            class="text-left"><span
-                                                                                class="sm:hidden">Jahr:</span>{{ $payment->year }}
-                                                                        </div>
-                                                                    </td>
-                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                        <div
-                                                                            class="text-left font-medium break-all">{{ $payment->event_id }}</div>
-                                                                    </td>
-                                                                    <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                        @if($payment->btc_pay_invoice)
-                                                                            <flux:button href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"
-                                                                                       target="_blank"
-                                                                                       size="xs"
-                                                                                       variant="subtle">
-                                                                                Quittung
-                                                                            </flux:button>
-                                                                        @endif
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                            </tbody>
+                                                             <!-- Table body -->
+                                                              <tbody class="text-sm">
+                                                                  @foreach($payments as $payment)
+                                                                  <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
+                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                         <div
+                                                                             class="text-left font-medium text-gray-800 dark:text-gray-100">
+                                                                             <span class="sm:hidden">Sats:</span>
+                                                                             {{ $payment->amount }}
+                                                                         </div>
+                                                                     </td>
+                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                         <div
+                                                                             class="text-left"><span
+                                                                                 class="sm:hidden">Jahr:</span>{{ $payment->year }}
+                                                                         </div>
+                                                                     </td>
+                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                         <div
+                                                                             class="text-left font-medium break-all">{{ $payment->event_id }}</div>
+                                                                     </td>
+                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                         @if($payment->btc_pay_invoice)
+                                                                             <flux:button href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"
+                                                                                        target="_blank"
+                                                                                        size="xs"
+                                                                                        variant="subtle">
+                                                                                 Quittung
+                                                                             </flux:button>
+                                                                         @endif
+                                                                     </td>
+                                                                 </tr>
+                                                                  @endforeach
+                                                              </tbody>
                                                         </table>
                                                     </section>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </flux:card>
-                            @endif
-                        </section>
+                                 </flux:card>
+                             @endif
+                         </section>
 
                     </div>
 
@@ -743,6 +725,7 @@ new class extends Component {
 
             </div>
         </div>
+    </div>
 
     </div>
 </div>

@@ -2,11 +2,13 @@
 
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
+use Flux\Flux;
 use Livewire\Component;
-use WireUi\Actions\Notification;
 
 new class extends Component {
     public string $activeFilter = 'all';
+
+    public ?string $confirmDeleteId = null;
 
     public string $search = '';
 
@@ -74,16 +76,8 @@ new class extends Component {
 
     public function confirmDelete($id): void
     {
-        $notification = new Notification($this);
-        $notification->confirm([
-            'title' => 'Projektunterstützung löschen',
-            'message' => 'Bist du sicher, dass du diese Projektunterstützung löschen möchtest?',
-            'accept' => [
-                'label' => 'Ja, löschen',
-                'method' => 'delete',
-                'params' => $id,
-            ],
-        ]);
+        $this->confirmDeleteId = $id;
+        Flux::modal('delete-project')->show();
     }
 
     public function setFilter($filter): void
@@ -91,10 +85,12 @@ new class extends Component {
         $this->activeFilter = $filter;
     }
 
-    public function delete($id): void
+    public function delete(): void
     {
-        ProjectProposal::query()->findOrFail($id)->delete();
+        ProjectProposal::query()->findOrFail($this->confirmDeleteId)->delete();
+        Flux::toast('Projektunterstützung gelöscht.');
         $this->loadProjects();
+        Flux::modals()->close();
     }
 
 };
@@ -169,6 +165,26 @@ new class extends Component {
                     <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
                 @endforeach
             </div>
+
+            <!-- Confirmation modal -->
+            <flux:modal name="delete-project" class="min-w-[22rem]">
+                <div class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Projektunterstützung löschen</flux:heading>
+                        <flux:text class="mt-2">
+                            <p>Bist du sicher, dass du diese Projektunterstützung löschen möchtest?</p>
+                            <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                        </flux:text>
+                    </div>
+                    <div class="flex gap-2">
+                        <flux:spacer />
+                        <flux:modal.close>
+                            <flux:button variant="ghost">Abbrechen</flux:button>
+                        </flux:modal.close>
+                        <flux:button type="submit" wire:click="delete" variant="danger">Ja, löschen</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
 
         </div>
     </div>
