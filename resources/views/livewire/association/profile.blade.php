@@ -54,12 +54,12 @@ new class extends Component {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->currentPleb = EinundzwanzigPleb::query()
                 ->with([
-                    'paymentEvents' => fn ($query) => $query->where('year', date('Y')),
+                    'paymentEvents' => fn($query) => $query->where('year', date('Y')),
                 ])
                 ->where('pubkey', $this->currentPubkey)->first();
             if ($this->currentPleb) {
                 $this->email = $this->currentPleb->email;
-                $this->showEmail = ! $this->no;
+                $this->showEmail = !$this->no;
                 if ($this->currentPleb->association_status === AssociationStatus::ACTIVE) {
                     $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
                 }
@@ -80,12 +80,12 @@ new class extends Component {
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->with([
-                'paymentEvents' => fn ($query) => $query->where('year', date('Y')),
+                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
             ])
             ->where('pubkey', $pubkey)->first();
         $this->email = $this->currentPleb->email;
         $this->no = $this->currentPleb->no_email;
-        $this->showEmail = ! $this->no;
+        $this->showEmail = !$this->no;
         if ($this->currentPleb->association_status === AssociationStatus::ACTIVE) {
             $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
         }
@@ -113,7 +113,7 @@ new class extends Component {
 
     public function updatedNo(): void
     {
-        $this->showEmail = ! $this->no;
+        $this->showEmail = !$this->no;
         $this->currentPleb->update([
             'no_email' => $this->no,
         ]);
@@ -220,7 +220,7 @@ new class extends Component {
     public function save($type): void
     {
         $this->form->validate();
-        if (! $this->form->check) {
+        if (!$this->form->check) {
             $this->js('alert("Du musst den Statuten zustimmen.")');
 
             return;
@@ -285,7 +285,7 @@ new class extends Component {
 
         $this->events = collect($response[config('services.relay')])
             ->map(function ($event) {
-                if (! isset($event->event)) {
+                if (!isset($event->event)) {
                     return false;
                 }
 
@@ -319,8 +319,6 @@ new class extends Component {
         </div>
 
         <flux:card>
-            <div class="flex flex-col md:flex-row md:-mr-px">
-
                 <!-- Sidebar -->
                 <div
                     class="flex flex-nowrap overflow-x-scroll no-scrollbar md:block md:overflow-auto px-3 py-6 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700/60 min-w-60 md:space-y-3">
@@ -341,20 +339,20 @@ new class extends Component {
                         </ul>
                     </div>
 
-                <!-- Panel -->
-                <div class="grow">
+                    <!-- Panel -->
+                    <div class="grow">
 
-                    <!-- Panel body -->
-                    <div class="p-6 space-y-6">
-                        <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">Aktueller Status</h2>
+                        <!-- Panel body -->
+                        <div class="p-6 space-y-6">
+                            <h2 class="sm:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-5">
+                                Aktueller Status
+                            </h2>
 
-                         <section>
-
-                            @if(!$currentPleb)
+                            <section>
                                 <div class="space-y-2 mb-12">
                                     <div class="flex justify-between items-center mb-4">
-                                        <div class="text-xl text-gray-500 dark:text-gray-400 italic">Empfohlene Nostr
-                                            Login und Signer-Apps
+                                        <div class="text-xl text-gray-500 dark:text-gray-400 italic">
+                                            Empfohlene Nostr Login und Signer-Apps
                                         </div>
                                     </div>
                                     <flux:card>
@@ -367,7 +365,8 @@ new class extends Component {
                                                        href="https://github.com/greenart7c3/Amber">
                                                         Amber
                                                     </a>
-                                                    <div class="text-sm">Perfekt für mobile Android Geräte. Eine App, in
+                                                    <div class="text-sm">Perfekt für mobile Android Geräte. Eine
+                                                        App, in
                                                         der man alle Keys/nsecs verwalten kann.
                                                     </div>
                                                 </div>
@@ -392,7 +391,8 @@ new class extends Component {
                                                         Alby - Bitcoin Lightning Wallet & Nostr
                                                     </a>
                                                     <div class="text-sm">
-                                                        Browser-Erweiterung in die man seinen Key/nsec eingeben kann.
+                                                        Browser-Erweiterung in die man seinen Key/nsec eingeben
+                                                        kann.
                                                         Pro Alby-Konto ein nsec.
                                                     </div>
                                                 </div>
@@ -431,92 +431,92 @@ new class extends Component {
                                         </div>
                                     </flux:card>
                                     <flux:card>
-                                            <!-- Left side -->
-                                            <div class="flex items-start space-x-3 md:space-x-4">
-                                                <div>
-                                                    <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
-                                                       href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
-                                                        nos2x-fox
-                                                    </a>
-                                                    <div class="text-sm">
-                                                        Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
-                                                    </div>
+                                        <!-- Left side -->
+                                        <div class="flex items-start space-x-3 md:space-x-4">
+                                            <div>
+                                                <a class="inline-flex font-semibold text-gray-800 dark:text-gray-100"
+                                                   href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
+                                                    nos2x-fox
+                                                </a>
+                                                <div class="text-sm">
+                                                    Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
                                                 </div>
                                             </div>
-                                            <!-- Right side -->
-                                            <div class="flex items-center space-x-4 pl-10 md:pl-0">
-                                                <div
-                                                    class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full text-center px-2.5 py-1">
-                                                    Browser Firefox
-                                                </div>
-                                            </div>
-                                      </flux:card>
-                             @endif
-
-                             <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                <template x-if="$store.nostr.user">
-                                    <div class="flex items">
-                                        <img class="w-12 h-12 rounded-full"
-                                             x-bind:src="$store.nostr.user.picture || '{{ asset('apple-touch-icon.png') }}'"
-                                             alt="Avatar">
-                                        <div class="ml-4">
-                                            <h3 class="w-48 sm:w-full truncate text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
-                                                x-text="$store.nostr.user.display_name"></h3>
-                                            <div
-                                                class="w-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
-                                                x-text="$store.nostr.user.name"></div>
                                         </div>
-                                    </div>
-                                </template>
-                                 @if($currentPubkey && $currentPleb->association_status->value < 2)
-                                        <flux:card>
-                                            <div class="flex">
-                                                <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
-                                                     width="16" height="16" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
-                                                </svg>
-                                                <div>Profil in der Datenbank vorhanden.</div>
+                                        <!-- Right side -->
+                                        <div class="flex items-center space-x-4 pl-10 md:pl-0">
+                                            <div
+                                                class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full text-center px-2.5 py-1">
+                                                Browser Firefox
                                             </div>
-                                        </flux:card>
-                                     </div>
-                                 @endif
-                             </div>
-                        </section>
+                                        </div>
+                                    </flux:card>
 
-                         <section>
+                                    <div class="flex flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                        <template x-if="$store.nostr.user">
+                                            <div class="flex items">
+                                                <img class="w-12 h-12 rounded-full"
+                                                     x-bind:src="$store.nostr.user.picture || '{{ asset('apple-touch-icon.png') }}'"
+                                                     alt="Avatar">
+                                                <div class="ml-4">
+                                                    <h3 class="w-48 sm:w-full truncate text-lg leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold"
+                                                        x-text="$store.nostr.user.display_name"></h3>
+                                                    <div
+                                                        class="w-48 sm:w-full truncate text-sm text-gray-500 dark:text-gray-400"
+                                                        x-text="$store.nostr.user.name"></div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        @if($currentPubkey && $currentPleb->association_status->value < 2)
+                                            <flux:card>
+                                                <div class="flex">
+                                                    <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
+                                                         width="16" height="16" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
+                                                    </svg>
+                                                    <div>Profil in der Datenbank vorhanden.</div>
+                                                </div>
+                                            </flux:card>
+                                        @endif
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section>
                                 <h3 class="text-xl leading-snug text-[#1B1B1B] dark:text-gray-100 font-bold mb-1">
                                     Einundzwanzig Mitglied werden
                                 </h3>
                                 <h4 class="text-xs leading-snug text-[#1B1B1B] dark:text-gray-100 font-italic mb-1">
                                     Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr.<br>
-                                    <a href="https://einundzwanzig.space/verein/" class="text-amber-500">Firmen melden
-                                        sich bitte direkt an den Vorstand.</a>
+                                    <a href="https://einundzwanzig.space/verein/" class="text-amber-500">
+                                        Firmen melden sich bitte direkt an den Vorstand.
+                                    </a>
                                 </h4>
                                 <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
-                                     <div class="sm:w-1/2 flex flex-col space-y-2">
-                                         <div class="flex items-center space-x-2">
-                                              <div wire:dirty>
-                                                  <flux:field variant="inline">
-                                                      <flux:checkbox wire:model="form.check" label="Ich stimme den Vereins-Statuten zu"/>
-                                                      <flux:error name="form.check" />
-                                                  </flux:field>
-                                              </div>
+                                    <div class="sm:w-1/2 flex flex-col space-y-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div wire:dirty>
+                                                <flux:field variant="inline">
+                                                    <flux:checkbox wire:model="form.check"
+                                                                   label="Ich stimme den Vereins-Statuten zu"/>
+                                                    <flux:error name="form.check"/>
+                                                </flux:field>
+                                            </div>
                                             <div>
                                                 <a href="https://einundzwanzig.space/verein/" target="_blank"
                                                    class="text-amber-500">Statuten</a>
                                             </div>
                                         </div>
-                                         <flux:button wire:click="save({{ AssociationStatus::PASSIVE() }})">
+                                        <flux:button wire:click="save({{ AssociationStatus::PASSIVE() }})">
                                             Mit deinem aktuellen Nostr-Profil Mitglied werden
                                         </flux:button>
-                                     </div>
-                                  </div>
-                              @if($currentPubkey)
-<flux:card class="mt-6">
-<div class="flex w-full justify-between items-start">
+                                    </div>
+                                </div>
+                                <flux:card class="mt-6">
+                                    <div class="flex w-full justify-between items-start">
                                         <div class="flex w-full">
-                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3"
+                                            <svg class="shrink-0 fill-current text-yellow-500 mt-0.75 mr-3"
                                                  width="16"
                                                  height="16" viewBox="0 0 16 16">
                                                 <path
@@ -535,197 +535,191 @@ new class extends Component {
                                                     diese Adresse AES-256 verschlüsselt in der Datenbank ab.
                                                 </div>
                                                 <div
-                                                     class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
-                                                      <flux:field variant="inline" xl>
-                                                            <flux:label>NEIN</flux:label>
-                                                            <flux:description>Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.</flux:description>
-                                                            <flux:switch
-                                                                wire:model.live="no"
-                                                                wire:dirty
-                                                            />
-                                                            <flux:error name="no" />
-                                                        </flux:field>
+                                                    class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 text-amber-500">
+                                                    <flux:field variant="inline" xl>
+                                                        <flux:label>NEIN</flux:label>
+                                                        <flux:description>Ich informiere mich selbst in der News
+                                                            Sektion und gebe keine E-Mail Adresse raus.
+                                                        </flux:description>
+                                                        <flux:switch
+                                                            wire:model.live="no"
+                                                            wire:dirty
+                                                        />
+                                                        <flux:error name="no"/>
+                                                    </flux:field>
                                                 </div>
-                                                @if($showEmail)
-                                                    <div wire:key="showEmail"
-                                                         class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                                         <flux:field>
-                                                            <flux:label>Fax-Nummer</flux:label>
-                                                            <flux:input wire:model.live.debounce="fax" wire:dirty placeholder="Fax-Nummer"/>
-                                                            <flux:error name="fax" />
-                                                        </flux:field>
-                                                        <flux:field>
-                                                            <flux:label>E-Mail Adresse</flux:label>
-                                                            <flux:input type="email" wire:model.live.debounce="email" wire:dirty placeholder="E-Mail Adresse"/>
-                                                            <flux:error name="email" />
-                                                        </flux:field>
-                                                    </div>
-                                                     <div wire:key="showSave" class="flex space-x-2 mt-2">
-                                                        <flux:button wire:click="saveEmail" wire:loading.attr="disabled">
+                                                <div wire:key="showEmail"
+                                                     class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                                    <flux:field>
+                                                        <flux:label>Fax-Nummer</flux:label>
+                                                        <flux:input wire:model.live.debounce="fax" wire:dirty
+                                                                    placeholder="Fax-Nummer"/>
+                                                        <flux:error name="fax"/>
+                                                    </flux:field>
+                                                    <flux:field>
+                                                        <flux:label>E-Mail Adresse</flux:label>
+                                                        <flux:input type="email"
+                                                                    wire:model.live.debounce="email" wire:dirty
+                                                                    placeholder="E-Mail Adresse"/>
+                                                        <flux:error name="email"/>
+                                                    </flux:field>
+                                                </div>
+                                                <div wire:key="showSave" class="flex space-x-2 mt-2">
+                                                    <flux:button wire:click="saveEmail"
+                                                                 wire:loading.attr="disabled">
                                                         Speichern
                                                     </flux:button>
-                                                    </div>
-                                                @endif
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-@endif
-@endif
-                                </div>
-                            </div>
-                             @endif
-                         </section>
-
-                          <section>
-                             @if($currentPleb && $currentPleb->association_status->value > 1)
-                                 <div class="flex flex-col space-y-4">
-                                    <div
-<flux:card class="max-w-lg">
-<div class="flex w-full justify-between items-start">
-                                            <div class="flex">
-                                                <svg class="shrink-0 fill-current text-green-500 mt-[3px] mr-3"
-                                                     width="16"
-                                                     height="16" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
-                                                </svg>
-                                                <div>
-                                                    <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
-                                                        Du bist derzeit ein Mitglied des Vereins.
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                     </flux:card>
-                                 </div>
-                             @endif
-                          </section>
-
-                         <section>
-                            @if($currentPleb && $currentPleb->association_status->value > 1)
-<flux:card>
-<div class="flex w-full justify-between items-start">
-                                        <div class="flex">
-                                            <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
-                                                 height="16" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
-                                            </svg>
-                                            <div>
-                                                <div
-                                                    class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
-                                                    <p>Nostr Event für die Zahlung des
-                                                        Mitgliedsbeitrags: <span
-                                                            class="break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
-                                                    </p>
-                                                     <div>
-                                                         @if(isset($latestEvent))
-                                                            <p>{{ $latestEvent['content'] }}</p>
-                                                            <div class="mt-8">
-                                                                @if(!$currentYearIsPaid)
-                                                                    <div class="flex justify-center">
-                                                                        <flux:button wire:click="pay('{{ date('Y') }}:{{ $currentPubkey }}')" class="text-2xl">
-                                                                            <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
-                                                                            Pay {{ $amountToPay }} Sats
-                                                                        </flux:button>
-                                                                    </div>
-                                                                @else
-                                                                @if($currentYearIsPaid)
-                                                                    <div class="flex sm:justify-center">
-                                                                        <flux:button disabled class="sm:text-2xl">
-                                                                            <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
-                                                                            aktuelles Jahr bezahlt
-                                                                        </flux:button>
-                                                                    </div>
-                                                                @endif
-                                                                @endif
-                                                            </div>
-                                                        @else
-                                                            <div class="flex sm:justify-center">
-                                                                <flux:button disabled>
-                                                                    <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
-                                                                    Unser Nostr-Relay konnte derzeit nicht erreicht
-                                                                    werden, um eine Zahlung zu initialisieren. Bitte
-                                                                    versuche es später noch einmal.
-                                                                </flux:button>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <section>
-                                                        <h3 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1">
-                                                            bisherige Zahlungen</h3>
-                                                        <!-- Table -->
-                                                        <table class="table-auto w-full dark:text-gray-400">
-                                                            <!-- Table header -->
-                                                            <thead
-                                                                class="text-xs uppercase text-gray-400 dark:text-gray-500">
-                                                            <tr class="flex flex-wrap md:table-row md:flex-no-wrap">
-                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
-                                                                    <div class="font-semibold text-left">Satoshis</div>
-                                                                </th>
-                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
-                                                                    <div class="font-semibold text-left">Jahr</div>
-                                                                </th>
-                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
-                                                                    <div class="font-semibold text-left">Event-ID</div>
-                                                                </th>
-                                                                <th class="w-full hidden md:w-auto md:table-cell py-2">
-                                                                    <div class="font-semibold text-left">Quittung</div>
-                                                                </th>
-                                                            </tr>
-                                                            </thead>
-                                                             <!-- Table body -->
-                                                              <tbody class="text-sm">
-                                                                  @foreach($payments as $payment)
-                                                                  <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
-                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                         <div
-                                                                             class="text-left font-medium text-gray-800 dark:text-gray-100">
-                                                                             <span class="sm:hidden">Sats:</span>
-                                                                             {{ $payment->amount }}
-                                                                         </div>
-                                                                     </td>
-                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                         <div
-                                                                             class="text-left"><span
-                                                                                 class="sm:hidden">Jahr:</span>{{ $payment->year }}
-                                                                         </div>
-                                                                     </td>
-                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                         <div
-                                                                             class="text-left font-medium break-all">{{ $payment->event_id }}</div>
-                                                                     </td>
-                                                                     <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
-                                                                         @if($payment->btc_pay_invoice)
-                                                                             <flux:button href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"
-                                                                                        target="_blank"
-                                                                                        size="xs"
-                                                                                        variant="subtle">
-                                                                                 Quittung
-                                                                             </flux:button>
-                                                                         @endif
-                                                                     </td>
-                                                                 </tr>
-                                                                  @endforeach
-                                                              </tbody>
-                                                        </table>
-                                                    </section>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                 </flux:card>
-                             @endif
-                         </section>
-
+                                </flux:card>
+                            </section>
+                        </div>
                     </div>
-
                 </div>
 
-            </div>
-        </div>
-    </div>
+                <section>
+                    @if($currentPleb && $currentPleb->association_status->value > 1)
+                        <div class="flex flex-col space-y-4">
+                            <flux:card class="max-w-lg">
+                                <div class="flex w-full justify-between items-start">
+                                    <div class="flex">
+                                        <svg class="shrink-0 fill-current text-green-500 mt-0.75 mr-3"
+                                             width="16"
+                                             height="16" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                        </svg>
+                                        <div>
+                                            <div class="font-medium text-gray-800 dark:text-gray-100 mb-1">
+                                                Du bist derzeit ein Mitglied des Vereins.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </flux:card>
+                        </div>
+                    @endif
+                </section>
 
+                <section>
+                    @if($currentPleb && $currentPleb->association_status->value > 1)
+                        <flux:card>
+                            <div class="flex w-full justify-between items-start">
+                                <div class="flex">
+                                    <svg class="shrink-0 fill-current text-yellow-500 mt-[3px] mr-3" width="16"
+                                         height="16" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
+                                    </svg>
+                                    <div>
+                                        <div
+                                            class="font-medium text-gray-800 dark:text-gray-100 mb-1 space-y-2">
+                                            <p>
+                                                Nostr Event für die Zahlung des Mitgliedsbeitrags: <span
+                                                    class="break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
+                                            </p>
+                                            <div>
+                                                @if(isset($latestEvent))
+                                                    <p>{{ $latestEvent['content'] }}</p>
+                                                    <div class="mt-8">
+                                                        @if(!$currentYearIsPaid)
+                                                            <div class="flex justify-center">
+                                                                <flux:button
+                                                                    wire:click="pay('{{ date('Y') }}:{{ $currentPubkey }}')"
+                                                                    class="text-2xl">
+                                                                    <i class="fa-sharp-duotone fa-solid fa-bolt-lightning mr-2"></i>
+                                                                    Pay {{ $amountToPay }} Sats
+                                                                </flux:button>
+                                                            </div>
+                                                        @elseif($currentYearIsPaid)
+                                                            <div class="flex sm:justify-center">
+                                                                <flux:button disabled class="sm:text-2xl">
+                                                                    <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
+                                                                    aktuelles Jahr bezahlt
+                                                                </flux:button>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <div class="flex sm:justify-center">
+                                                        <flux:button disabled>
+                                                            <i class="fa-sharp-duotone fa-solid fa-user-helmet-safety mr-2"></i>
+                                                            Unser Nostr-Relay konnte derzeit nicht erreicht
+                                                            werden, um eine Zahlung zu initialisieren. Bitte
+                                                            versuche es später noch einmal.
+                                                        </flux:button>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <section>
+                                                <h3 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1">
+                                                    bisherige Zahlungen</h3>
+                                                <!-- Table -->
+                                                <table class="table-auto w-full dark:text-gray-400">
+                                                    <!-- Table header -->
+                                                    <thead
+                                                        class="text-xs uppercase text-gray-400 dark:text-gray-500">
+                                                    <tr class="flex flex-wrap md:table-row md:flex-no-wrap">
+                                                        <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                            <div class="font-semibold text-left">Satoshis</div>
+                                                        </th>
+                                                        <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                            <div class="font-semibold text-left">Jahr</div>
+                                                        </th>
+                                                        <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                            <div class="font-semibold text-left">Event-ID</div>
+                                                        </th>
+                                                        <th class="w-full hidden md:w-auto md:table-cell py-2">
+                                                            <div class="font-semibold text-left">Quittung</div>
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <!-- Table body -->
+                                                    <tbody class="text-sm">
+                                                    @foreach($payments as $payment)
+                                                        <tr class="flex flex-wrap md:table-row md:flex-no-wrap border-b border-gray-200 dark:border-gray-700/60 py-2 md:py-0">
+                                                            <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                <div
+                                                                    class="text-left font-medium text-gray-800 dark:text-gray-100">
+                                                                    <span class="sm:hidden">Sats:</span>
+                                                                    {{ $payment->amount }}
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                <div
+                                                                    class="text-left"><span
+                                                                        class="sm:hidden">Jahr:</span>{{ $payment->year }}
+                                                                </div>
+                                                            </td>
+                                                            <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                <div
+                                                                    class="text-left font-medium break-all">{{ $payment->event_id }}</div>
+                                                            </td>
+                                                            <td class="w-full block md:w-auto md:table-cell py-0.5 md:py-2">
+                                                                @if($payment->btc_pay_invoice)
+                                                                    <flux:button
+                                                                        href="https://pay.einundzwanzig.space/i/{{ $payment->btc_pay_invoice }}/receipt"
+                                                                        target="_blank"
+                                                                        size="xs"
+                                                                        variant="subtle">
+                                                                        Quittung
+                                                                    </flux:button>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </flux:card>
+                    @endif
+                </section>
+        </flux:card>
     </div>
 </div>
