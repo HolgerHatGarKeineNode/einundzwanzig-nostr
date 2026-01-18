@@ -7,17 +7,18 @@ use App\Models\EinundzwanzigPleb;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
-use PowerComponents\LivewirePowerGrid\Detail;
-use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Footer;
-use PowerComponents\LivewirePowerGrid\Header;
+use PowerComponents\LivewirePowerGrid\Components\SetUp\Exportable;
+use PowerComponents\LivewirePowerGrid\Facades\PowerGrid;
+use PowerComponents\LivewirePowerGrid\Facades\Rule;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use PowerComponents\LivewirePowerGrid\PowerGridFields;
+use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 
 class EinundzwanzigPlebTable extends PowerGridComponent
 {
-    public string $sortField = 'association_status';
+    use WithExport;
 
-    public string $sortDirection = 'desc';
+    public string $tableName = 'einundzwanzig-pleb-table';
 
     public string $sortField = 'association_status';
 
@@ -26,14 +27,14 @@ class EinundzwanzigPlebTable extends PowerGridComponent
     public function setUp(): array
     {
         return [
-            Exportable::make('export')
+            PowerGrid::exportable('export')
                 ->striped()
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
-            Header::make()->showSearchInput(),
-            Footer::make()
+            PowerGrid::header()->showSearchInput(),
+            PowerGrid::footer()
                 ->showPerPage(0)
                 ->showRecordCount(),
-            Detail::make()
+            PowerGrid::detail()
                 ->view('components.detail')
                 ->showCollapseIcon()
                 ->params([]),
