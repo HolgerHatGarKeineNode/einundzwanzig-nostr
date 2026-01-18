@@ -4,14 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {!! seo($seo ?? null) !!}
-
     <title>{{ $title ?? 'Page Title' }}</title>
-    @livewireStyles
-    @stack('scripts')
-    @vite(['resources/js/app.js','resources/css/app.css'])
-    @googlefonts
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
-    @include('components.layouts.partials.styles')
+    @googlefonts
+    @vite(['resources/js/app.js','resources/css/app.css'])
+    @livewireStyles
     @fluxAppearance
 </head>
 <body class="min-h-screen bg-white dark:bg-zinc-800 antialiased"
@@ -79,7 +76,7 @@
                 <flux:sidebar.item icon="hand-heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:sidebar.item>
             @endif
 
-            @include('components.layouts.navigation.admin')
+            <x-layouts.navigation.admin :currentRoute="request()->route()->getName()"/>
         </flux:sidebar.nav>
     </flux:sidebar>
 

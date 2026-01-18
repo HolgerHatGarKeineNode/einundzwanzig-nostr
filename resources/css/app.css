@@ -1,8 +1,114 @@
-@import 'tailwindcss';
-@import '../../vendor/livewire/flux/dist/flux.css';
+@import "tailwindcss";
+@import "../../vendor/livewire/flux/dist/flux.css";
+
+/* ----------------------------------------
+   CONTENT SCANNING (Tailwind v4 CSS-first)
+   Keep paths MINIMAL and NON-RECURSIVE
+----------------------------------------- */
+@source "../views/**/*.blade.php";
+@source "../js/**/*.js";
+
+/* Flux runtime templates ONLY (no stubs) */
+@source "../../vendor/livewire/flux/dist/**/*.blade.php";
+
+/* ----------------------------------------
+   Custom variants
+----------------------------------------- */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* See Alpine.js: https://github.com/alpinejs/alpine#x-cloak */
+/* ----------------------------------------
+   Theme tokens
+----------------------------------------- */
+@theme {
+    --font-sans: "Inconsolata", monospace;
+
+    --color-zinc-50: var(--color-neutral-50);
+    --color-zinc-100: var(--color-neutral-100);
+    --color-zinc-200: var(--color-neutral-200);
+    --color-zinc-300: var(--color-neutral-300);
+    --color-zinc-400: var(--color-neutral-400);
+    --color-zinc-500: var(--color-neutral-500);
+    --color-zinc-600: var(--color-neutral-600);
+    --color-zinc-700: var(--color-neutral-700);
+    --color-zinc-800: var(--color-neutral-800);
+    --color-zinc-900: var(--color-neutral-900);
+    --color-zinc-950: var(--color-neutral-950);
+
+    --color-accent: var(--color-neutral-800);
+    --color-accent-content: var(--color-neutral-800);
+    --color-accent-foreground: var(--color-white);
+}
+
+/* ----------------------------------------
+   Dark mode overrides
+----------------------------------------- */
+@layer theme {
+    .dark {
+        --color-accent: var(--color-white);
+        --color-accent-content: var(--color-white);
+        --color-accent-foreground: var(--color-neutral-800);
+    }
+}
+
+/* ----------------------------------------
+   Base layer tweaks
+----------------------------------------- */
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+}
+
+/* ----------------------------------------
+   Alpine.js helpers
+----------------------------------------- */
 [x-cloak=""] {
     display: none;
+}
+
+@media screen and (max-width: theme(screens.lg)) {
+    [x-cloak="lg"] {
+        display: none;
+    }
+}
+
+/* ----------------------------------------
+   Flux UI helpers
+----------------------------------------- */
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* ----------------------------------------
+   Leaflet overrides
+----------------------------------------- */
+.leaflet-popup-content-wrapper {
+    background-color: #404040 !important;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+    background-color: #404040 !important;
+}
+
+.leaflet-container a {
+    color: unset !important;
 }

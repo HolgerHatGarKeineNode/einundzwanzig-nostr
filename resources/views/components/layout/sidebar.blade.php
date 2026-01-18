@@ -60,13 +60,9 @@ new class extends Component {
 
         <!-- Links -->
         <div class="space-y-8">
-            {{--@include('components.layouts.navigation.meetups')--}}
-            @include('components.layouts.navigation.association')
-            {{--@include('components.layouts.navigation.events')
-            @include('components.layouts.navigation.courses')
-            @include('components.layouts.navigation.nostr')
-            @include('components.layouts.navigation.legacy')--}}
-            @include('components.layouts.navigation.admin')
+            @dd($currentRoute)
+            <x-layouts.navigation.association :currentRoute="$currentRoute"/>
+            <x-layouts.navigation.admin :currentRoute="$currentRoute"/>
         </div>
 
         <!-- Expand / collapse button -->

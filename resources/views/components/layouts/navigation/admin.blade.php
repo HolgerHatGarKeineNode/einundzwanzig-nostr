@@ -1,4 +1,12 @@
-<!-- Admin group -->
+@props([
+    'currentRoute',
+])
+@php
+    $isCurrentRouteClass = 'pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] from-orange-500/12 dark:from-orange-500/24 to-orange-500/4';
+    $isNotCurrentRouteClass = 'pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0';
+    $isCurrentSubItem = 'block text-orange-500 transition truncate';
+    $isNotCurrentSubItem = 'block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate';
+@endphp
 <div>
     <h3 class="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3">
                         <span class="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6"
