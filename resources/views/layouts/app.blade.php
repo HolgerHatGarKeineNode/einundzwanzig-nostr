@@ -3,12 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {!! seo($seo ?? null) !!}
+    @hasSection('meta')
+        @yield('meta')
+    @else
+        {!! seo($SEOData ?? null) !!}
+    @endif
     <title>{{ $title ?? 'Page Title' }}</title>
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
     @googlefonts
-    @vite(['resources/js/app.js','resources/css/app.css'])
-    @livewireStyles
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
 </head>
 <body class="min-h-screen bg-white dark:bg-zinc-800 antialiased"
@@ -27,8 +30,8 @@
         <flux:navbar class="-mb-px max-lg:hidden">
             @if(\App\Support\NostrAuth::check())
                 <flux:navbar.item icon="rss" :href="route('association.news')" :current="request()->routeIs('association.news')">News</flux:navbar.item>
-                <flux:navbar.item icon="id-card-clip" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Profil</flux:navbar.item>
-                <flux:navbar.item icon="hand-heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:navbar.item>
+                <flux:navbar.item icon="identification" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Profil</flux:navbar.item>
+                <flux:navbar.item icon="heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:navbar.item>
             @endif
         </flux:navbar>
 
@@ -72,8 +75,8 @@
         <flux:sidebar.nav>
             @if(\App\Support\NostrAuth::check())
                 <flux:sidebar.item icon="rss" :href="route('association.news')" :current="request()->routeIs('association.news')">News</flux:sidebar.item>
-                <flux:sidebar.item icon="id-card-clip" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Meine Mitgliedschaft</flux:sidebar.item>
-                <flux:sidebar.item icon="hand-heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:sidebar.item>
+                <flux:sidebar.item icon="identification" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Meine Mitgliedschaft</flux:sidebar.item>
+                <flux:sidebar.item icon="heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:sidebar.item>
             @endif
 
             <x-layouts.navigation.admin :currentRoute="request()->route()->getName()"/>

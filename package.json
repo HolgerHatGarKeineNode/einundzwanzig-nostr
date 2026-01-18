@@ -23,6 +23,7 @@
         "webln": "^0.3.2"
     },
     "dependencies": {
+        "@tailwindcss/vite": "^4.1.18",
         "shiki": "^1.22.0"
     }
 }

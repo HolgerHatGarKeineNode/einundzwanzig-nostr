@@ -60,7 +60,6 @@ new class extends Component {
 
         <!-- Links -->
         <div class="space-y-8">
-            @dd($currentRoute)
             <x-layouts.navigation.association :currentRoute="$currentRoute"/>
             <x-layouts.navigation.admin :currentRoute="$currentRoute"/>
         </div>

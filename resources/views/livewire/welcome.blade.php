@@ -1,5 +1,4 @@
-<x-layouts.app title="Welcome">
-    <div>
-        TEST
-    </div>
-</x-layouts.app>
+@livewireLayout('layouts.app', ['title' => 'Welcome'])
+<div>
+    TEST
+</div>

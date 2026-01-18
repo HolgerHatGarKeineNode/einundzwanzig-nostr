@@ -1,5 +1,5 @@
-<x-layouts.app title="{{ __('Changelog') }}">
-    <div>
+@livewireLayout('layouts.app', ['title' => __('Changelog')])
+<div>
         <div
             class="sm:flex sm:justify-between sm:items-center px-4 sm:px-6 py-8 border-b border-gray-200 dark:border-gray-700/60">
 
@@ -64,4 +64,3 @@
             </div>
         </div>
     </div>
-</x-layouts.app>

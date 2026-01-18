@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../vendor/livewire/flux/dist/flux.css";
+@import '../../vendor/power-components/livewire-powergrid/resources/css/tailwind4.css';
 
 /* ----------------------------------------
    CONTENT SCANNING (Tailwind v4 CSS-first)
@@ -7,6 +8,8 @@
 ----------------------------------------- */
 @source "../views/**/*.blade.php";
 @source "../js/**/*.js";
+@source '../../vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php';
+@source '../../vendor/power-components/livewire-powergrid/resources/views/**/*.php';
 
 /* Flux runtime templates ONLY (no stubs) */
 @source "../../vendor/livewire/flux/dist/**/*.blade.php";

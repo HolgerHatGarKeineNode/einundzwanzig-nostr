@@ -35,7 +35,7 @@
         "spatie/laravel-sluggable": "^3.6",
         "spatie/laravel-tags": "^4.9.2",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
-         "swentel/nostr-php": "^1.4"
+        "swentel/nostr-php": "^1.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -97,9 +97,11 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": [{
-        "name": "flux-pro",
-        "type": "composer",
-        "url": "https://composer.fluxui.dev"
-    }]
+    "repositories": [
+        {
+            "name": "flux-pro",
+            "type": "composer",
+            "url": "https://composer.fluxui.dev"
+        }
+    ]
 }
