@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {!! seo($seo ?? null) !}
+    {!! seo($seo ?? null) !!}
 
     <title>{{ $title ?? 'Page Title' }}</title>
     @livewireStyles
@@ -11,8 +11,6 @@
     @vite(['resources/js/app.js','resources/css/app.css'])
     @googlefonts
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     @include('components.layouts.partials.styles')
     @fluxAppearance
 </head>
@@ -31,9 +29,9 @@
 
         <flux:navbar class="-mb-px max-lg:hidden">
             @if(\App\Support\NostrAuth::check())
-                <flux:navbar.item icon="rss" :href="route('association.news')" {{ request()->routeIs('association.news') ? 'current' : '' }}>News</flux:navbar.item>
-                <flux:navbar.item icon="id-card-clip" :href="route('association.profile')" {{ request()->routeIs('association.profile') ? 'current' : '' }}>Profil</flux:navbar.item>
-                <flux:navbar.item icon="hand-heart" :href="route('association.projectSupport')" {{ request()->routeIs('association.projectSupport') ? 'current' : '' }}>Projekt-Unterstützungen</flux:navbar.item>
+                <flux:navbar.item icon="rss" :href="route('association.news')" :current="request()->routeIs('association.news')">News</flux:navbar.item>
+                <flux:navbar.item icon="id-card-clip" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Profil</flux:navbar.item>
+                <flux:navbar.item icon="hand-heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:navbar.item>
             @endif
         </flux:navbar>
 
@@ -76,9 +74,9 @@
 
         <flux:sidebar.nav>
             @if(\App\Support\NostrAuth::check())
-                <flux:sidebar.item icon="rss" :href="route('association.news')" {{ request()->routeIs('association.news') ? 'current' : '' }}>News</flux:sidebar.item>
-                <flux:sidebar.item icon="id-card-clip" :href="route('association.profile')" {{ request()->routeIs('association.profile') ? 'current' : '' }}>Meine Mitgliedschaft</flux:sidebar.item>
-                <flux:sidebar.item icon="hand-heart" :href="route('association.projectSupport')" {{ request()->routeIs('association.projectSupport') ? 'current' : '' }}>Projekt-Unterstützungen</flux:sidebar.item>
+                <flux:sidebar.item icon="rss" :href="route('association.news')" :current="request()->routeIs('association.news')">News</flux:sidebar.item>
+                <flux:sidebar.item icon="id-card-clip" :href="route('association.profile')" :current="request()->routeIs('association.profile')">Meine Mitgliedschaft</flux:sidebar.item>
+                <flux:sidebar.item icon="hand-heart" :href="route('association.projectSupport')" :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen</flux:sidebar.item>
             @endif
 
             @include('components.layouts.navigation.admin')
