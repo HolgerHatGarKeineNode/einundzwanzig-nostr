@@ -39,6 +39,7 @@ class extends Component {
         ProjectProposal::query()->create([
             'name' => $this->form['name'],
             'description' => $this->form['description'],
+            'support_in_sats' => 0,
             'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id,
         ]);
 

@@ -23,4 +23,30 @@ class EinundzwanzigPlebFactory extends Factory
             'association_status' => \App\Enums\AssociationStatus::DEFAULT,
         ];
     }
+
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'association_status' => \App\Enums\AssociationStatus::ACTIVE,
+        ]);
+    }
+
+    public function boardMember(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'association_status' => \App\Enums\AssociationStatus::HONORARY,
+        ]);
+    }
+
+    public function withPaidCurrentYear(): static
+    {
+        return $this->afterCreating(function (\App\Models\EinundzwanzigPleb $pleb) {
+            $pleb->paymentEvents()->create([
+                'year' => date('Y'),
+                'amount' => 21000,
+                'paid' => true,
+                'event_id' => 'test_event_'.fake()->sha256(),
+            ]);
+        });
+    }
 }

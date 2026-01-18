@@ -3,6 +3,7 @@
 use App\Enums\AssociationStatus;
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
+use App\Support\NostrAuth;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 
@@ -23,8 +24,9 @@ beforeEach(function () {
 });
 
 it('renders create form for authorized users', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->assertStatus(200)
         ->assertSee('Projektförderung anlegen')
         ->assertSeeLivewire('association.project-support.form.create');
@@ -37,15 +39,17 @@ it('does not render create form for unauthorized users', function () {
         'association_status' => AssociationStatus::DEFAULT->value,
     ]);
 
-    Livewire::actingAs($unauthorizedPleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($unauthorizedPleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->assertSet('isAllowed', false)
         ->assertDontSee('Projektförderung anlegen');
 });
 
 it('validates required name field', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->set('form.name', '')
         ->set('form.description', 'Test description')
         ->call('save')
@@ -53,8 +57,9 @@ it('validates required name field', function () {
 });
 
 it('validates name max length', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->set('form.name', Str::random(300))
         ->set('form.description', 'Test description')
         ->call('save')
@@ -62,8 +67,9 @@ it('validates name max length', function () {
 });
 
 it('validates required description field', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->set('form.name', 'Test Project')
         ->set('form.description', '')
         ->call('save')
@@ -71,8 +77,9 @@ it('validates required description field', function () {
 });
 
 it('creates project proposal successfully', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->set('form.name', 'Test Project')
         ->set('form.description', 'This is a test project for unit testing purposes.')
         ->call('save')
@@ -86,8 +93,9 @@ it('creates project proposal successfully', function () {
 });
 
 it('associates project proposal with current pleb', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.create')
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
         ->set('form.name', 'Test Project')
         ->set('form.description', 'Test description')
         ->call('save')

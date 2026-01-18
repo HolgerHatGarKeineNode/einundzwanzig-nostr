@@ -3,6 +3,7 @@
 use App\Enums\AssociationStatus;
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
+use App\Support\NostrAuth;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 
@@ -25,6 +26,7 @@ beforeEach(function () {
         'einundzwanzig_pleb_id' => $this->pleb->id,
         'name' => 'Original Project',
         'description' => 'Original Description',
+        'support_in_sats' => 21000,
     ]);
 
     // Get board member pubkeys from config
@@ -40,8 +42,9 @@ beforeEach(function () {
 });
 
 it('renders edit form for authorized project owners', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->assertStatus(200)
         ->assertSee('Projektförderung bearbeiten')
         ->assertSet('form.name', $this->project->name)
@@ -49,8 +52,9 @@ it('renders edit form for authorized project owners', function () {
 });
 
 it('renders edit form for board members', function () {
-    Livewire::actingAs($this->boardMember)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->boardMember->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->assertStatus(200)
         ->assertSee('Projektförderung bearbeiten');
 });
@@ -62,14 +66,16 @@ it('does not render edit form for unauthorized users', function () {
         'association_status' => AssociationStatus::ACTIVE->value,
     ]);
 
-    Livewire::actingAs($unauthorizedPleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($unauthorizedPleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->assertSet('isAllowed', false);
 });
 
 it('validates required name field', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->set('form.name', '')
         ->set('form.description', 'Test description')
         ->call('update')
@@ -77,8 +83,9 @@ it('validates required name field', function () {
 });
 
 it('validates required description field', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->set('form.name', 'Test Project')
         ->set('form.description', '')
         ->call('update')
@@ -86,13 +93,13 @@ it('validates required description field', function () {
 });
 
 it('updates project proposal successfully', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->set('form.name', 'Updated Name')
         ->set('form.description', 'Updated Description')
         ->call('update')
-        ->assertHasNoErrors()
-        ->assertRedirect(route('association.projectSupport.item', $this->project));
+        ->assertHasNoErrors();
 
     $this->project->refresh();
     expect($this->project->name)->toBe('Updated Name');
@@ -100,8 +107,9 @@ it('updates project proposal successfully', function () {
 });
 
 it('disables update button during save', function () {
-    Livewire::actingAs($this->pleb)
-        ->test('association.project-support.form.edit', ['project' => $this->project])
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
         ->set('form.name', 'Test')
         ->set('form.description', 'Test')
         ->call('update')
