@@ -332,7 +332,7 @@ new class extends Component {
                         </div>
                         <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
                             <li class="mr-0.5 md:mr-0 md:mb-0.5">
-                                <a class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-[linear-gradient(135deg,var(--tw-gradient-stops))] from-orange-500/[0.12] dark:from-orange-500/[0.24] to-orange-500/[0.04]"
+                                <a class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-[linear-gradient(135deg,var(--tw-gradient-stops))] from-orange-500/12 dark:from-orange-500/24 to-orange-500/4"
                                    href="#0">
                                     <i class="fa-sharp-duotone fa-solid fa-id-card-clip shrink-0 fill-current text-orange-400 mr-2"></i>
                                     <span

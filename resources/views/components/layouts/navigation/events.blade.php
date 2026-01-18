@@ -28,7 +28,7 @@
                 </div>
             </a>
             <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                <ul class="pl-8 mt-1" :class="open ? '!block' : 'hidden'">
+                <ul class="pl-8 mt-1" :class="open ? 'block!' : 'hidden'">
                     <li class="mb-1 last:mb-0">
                         <a class="block text-amber-500 transition truncate" href="index.html">
                                             <span
@@ -73,7 +73,7 @@
                 </div>
             </a>
             <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                <ul class="pl-8 mt-1 hidden" :class="open ? '!block' : 'hidden'">
+                <ul class="pl-8 mt-1 hidden" :class="open ? 'block!' : 'hidden'">
                     <li class="mb-1 last:mb-0">
                         <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate"
                            href="customers.html">

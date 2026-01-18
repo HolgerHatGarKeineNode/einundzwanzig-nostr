@@ -32,7 +32,7 @@
     }
 </script>
 <div x-data="nostrLogin"
-     class="flex h-[100dvh] overflow-hidden">
+     class="flex h-dvh overflow-hidden">
     <livewire:layout.sidebar/>
     <div
         class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
