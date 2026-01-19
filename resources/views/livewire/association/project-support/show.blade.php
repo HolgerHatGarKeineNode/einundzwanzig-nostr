@@ -21,7 +21,6 @@ new class extends Component {
         $this->projectProposal = \App\Models\ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
         if (NostrAuth::check()) {
             $this->currentPubkey = NostrAuth::pubkey();
-            $this->handleNostrLoggedIn($this->currentPubkey);
             $this->isAllowed = true;
         }
     }
@@ -43,17 +42,6 @@ new class extends Component {
                 fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board'))
             )
             ->get();
-    }
-
-    public function handleNostrLoggedIn($pubkey): void
-    {
-        $this->currentPubkey = $pubkey;
-        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-        $this->isAllowed = true;
-        $this->ownVoteExists = Vote::query()
-            ->where('project_proposal_id', $this->projectProposal->id)
-            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
-            ->exists();
     }
 
     public function handleApprove(): void
@@ -95,7 +83,9 @@ new class extends Component {
                         <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold mb-2">
                             {{ $projectProposal->name }}
                         </h1>
-                        {!! $projectProposal->description !!}
+                        <x-markdown>
+                            {!! $projectProposal->description !!}
+                        </x-markdown>
                     </header>
 
                     <div class="space-y-3 sm:flex sm:items-center sm:justify-between sm:space-y-0 mb-6">

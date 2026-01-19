@@ -9,15 +9,22 @@ use Livewire\Component;
 new
 #[Layout('layouts.app')]
 #[Title('Projektförderung bearbeiten')]
-class extends Component {
+class extends Component
+{
     public ProjectProposal $project;
 
     public array $form = [
         'name' => '',
         'description' => '',
+        'support_in_sats' => '',
+        'website' => '',
+        'accepted' => false,
+        'sats_paid' => 0,
     ];
 
     public bool $isAllowed = false;
+
+    public bool $isAdmin = false;
 
     public function mount($projectProposal): void
     {
@@ -38,7 +45,15 @@ class extends Component {
                 $this->form = [
                     'name' => $this->project->name,
                     'description' => $this->project->description,
+                    'support_in_sats' => (string) $this->project->support_in_sats,
+                    'website' => $this->project->website ?? '',
+                    'accepted' => (bool) $this->project->accepted,
+                    'sats_paid' => $this->project->sats_paid,
                 ];
+            }
+
+            if ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
+                $this->isAdmin = true;
             }
         }
     }
@@ -48,11 +63,17 @@ class extends Component {
         $this->validate([
             'form.name' => 'required|string|max:255',
             'form.description' => 'required|string',
+            'form.support_in_sats' => 'required|integer|min:0',
+            'form.website' => 'required|url|max:255',
         ]);
 
         $this->project->update([
             'name' => $this->form['name'],
             'description' => $this->form['description'],
+            'support_in_sats' => (int) $this->form['support_in_sats'],
+            'website' => $this->form['website'],
+            'accepted' => $this->isAdmin ? (bool) $this->form['accepted'] : $this->project->accepted,
+            'sats_paid' => $this->isAdmin ? $this->form['sats_paid'] : $this->project->sats_paid,
         ]);
 
         $this->redirectRoute('association.projectSupport.item', $this->project);
@@ -72,47 +93,70 @@ class extends Component {
                 </div>
             </div>
 
-            <div class="md:flex">
-                <!-- Left column -->
-                <div class="w-full md:w-60 mb-4 md:mb-0">
-                    <div
-                        class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                            Formular
-                        </h2>
-                        <div class="space-y-4">
-                            <div>
-                                <flux:field>
-                                    <flux:label>Name</flux:label>
-                                    <flux:input wire:model="form.name" placeholder="Projektname" />
-                                    <flux:error name="form.name" />
-                                </flux:field>
-                            </div>
-                            <div>
-                                <flux:field>
-                                    <flux:label>Beschreibung</flux:label>
-                                    <flux:textarea wire:model="form.description" rows="6" placeholder="Projektbeschreibung..." />
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left column - Form -->
+                <div class="lg:col-span-2">
+                    <flux:card>
+                        <flux:fieldset>
+                            <flux:legend>Formular</flux:legend>
+                            <div class="space-y-4">
+                                <div>
+                                    <flux:field>
+                                        <flux:label>Name</flux:label>
+                                        <flux:input wire:model="form.name" placeholder="Projektname" />
+                                        <flux:error name="form.name" />
+                                    </flux:field>
+                                </div>
+                                <div>
+                                    <flux:field>
+                                        <flux:label>Website</flux:label>
+                                        <flux:input wire:model="form.website" type="url" placeholder="https://example.com" />
+                                        <flux:error name="form.website" />
+                                    </flux:field>
+                                </div>
+                                <div>
+                                    <flux:field>
+                                        <flux:label>Unterstützung (Sats)</flux:label>
+                                        <flux:input wire:model="form.support_in_sats" type="number" placeholder="100000" />
+                                        <flux:error name="form.support_in_sats" />
+                                    </flux:field>
+                                </div>
+                                <div>
+                                    <flux:editor wire:model="form.description" label="Beschreibung" description="Projektbeschreibung..." />
                                     <flux:error name="form.description" />
-                                </flux:field>
+                                </div>
+
+                                @if($isAdmin)
+                                    <flux:separator />
+                                    <flux:heading level="3" class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Admin Felder</flux:heading>
+                                    <div class="space-y-3 mt-3">
+                                        <flux:field>
+                                            <flux:label>Akzeptiert</flux:label>
+                                            <flux:switch wire:model="form.accepted" />
+                                        </flux:field>
+                                        <flux:field>
+                                            <flux:label>Sats bezahlt</flux:label>
+                                            <flux:input type="number" wire:model="form.sats_paid" />
+                                        </flux:field>
+                                    </div>
+                                @endif
+
+                                <flux:button wire:click="update" wire:loading.attr="disabled" variant="primary" class="w-full mt-4">
+                                    Speichern
+                                </flux:button>
                             </div>
-                            <flux:button wire:click="update" wire:loading.attr="disabled" variant="primary" class="w-full">
-                                Speichern
-                            </flux:button>
-                        </div>
-                    </div>
+                        </flux:fieldset>
+                    </flux:card>
                 </div>
 
-                <!-- Right column -->
-                <div class="flex-1 md:ml-8">
-                    <div
-                        class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                            Information
-                        </h2>
-                        <p class="text-sm text-gray-800 dark:text-gray-100">
+                <!-- Right column - Information -->
+                <div>
+                    <flux:card>
+                        <flux:heading level="2">Information</flux:heading>
+                        <p class="text-sm text-gray-800 dark:text-gray-100 mt-4">
                             Bearbeite die Projektförderung und speichere deine Änderungen.
                         </p>
-                    </div>
+                    </flux:card>
                 </div>
             </div>
         </div>

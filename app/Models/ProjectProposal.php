@@ -35,6 +35,8 @@ class ProjectProposal extends Model implements HasMedia
     protected $casts = [
         'id' => 'integer',
         'einundzwanzig_pleb_id' => 'integer',
+        'accepted' => 'boolean',
+        'sats_paid' => 'integer',
     ];
 
     protected static function booted() {}

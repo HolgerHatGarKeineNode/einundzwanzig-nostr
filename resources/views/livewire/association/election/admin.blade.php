@@ -47,25 +47,6 @@ new class extends Component {
         $this->loadBoardVotes();
     }
 
-    public function handleNostrLoggedOut(): void
-    {
-        $this->currentPubkey = null;
-        $this->currentPleb = null;
-    }
-
-    public function handleNostrLoggedIn($pubkey): void
-    {
-        $this->currentPubkey = $pubkey;
-        $allowedPubkeys = [
-            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-        ];
-        if (in_array($this->currentPubkey, $allowedPubkeys, true)) {
-            $this->isAllowed = true;
-        }
-        dd($this->isAllowed);
-    }
-
     public function handleNewVote(): void
     {
         $this->loadEvents();

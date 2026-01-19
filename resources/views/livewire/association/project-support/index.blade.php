@@ -64,21 +64,6 @@ new class extends Component {
             ->get();
     }
 
-    public function handleNostrLoggedIn($pubkey): void
-    {
-        NostrAuth::login($pubkey);
-        $this->currentPubkey = $pubkey;
-        $this->currentPleb = EinundzwanzigPleb::query()->where('pubkey', $pubkey)->first();
-        $this->isAllowed = true;
-    }
-
-    public function handleNostrLoggedOut(): void
-    {
-        $this->isAllowed = false;
-        $this->currentPubkey = null;
-        $this->currentPleb = null;
-    }
-
     public function confirmDeleteProject($id): void
     {
         $this->projectToDelete = ProjectProposal::query()->findOrFail($id);

@@ -113,11 +113,7 @@
             </div>
             <div class="py-2">
                 @if($project->sats_paid)
-                    <div
-                        class="text-sm inline-flex font-medium bg-green-500/20 text-green-700 rounded-full text-center px-2.5 py-1">
-                        Wurde mit {{ number_format($project->sats_paid, 0, ',', '.') }} Sats
-                        unterstützt
-                    </div>
+                    <flux:badge color="green">Wurde mit {{ number_format($project->sats_paid, 0, ',', '.') }} Sats unterstützt</flux:badge>
                 @endif
             </div>
         </div>

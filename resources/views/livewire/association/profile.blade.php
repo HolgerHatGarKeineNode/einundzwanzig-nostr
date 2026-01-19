@@ -73,44 +73,6 @@ new class extends Component {
         }
     }
 
-    public function handleNostrLoggedIn($pubkey): void
-    {
-        NostrAuth::login($pubkey);
-
-        $this->currentPubkey = $pubkey;
-        $this->currentPleb = EinundzwanzigPleb::query()
-            ->with([
-                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
-            ])
-            ->where('pubkey', $pubkey)->first();
-        $this->email = $this->currentPleb->email;
-        $this->no = $this->currentPleb->no_email;
-        $this->showEmail = !$this->no;
-        if ($this->currentPleb->association_status === AssociationStatus::ACTIVE) {
-            $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
-        }
-        if ($this->currentPleb->paymentEvents->count() < 1) {
-            $this->createPaymentEvent();
-            $this->currentPleb->load('paymentEvents');
-        }
-        $this->loadEvents();
-        $this->listenForPayment();
-    }
-
-    public function handleNostrLoggedOut(): void
-    {
-        NostrAuth::logout();
-
-        $this->currentPubkey = null;
-        $this->currentPleb = null;
-        $this->yearsPaid = [];
-        $this->events = [];
-        $this->payments = [];
-        $this->qrCode = null;
-        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
-        $this->currentYearIsPaid = false;
-    }
-
     public function updatedNo(): void
     {
         $this->showEmail = !$this->no;
@@ -562,7 +524,7 @@ new class extends Component {
                                             Pay {{ $amountToPay }} Sats
                                         </flux:button>
                                     @else
-                                        <flux:button disabled class="text-xl px-8 py-3">
+                                        <flux:button disabled variant="primary" color="green" class="text-xl px-8 py-3">
                                             <i class="fa-sharp-duotone fa-solid fa-check-circle mr-2"></i>
                                             Aktuelles Jahr bezahlt
                                         </flux:button>
