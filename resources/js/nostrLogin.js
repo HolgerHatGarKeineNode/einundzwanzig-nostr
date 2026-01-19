@@ -32,8 +32,9 @@ export default () => ({
                 try {
                     const data = JSON.parse(text);
                     console.log('Profile fetched', data);
-                    // store the profile in AlpineJS store
+                    // store in AlpineJS store
                     Alpine.store('nostr', {user: data});
+                    // dispatch Livewire event
                     this.$dispatch('nostrLoggedIn', {pubkey: pubkey});
                 } catch (e) {
                     console.error('JSON parse error:', e);

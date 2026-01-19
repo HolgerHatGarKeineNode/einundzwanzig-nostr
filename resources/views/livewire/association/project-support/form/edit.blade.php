@@ -81,14 +81,14 @@ class extends Component {
                             Formular
                         </h2>
                         <div class="space-y-4">
-                            <div wire:dirty>
+                            <div>
                                 <flux:field>
                                     <flux:label>Name</flux:label>
                                     <flux:input wire:model="form.name" placeholder="Projektname" />
                                     <flux:error name="form.name" />
                                 </flux:field>
                             </div>
-                            <div wire:dirty>
+                            <div>
                                 <flux:field>
                                     <flux:label>Beschreibung</flux:label>
                                     <flux:textarea wire:model="form.description" rows="6" placeholder="Projektbeschreibung..." />

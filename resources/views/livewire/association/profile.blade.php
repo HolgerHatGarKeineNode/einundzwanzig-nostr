@@ -135,14 +135,14 @@ new class extends Component {
         Flux::toast('E-Mail Adresse gespeichert.');
     }
 
-    public function pay($comment): \Illuminate\Http\RedirectResponse
+    public function pay($comment): mixed
     {
         $paymentEvent = $this->currentPleb
             ->paymentEvents()
             ->where('year', date('Y'))
             ->first();
         if ($paymentEvent->btc_pay_invoice) {
-            return redirect('https://pay.einundzwanzig.space/i/'.$paymentEvent->btc_pay_invoice);
+            return redirect()->away('https://pay.einundzwanzig.space/i/'.$paymentEvent->btc_pay_invoice);
         }
         try {
             $response = \Illuminate\Support\Facades\Http::withHeaders([
@@ -172,7 +172,7 @@ new class extends Component {
             $paymentEvent->btc_pay_invoice = $response->json()['id'];
             $paymentEvent->save();
 
-            return redirect($response->json()['checkoutLink']);
+            return redirect()->away($response->json()['checkoutLink']);
         } catch (\Exception $e) {
             Flux::toast(
                 'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: '.$e->getMessage(),
@@ -343,9 +343,7 @@ new class extends Component {
                                         </p>
                                     </div>
                                     <div class="shrink-0">
-                                        <div class="text-xs inline-flex font-medium bg-green-500/20 text-green-700 rounded-full px-2.5 py-1">
-                                            Android
-                                        </div>
+                                        <flux:badge color="success">Android</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
@@ -362,9 +360,7 @@ new class extends Component {
                                         </p>
                                     </div>
                                     <div class="shrink-0">
-                                        <div class="text-xs inline-flex font-medium bg-yellow-500/20 text-yellow-700 rounded-full px-2.5 py-1">
-                                            Browser Chrome/Firefox
-                                        </div>
+                                        <flux:badge color="warning">Browser Chrome/Firefox</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
@@ -381,9 +377,7 @@ new class extends Component {
                                         </p>
                                     </div>
                                     <div class="shrink-0">
-                                        <div class="text-xs inline-flex font-medium bg-red-500/20 text-red-700 rounded-full px-2.5 py-1">
-                                            Browser Chrome
-                                        </div>
+                                        <flux:badge color="danger">Browser Chrome</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
@@ -400,9 +394,7 @@ new class extends Component {
                                         </p>
                                     </div>
                                     <div class="shrink-0">
-                                        <div class="text-xs inline-flex font-medium bg-amber-500/20 text-amber-700 rounded-full px-2.5 py-1">
-                                            Browser Firefox
-                                        </div>
+                                        <flux:badge color="amber">Browser Firefox</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
@@ -440,7 +432,7 @@ new class extends Component {
 
                 @if($currentPubkey && !$currentPleb->application_for && $currentPleb->association_status->value < 2)
                     <!-- Membership Registration Section -->
-                    <div class="space-y-4 py-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="space-y-4 py-6 border-t border-gray-200 dark:border-gray-600">
                         <div>
                             <h3 class="text-xl md:text-2xl text-[#1B1B1B] dark:text-gray-100 font-bold mb-2">
                                 Einundzwanzig Mitglied werden
@@ -472,7 +464,7 @@ new class extends Component {
 
                 @if($currentPubkey)
                     <!-- Email Settings Section -->
-                    <div class="py-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="py-6 border-t border-gray-200 dark:border-gray-600">
                         <flux:callout variant="warning" class="mb-6">
                             <div class="space-y-4">
                                 <p class="font-medium text-gray-800 dark:text-gray-100">
@@ -590,7 +582,7 @@ new class extends Component {
 
                         <!-- Payment History -->
                         @if($payments && count($payments) > 0)
-                            <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div class="pt-6 border-t border-gray-200 dark:border-gray-600">
                                 <h4 class="text-lg md:text-xl text-gray-800 dark:text-gray-100 font-bold mb-4">
                                     Bisherige Zahlungen
                                 </h4>
@@ -598,7 +590,7 @@ new class extends Component {
                                 <!-- Desktop Table -->
                                 <div class="hidden md:block overflow-x-auto">
                                     <table class="table-auto w-full">
-                                        <thead class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                        <thead class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
                                             <tr>
                                                 <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap text-left">
                                                     <div class="font-semibold">Satoshis</div>
@@ -614,7 +606,7 @@ new class extends Component {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody class="text-sm divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tbody class="text-sm divide-y divide-gray-200 dark:divide-gray-600">
                                             @foreach($payments as $payment)
                                                 <tr>
                                                     <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
@@ -646,7 +638,7 @@ new class extends Component {
                                 <!-- Mobile Cards -->
                                 <div class="md:hidden space-y-4">
                                     @foreach($payments as $payment)
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
                                             <div class="space-y-3">
                                                 <div class="flex justify-between items-center">
                                                     <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Satoshis</span>

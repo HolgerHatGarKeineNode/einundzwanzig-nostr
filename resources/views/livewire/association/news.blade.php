@@ -23,11 +23,13 @@ class extends Component {
         'description' => '',
     ];
 
-    public mixed $file;
+    public $file;
 
     public bool $isAllowed = false;
 
     public bool $canEdit = false;
+
+    public ?int $confirmDeleteId = null;
 
     public function mount(): void
     {
@@ -43,7 +45,7 @@ class extends Component {
                 $this->isAllowed = true;
             }
 
-            if ($currentPleb && $currentPleb->association_status->value > 2) {
+            if ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'))) {
                 $this->canEdit = true;
             }
 
@@ -86,17 +88,26 @@ class extends Component {
             ->get();
     }
 
-    public function delete(int $id): void
+    public function confirmDelete(int $id): void
     {
-        $news = Notification::query()->find($id);
-        if ($news) {
-            $news->delete();
-        }
+        $this->confirmDeleteId = $id;
+    }
+
+    public function delete(): void
+    {
+        $news = Notification::query()->findOrFail($this->confirmDeleteId);
+        $news->delete();
 
         $this->news = \App\Models\Notification::query()
             ->with(['einundzwanzigPleb.profile'])
             ->latest()
             ->get();
+    }
+
+    public function removeFile(): void
+    {
+        $this->file->delete();
+        $this->file = null;
     }
 };
 ?>
@@ -161,46 +172,45 @@ class extends Component {
                             <div class="space-y-2">
                                 @forelse($news as $post)
                                     <flux:card wire:key="post_{{ $post->id }}">
-                                            <!-- Avatar -->
-                                            <div class="shrink-0 mt-1.5">
-                                                <img class="w-8 h-8 rounded-full"
-                                                     src="{{ $post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
-                                                     width="32" height="32"
-                                                     alt="{{ $post->einundzwanzigPleb->profile?->name }}">
-                                            </div>
-                                            <!-- Content -->
-                                            <div class="grow">
-                                                <!-- Title -->
-                                                <h2 class="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                                    {{ $post->name }}
-                                                </h2>
-                                                <p class="mb-6">
-                                                    {{ $post->description }}
-                                                </p>
-                                                <!-- Footer -->
-                                                <footer class="flex flex-wrap text-sm">
+                                        <!-- Avatar -->
+                                        <div class="shrink-0 mt-1.5">
+                                            <img class="w-8 h-8 rounded-full"
+                                                 src="{{ $post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                                                 width="32" height="32"
+                                                 alt="{{ $post->einundzwanzigPleb->profile?->name }}">
+                                        </div>
+                                        <!-- Content -->
+                                        <div class="grow">
+                                            <!-- Title -->
+                                            <h2 class="font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                                {{ $post->name }}
+                                            </h2>
+                                            <p class="mb-6">
+                                                {{ $post->description }}
+                                            </p>
+                                            <!-- Footer -->
+                                            <footer class="flex flex-wrap text-sm">
+                                                <div
+                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
                                                     <div
-                                                        class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
-                                                        <div
-                                                            class="font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400">
-                                                            <div class="flex items-center">
-                                                                <svg class="mr-2 fill-current" width="16"
-                                                                     height="16"
-                                                                     xmlns="http://www.w3.org/2000/svg">
-                                                                    <path
-                                                                        d="M15.686 5.708 10.291.313c-.4-.4-.999-.4-1.399 0s-.4 1 0 1.399l.6.6-6.794 3.696-1-1C1.299 4.61.7 4.61.3 5.009c-.4.4-.4 1 0 1.4l1.498 1.498 2.398 2.398L.6 14.001 2 15.4l3.696-3.697L9.692 15.7c.5.5 1.199.2 1.398 0 .4-.4.4-1 0-1.4l-.999-.998 3.697-6.695.6.6c.599.6 1.199.2 1.398 0 .3-.4.3-1.1-.1-1.499Zm-7.193 6.095L4.196 7.507l6.695-3.697 1.298 1.299-3.696 6.694Z"></path>
-                                                                </svg>
-                                                                {{ $post->einundzwanzigPleb->profile->name }}
-                                                            </div>
+                                                        class="font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400">
+                                                        <div class="flex items-center">
+                                                            <svg class="mr-2 fill-current" width="16"
+                                                                 height="16"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="M15.686 5.708 10.291.313c-.4-.4-.999-.4-1.399 0s-.4 1 0 1.399l.6.6-6.794 3.696-1-1C1.299 4.61.7 4.61.3 5.009c-.4.4-.4 1 0 1.4l1.498 1.498 2.398 2.398L.6 14.001 2 15.4l3.696-3.697L9.692 15.7c.5.5 1.199.2 1.398 0 .4-.4.4-1 0-1.4l-.999-.998 3.697-6.695.6.6c.599.6 1.199.2 1.398 0 .3-.4.3-1.1-.1-1.499Zm-7.193 6.095L4.196 7.507l6.695-3.697 1.298 1.299-3.696 6.694Z"></path>
+                                                            </svg>
+                                                            {{ $post->einundzwanzigPleb->profile->name }}
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
+                                                </div>
+                                                <div
+                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
                                                             <span
                                                                 class="text-gray-500">{{ $post->created_at->format('d.m.Y') }}</span>
-                                                    </div>
-                                                </footer>
-                                            </div>
+                                                </div>
+                                            </footer>
                                         </div>
                                         <div class="mt-2 flex justify-end w-full space-x-2">
                                             <flux:button
@@ -211,14 +221,34 @@ class extends Component {
                                                 Öffnen
                                             </flux:button>
                                             @if($canEdit)
-                                                <flux:button
-                                                    xs
-                                                    negative
-                                                    wire:click="delete({{ $post->id }})"
-                                                    wire:loading.attr="disabled"
-                                                    icon="trash">
-                                                    Löschen
-                                                </flux:button>
+                                                <flux:modal.trigger name="delete-news-{{ $post->id }}">
+                                                    <flux:button
+                                                        xs
+                                                        variant="danger"
+                                                        icon="trash"
+                                                        wire:click="confirmDelete({{ $post->id }})">
+                                                        Löschen
+                                                    </flux:button>
+                                                </flux:modal.trigger>
+
+                                                <flux:modal name="delete-news-{{ $post->id }}" class="min-w-88">
+                                                    <div class="space-y-6">
+                                                        <div>
+                                                            <flux:heading size="lg">News löschen?</flux:heading>
+                                                            <flux:text class="mt-2">
+                                                                Du bist dabei, diese News zu löschen.<br>
+                                                                Diese Aktion kann nicht rückgängig gemacht werden.
+                                                            </flux:text>
+                                                        </div>
+                                                        <div class="flex gap-2">
+                                                            <flux:spacer />
+                                                            <flux:modal.close>
+                                                                <flux:button variant="ghost">Abbrechen</flux:button>
+                                                            </flux:modal.close>
+                                                            <flux:button wire:click="delete" variant="danger">Löschen</flux:button>
+                                                        </div>
+                                                    </div>
+                                                </flux:modal>
                                             @endif
                                         </div>
                                     </flux:card>
@@ -246,17 +276,29 @@ class extends Component {
                                 @if($canEdit)
                                     <flux:card>
                                         <div
-                                            class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-4">
+                                            class="text-xs font-semibold text-gray-400 dark:text-gray-200 uppercase mb-4">
                                             News anlegen
                                         </div>
                                         <div class="mt-4 flex flex-col space-y-2">
-                                            <div wire:dirty>
-                                                <input class="text-gray-200" type="file" wire:model="file">
-                                                @error('file')
-                                                <span class="text-red-500">{{ $message }}</span>
-                                                @enderror
+                                            <flux:file-upload wire:model="file" label="PDF hochladen">
+                                                <flux:file-upload.dropzone heading="Drop file here or click to browse" text="PDF bis 10MB" />
+                                            </flux:file-upload>
+                                            @error('file')
+                                            <span class="text-red-500">{{ $message }}</span>
+                                            @enderror
+                                            <div class="mt-3 flex flex-col gap-2">
+                                                @if ($file)
+                                                    <flux:file-item
+                                                        :heading="$file->getClientOriginalName()"
+                                                        :size="$file->getSize()"
+                                                    >
+                                                        <x-slot name="actions">
+                                                            <flux:file-item.remove wire:click="removeFile" aria-label="{{ 'Remove file: ' . $file->getClientOriginalName() }}" />
+                                                        </x-slot>
+                                                    </flux:file-item>
+                                                @endif
                                             </div>
-                                            <div wire:dirty>
+                                            <div>
                                                 <flux:field>
                                                     <flux:label>Kategorie</flux:label>
                                                     <flux:select
@@ -273,14 +315,14 @@ class extends Component {
                                                     <flux:error name="form.category"/>
                                                 </flux:field>
                                             </div>
-                                            <div wire:dirty>
+                                            <div>
                                                 <flux:field>
                                                     <flux:label>Titel</flux:label>
                                                     <flux:input wire:model="form.name" placeholder="News-Titel"/>
                                                     <flux:error name="form.name"/>
                                                 </flux:field>
                                             </div>
-                                            <div wire:dirty>
+                                            <div>
                                                 <flux:field>
                                                     <flux:label>Beschreibung</flux:label>
                                                     <flux:description>optional</flux:description>
