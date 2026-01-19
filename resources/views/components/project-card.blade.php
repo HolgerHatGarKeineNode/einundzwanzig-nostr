@@ -81,33 +81,31 @@
                     </div>
                 @endif
             </div>
-            <div
-                class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
-                @if(
-                    ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
-                    || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
-                     )
-                    <flux:modal.trigger name="delete-project">
-                        <flux:button
-                            icon="trash"
-                            xs
-                            negative
-                            wire:loading.attr="disabled">
-                            Löschen
-                        </flux:button>
-                    </flux:modal.trigger>
-                    <flux:button
-                        icon="pencil"
-                        xs
-                        secondary
-                        :href="route('association.projectSupport.edit', ['projectProposal' => $project])">
-                        Editieren
-                    </flux:button>
-                @endif
+             <div
+                 class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
+                 @if(
+                     ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
+                     || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
+                      )
+                     <flux:button
+                         icon="trash"
+                         size="xs"
+                         variant="danger"
+                         wire:click="$dispatch('confirmDeleteProject', { id: {{ $project->id }} })">
+                         Löschen
+                     </flux:button>
+
+                     <flux:button
+                         icon="pencil"
+                         size="xs"
+                         :href="route('association.projectSupport.edit', ['projectProposal' => $project])">
+                         Editieren
+                     </flux:button>
+                 @endif
                 @if(($currentPleb && $currentPleb->association_status->value > 2) || $project->accepted)
                     <flux:button
                         icon="folder-open"
-                        xs
+                        size="xs"
                         :href="route('association.projectSupport.item', ['projectProposal' => $project])">
                         Öffnen
                     </flux:button>

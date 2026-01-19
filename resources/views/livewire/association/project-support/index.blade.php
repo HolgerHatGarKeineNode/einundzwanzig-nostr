@@ -22,9 +22,12 @@ new class extends Component {
 
     public ?EinundzwanzigPleb $currentPleb = null;
 
+    public ?ProjectProposal $projectToDelete = null;
+
     protected $listeners = [
         'nostrLoggedIn' => 'handleNostrLoggedIn',
         'nostrLoggedOut' => 'handleNostrLoggedOut',
+        'confirmDeleteProject' => 'confirmDeleteProject',
     ];
 
     public function mount(): void
@@ -76,9 +79,9 @@ new class extends Component {
         $this->currentPleb = null;
     }
 
-    public function confirmDelete($id): void
+    public function confirmDeleteProject($id): void
     {
-        $this->confirmDeleteId = $id;
+        $this->projectToDelete = ProjectProposal::query()->findOrFail($id);
         Flux::modal('delete-project')->show();
     }
 
@@ -89,10 +92,13 @@ new class extends Component {
 
     public function delete(): void
     {
-        ProjectProposal::query()->findOrFail($this->confirmDeleteId)->delete();
-        Flux::toast('Projektunterstützung gelöscht.');
-        $this->loadProjects();
-        Flux::modals()->close();
+        if ($this->projectToDelete) {
+            $this->projectToDelete->delete();
+            Flux::toast('Projektunterstützung gelöscht.');
+            $this->loadProjects();
+            Flux::modals()->close();
+            $this->projectToDelete = null;
+        }
     }
 
 };
@@ -158,33 +164,33 @@ new class extends Component {
                 </li>
             </ul>
         </div>
-        <div class="text-sm text-gray-500 dark:text-gray-400 italic mb-4">{{ $projects->count() }} Projekte</div>
+         <div class="text-sm text-gray-500 dark:text-gray-400 italic mb-4">{{ $projects->count() }} Projekte</div>
 
-        <!-- Content -->
-        <div class="grid xl:grid-cols-2 gap-6 mb-8">
-            @foreach($this->projects as $project)
-                <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
-            @endforeach
-        </div>
+         <!-- Content -->
+         <div class="grid xl:grid-cols-2 gap-6 mb-8">
+             @foreach($this->projects as $project)
+                 <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
+             @endforeach
+         </div>
 
-        <!-- Confirmation modal -->
-        <flux:modal name="delete-project" class="min-w-88">
-            <div class="space-y-6">
-                <div>
-                    <flux:heading size="lg">Projektunterstützung löschen</flux:heading>
-                    <flux:text class="mt-2">
-                        <p>Bist du sicher, dass du diese Projektunterstützung löschen möchtest?</p>
-                        <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
-                    </flux:text>
-                </div>
-                <div class="flex gap-2">
-                    <flux:spacer/>
-                    <flux:modal.close>
-                        <flux:button variant="ghost">Abbrechen</flux:button>
-                    </flux:modal.close>
-                    <flux:button type="submit" wire:click="delete" variant="danger">Ja, löschen</flux:button>
-                </div>
-            </div>
-        </flux:modal>
-    </div>
+         <!-- Delete confirmation modal -->
+         <flux:modal name="delete-project" class="min-w-88">
+             <div class="space-y-6">
+                 <div>
+                     <flux:heading size="lg">Projektunterstützung löschen?</flux:heading>
+                     <flux:text class="mt-2">
+                         <p>Du bist dabei, diese Projektunterstützung zu löschen.</p>
+                         <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                     </flux:text>
+                 </div>
+                 <div class="flex gap-2">
+                     <flux:spacer/>
+                     <flux:modal.close>
+                         <flux:button variant="ghost">Abbrechen</flux:button>
+                     </flux:modal.close>
+                     <flux:button wire:click="delete" variant="danger">Löschen</flux:button>
+                 </div>
+             </div>
+         </flux:modal>
+     </div>
 </div>

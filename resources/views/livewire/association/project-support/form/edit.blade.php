@@ -19,9 +19,9 @@ class extends Component {
 
     public bool $isAllowed = false;
 
-    public function mount(ProjectProposal $project): void
+    public function mount($projectProposal): void
     {
-        $this->project = $project;
+        $this->project = ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
 
         if (NostrAuth::check()) {
             $currentPubkey = NostrAuth::pubkey();
@@ -30,14 +30,14 @@ class extends Component {
             if (
                 (
                     $currentPleb
-                    && $currentPleb->id === $project->einundzwanzig_pleb_id
+                    && $currentPleb->id === $this->project->einundzwanzig_pleb_id
                 )
                 || in_array($currentPleb->npub, config('einundzwanzig.config.current_board'))
             ) {
                 $this->isAllowed = true;
                 $this->form = [
-                    'name' => $project->name,
-                    'description' => $project->description,
+                    'name' => $this->project->name,
+                    'description' => $this->project->description,
                 ];
             }
         }
