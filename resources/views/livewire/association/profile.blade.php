@@ -60,6 +60,7 @@ new class extends Component
                 ->where('pubkey', $this->currentPubkey)->first();
             if ($this->currentPleb) {
                 $this->email = $this->currentPleb->email;
+                $this->no =  $this->currentPleb->no_email;
                 $this->showEmail = ! $this->no;
                 if ($this->currentPleb->association_status === AssociationStatus::ACTIVE) {
                     $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
