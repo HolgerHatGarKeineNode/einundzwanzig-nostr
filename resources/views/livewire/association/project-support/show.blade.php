@@ -81,17 +81,12 @@ new class extends Component {
 <div>
     @if($projectProposal->accepted || $isAllowed)
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full">
-            <div class="max-w-5xl mx-auto flex flex-col lg:flex-row lg:space-x-8 xl:space-x-16">
-                <div>
+            <div class="mx-auto flex flex-col lg:flex-row lg:space-x-8 xl:space-x-12">
+                <div class="flex-1">
                     <div class="mb-6">
-                        <a class="text-sm px-3 py-1 border border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"
-                           href="{{ route('association.projectSupport') }}">
-                            <svg class="fill-current text-gray-400 dark:text-gray-500 mr-2" width="7" height="12"
-                                 viewBox="0 0 7 12">
-                                <path d="M5.4.6 6.8 2l-4 4 4 4-1.4 1.4L0 6z"></path>
-                            </svg>
-                            <span>Zurück zur Übersicht</span>
-                        </a>
+                        <flux:button :href="route('association.projectSupport')" variant="primary" size="sm" icon="chevron-left">
+                            Zurück zur Übersicht
+                        </flux:button>
                     </div>
                     <div class="text-sm font-semibold text-violet-500 uppercase mb-2">
                         {{ $projectProposal->created_at->translatedFormat('d.m.Y') }}
@@ -134,58 +129,58 @@ new class extends Component {
                     </figure>
 
                     <hr class="my-6 border-t border-gray-100 dark:border-gray-700/60">
+                </div>
 
-                    @if($isAllowed && !$projectProposal->accepted)
-                        <div class="space-y-4">
-                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                                @if(!$ownVoteExists)
-                                    <div class="space-y-2">
-                                        <flux:button wire:click="handleApprove" class="w-full">
-                                            <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up mr-2"></i>
-                                            Zustimmen
-                                        </flux:button>
-                                        <flux:button wire:click="handleNotApprove" variant="danger" class="w-full">
-                                            <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down mr-2"></i>
-                                            Ablehnen
-                                        </flux:button>
-                                    </div>
-                                @else
-                                    <p class="text-sm text-gray-700 dark:text-gray-300">Du hast bereits abgestimmt.</p>
-                                @endif
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                    Zustimmungen des Vorstands ({{ count($this->boardVotes->where('value', 1)) }})
+                @if($isAllowed && !$projectProposal->accepted)
+                    <div class="lg:w-80 xl:w-96 shrink-0 space-y-4">
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl">
+                            @if(!$ownVoteExists)
+                                <div class="space-y-2">
+                                    <flux:button wire:click="handleApprove" class="w-full">
+                                        <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up mr-2"></i>
+                                        Zustimmen
+                                    </flux:button>
+                                    <flux:button wire:click="handleNotApprove" variant="danger" class="w-full">
+                                        <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down mr-2"></i>
+                                        Ablehnen
+                                    </flux:button>
                                 </div>
-                            </div>
+                            @else
+                                <p class="text-sm text-gray-700 dark:text-gray-300">Du hast bereits abgestimmt.</p>
+                            @endif
+                        </div>
 
-                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                    Ablehnungen des Vorstands ({{ count($this->boardVotes->where('value', 0)) }})
-                                </div>
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                    Zustimmungen der übrigen Mitglieder
-                                    ({{ count($this->otherVotes->where('value', 1)) }})
-                                </div>
-                            </div>
-
-                            <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl lg:w-72 xl:w-80">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                    Ablehnungen der übrigen Mitglieder
-                                    ({{ count($this->otherVotes->where('value', 0)) }})
-                                </div>
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl">
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                Zustimmungen des Vorstands ({{ count($this->boardVotes->where('value', 1)) }})
                             </div>
                         </div>
-                    @endif
-                </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl">
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                Ablehnungen des Vorstands ({{ count($this->boardVotes->where('value', 0)) }})
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl">
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                Zustimmungen der übrigen Mitglieder
+                                ({{ count($this->otherVotes->where('value', 1)) }})
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-5 shadow-sm rounded-xl">
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                Ablehnungen der übrigen Mitglieder
+                                ({{ count($this->otherVotes->where('value', 0)) }})
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     @else
-        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full mx-auto">
             <flux:callout variant="warning" icon="exclamation-circle">
                 <flux:heading>Zugriff auf Projektförderung nicht möglich</flux:heading>
                 <p>
