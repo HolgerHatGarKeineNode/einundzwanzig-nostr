@@ -16,7 +16,8 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Sign\Sign;
 use swentel\nostr\Subscription\Subscription;
 
-new class extends Component {
+new class extends Component
+{
     public ApplicationForm $form;
 
     public bool $no = false;
@@ -54,12 +55,12 @@ new class extends Component {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->currentPleb = EinundzwanzigPleb::query()
                 ->with([
-                    'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+                    'paymentEvents' => fn ($query) => $query->where('year', date('Y')),
                 ])
                 ->where('pubkey', $this->currentPubkey)->first();
             if ($this->currentPleb) {
                 $this->email = $this->currentPleb->email;
-                $this->showEmail = !$this->no;
+                $this->showEmail = ! $this->no;
                 if ($this->currentPleb->association_status === AssociationStatus::ACTIVE) {
                     $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
                 }
@@ -75,7 +76,7 @@ new class extends Component {
 
     public function updatedNo(): void
     {
-        $this->showEmail = !$this->no;
+        $this->showEmail = ! $this->no;
         $this->currentPleb->update([
             'no_email' => $this->no,
         ]);
@@ -182,7 +183,7 @@ new class extends Component {
     public function save($type): void
     {
         $this->form->validate();
-        if (!$this->form->check) {
+        if (! $this->form->check) {
             $this->js('alert("Du musst den Statuten zustimmen.")');
 
             return;
@@ -247,7 +248,7 @@ new class extends Component {
 
         $this->events = collect($response[config('services.relay')])
             ->map(function ($event) {
-                if (!isset($event->event)) {
+                if (! isset($event->event)) {
                     return false;
                 }
 
@@ -482,7 +483,11 @@ new class extends Component {
                         </svg>
                         <div>
                             <p class="font-medium text-gray-800 dark:text-gray-100">
-                                Du bist derzeit ein Mitglied des Vereins.
+                                @if($currentYearIsPaid)
+                                    <span class="text-green-600 dark:text-green-400">Du bist derzeit ein Mitglied des Vereins. Das aktuelle Jahr ist bezahlt.</span>
+                                @else
+                                    <span class="text-amber-600 dark:text-amber-400">Du wirst nach Zahlung des Vereinsbeitrages zum Mitglied. Das aktuelle Jahr ist noch nicht bezahlt.</span>
+                                @endif
                             </p>
                         </div>
                     </div>

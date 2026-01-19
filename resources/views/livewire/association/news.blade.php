@@ -132,7 +132,8 @@ class extends Component {
                                     <!-- Title -->
                                     <header class="mb-6">
                                         <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                                            News</h1>
+                                            News
+                                        </h1>
                                     </header>
 
                                 </div>
@@ -150,12 +151,11 @@ class extends Component {
                                             @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
                                                 <li class="mr-0.5 md:mr-0 md:mb-0.5"
                                                     wire:key="category_{{ $category['value'] }}">
-                                                    <div
-                                                        class="flex items-center px-2.5 py-2 rounded-lg whitespace-nowrap bg-white dark:bg-gray-800">
+                                                    <flux:badge>
                                                         <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current text-amber-500 mr-2"></i>
                                                         <span
                                                             class="text-sm font-medium text-amber-500">{{ $category['label'] }}</span>
-                                                    </div>
+                                                    </flux:badge>
                                                 </li>
                                             @endforeach
                                         </ul>
