@@ -462,7 +462,7 @@ new class extends Component
                                         @if($nip05HandleMismatch)
                                             <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
                                                 <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                    Dein aktiviertes Handle ist <strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
+                                                    Dein aktiviertes Handle ist <br><strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
                                                 </p>
                                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                                                     Die Synchronisation zu <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
