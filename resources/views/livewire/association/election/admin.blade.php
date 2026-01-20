@@ -168,7 +168,7 @@ new class extends Component {
 
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                <h1 class="text-2xl md:text-3xl text-zinc-800 dark:text-zinc-100 font-bold">
                     Wahl des Vorstands {{ $election->year }}
                 </h1>
             </div>
@@ -183,9 +183,9 @@ new class extends Component {
             <!-- Cards -->
         <div class="grid gap-y-4">
             <div wire:key="presidency" wire:ignore
-                 class="flex flex-col bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                    <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
+                 class="flex flex-col bg-white dark:bg-zinc-800 shadow-sm rounded-xl">
+                <header class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60">
+                    <h2 class="font-semibold text-zinc-800 dark:text-zinc-100"><i
                             class="fa-sharp-duotone fa-solid {{ $president['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $president['title'] }}
                     </h2>
                 </header>
@@ -196,9 +196,9 @@ new class extends Component {
                 </div>
             </div>
             <div wire:key="board" wire:ignore
-                 class="flex flex-col bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                    <h2 class="font-semibold text-gray-800 dark:text-gray-100"><i
+                 class="flex flex-col bg-white dark:bg-zinc-800 shadow-sm rounded-xl">
+                <header class="px-5 py-4 border-b border-zinc-100 dark:border-zinc-700/60">
+                    <h2 class="font-semibold text-zinc-800 dark:text-zinc-100"><i
                             class="fa-sharp-duotone fa-solid {{ $board['icon'] }} w-5 h-5 fill-current text-white mr-4"></i>{{ $board['title'] }}
                     </h2>
                 </header>

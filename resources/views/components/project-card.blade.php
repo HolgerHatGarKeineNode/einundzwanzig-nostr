@@ -27,22 +27,23 @@
                      src="{{ $project->getFirstMediaUrl('main') }}" alt="Meetup 01">
                 <button class="absolute top-0 right-0 mt-4 mr-4">
                     <img class="rounded-full h-8 w-8"
-                         src="{{ $project->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                         src="{{ $project->einundzwanzigPleb->profile?->picture }}"
+                         onerror="this.src='{{ asset('einundzwanzig-alpha.jpg') }}'"
                          alt="">
                 </button>
             </a>
         @else
-            <div
-                class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
-                href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
+            <a class="relative block w-24 sm:w-56 xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0"
+               href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
                 <img class="absolute object-cover object-center w-full h-full"
                      src="{{ $project->getFirstMediaUrl('main') }}" alt="Meetup 01">
                 <button class="absolute top-0 right-0 mt-4 mr-4">
                     <img class="rounded-full h-8 w-8"
-                         src="{{ $project->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                         src="{{ $project->einundzwanzigPleb->profile?->picture }}"
+                         onerror="this.src='{{ asset('einundzwanzig-alpha.jpg') }}'"
                          alt="">
                 </button>
-            </div>
+            </a>
         @endif
         <!-- Content -->
         <div class="grow p-5 flex flex-col">
@@ -63,45 +64,41 @@
             <!-- Footer -->
             <div class="flex justify-between items-center mt-3">
                 <!-- Tag -->
+                <flux:badge color="amber">{{ number_format($project->support_in_sats, 0, ',', '.') }} Sats</flux:badge>
                 <div
                     class="text-xs inline-flex items-center font-bold border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-200 rounded-full text-center px-2.5 py-1">
-                    <span>{{ number_format($project->support_in_sats, 0, ',', '.') }} Sats</span>
-                </div>
-                <div
-                    class="text-xs inline-flex items-center font-bold border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-200 rounded-full text-center px-2.5 py-1">
-                    <a href="{{ $project->website }}" target="_blank">Webseite</a>
+                    <flux:link href="{{ $project->website }}" target="_blank">Webseite</flux:link>
                 </div>
                 <!-- Avatars -->
                 @if($project->votes->where('value', true)->count() > 0)
                     <div class="hidden sm:flex items-center space-x-2">
-                        <div class="text-xs font-medium text-gray-400 dark:text-gray-300 italic">
-                            Anzahl der Unterstützer:
-                            +{{ $project->votes->where('value', true)->count() }}
-                        </div>
+                        <flux:badge>
+                            Anzahl der Unterstützer: +{{ $project->votes->where('value', true)->count() }}
+                        </flux:badge>
                     </div>
                 @endif
             </div>
-             <div
-                 class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
-                 @if(
-                     ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
-                     || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
-                      )
-                     <flux:button
-                         icon="trash"
-                         size="xs"
-                         variant="danger"
-                         wire:click="$dispatch('confirmDeleteProject', { id: {{ $project->id }} })">
-                         Löschen
-                     </flux:button>
+            <div
+                class="flex flex-col sm:flex-row justify-between items-center mt-3 space-y-2 sm:space-y-0">
+                @if(
+                    ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
+                    || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
+                     )
+                    <flux:button
+                        icon="trash"
+                        size="xs"
+                        variant="danger"
+                        wire:click="$dispatch('confirmDeleteProject', { id: {{ $project->id }} })">
+                        Löschen
+                    </flux:button>
 
-                     <flux:button
-                         icon="pencil"
-                         size="xs"
-                         :href="route('association.projectSupport.edit', ['projectProposal' => $project])">
-                         Editieren
-                     </flux:button>
-                 @endif
+                    <flux:button
+                        icon="pencil"
+                        size="xs"
+                        :href="route('association.projectSupport.edit', ['projectProposal' => $project])">
+                        Editieren
+                    </flux:button>
+                @endif
                 @if(($currentPleb && $currentPleb->association_status->value > 2) || $project->accepted)
                     <flux:button
                         icon="folder-open"
@@ -113,7 +110,9 @@
             </div>
             <div class="py-2">
                 @if($project->sats_paid)
-                    <flux:badge color="green">Wurde mit {{ number_format($project->sats_paid, 0, ',', '.') }} Sats unterstützt</flux:badge>
+                    <flux:badge color="green">Wurde mit {{ number_format($project->sats_paid, 0, ',', '.') }} Sats
+                        unterstützt
+                    </flux:badge>
                 @endif
             </div>
         </div>

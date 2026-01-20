@@ -124,7 +124,7 @@ new class extends Component {
                     ->get()
                     ->map(function ($p) use ($loadedEvents, $c) {
                         $votedClass = ' bg-green-500/20 text-green-700';
-                        $notVotedClass = ' bg-gray-500/20 text-gray-100';
+                        $notVotedClass = ' bg-zinc-500/20 text-zinc-100';
                         $hasVoted = $loadedEvents
                             ->filter(fn ($e) => $e['type'] === $c['type'] && $e['pubkey'] === $this->currentPubkey)
                             ->firstWhere('votedFor.pubkey', $p->pubkey);
@@ -158,7 +158,7 @@ new class extends Component {
                     ->get()
                     ->map(function ($p) use ($loadedBoardEvents, $c) {
                         $votedClass = ' bg-green-500/20 text-green-700';
-                        $notVotedClass = ' bg-gray-500/20 text-gray-100';
+                        $notVotedClass = ' bg-zinc-500/20 text-zinc-100';
                         $hasVoted = $loadedBoardEvents
                             ->filter(fn ($e) => $e['type'] === $c['type'] && $e['pubkey'] === $this->currentPubkey)
                             ->firstWhere('votedFor.pubkey', $p->pubkey);
@@ -311,13 +311,13 @@ new class extends Component {
                  class="absolute z-20 top-0 bottom-0 w-full md:w-auto md:static md:top-auto md:bottom-auto -mr-px md:translate-x-0 transition-transform duration-200 ease-in-out"
                  :class="inboxSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
                 <div
-                    class="sticky top-16 bg-white dark:bg-[#1B1B1B] overflow-x-hidden overflow-y-auto no-scrollbar shrink-0 border-r border-gray-200 dark:border-gray-700/60 md:w-[18rem] xl:w-[20rem] h-[calc(100dvh-64px)]">
+                    class="sticky top-16 bg-white dark:bg-[#1B1B1B] overflow-x-hidden overflow-y-auto no-scrollbar shrink-0 border-r border-zinc-200 dark:border-zinc-700/60 md:w-[18rem] xl:w-[20rem] h-[calc(100dvh-64px)]">
 
                     <!-- #Marketing group -->
                     <div>
                         <!-- Group header -->
                         <div class="sticky top-0 z-10">
-                            <div class="flex items-center bg-white dark:bg-[#1B1B1B] border-b border-gray-200 dark:border-gray-700/60 px-5 h-16">
+                            <div class="flex items-center bg-white dark:bg-[#1B1B1B] border-b border-zinc-200 dark:border-zinc-700/60 px-5 h-16">
                                 <div class="w-full flex items-center justify-between">
                                     <!-- Channel menu -->
                                     <div class="relative" x-data="{ open: false }">
@@ -325,16 +325,16 @@ new class extends Component {
                                                 @click.prevent="open = !open" :aria-expanded="open">
                                             <div class="truncate">
                                         <span
-                                            class="font-semibold text-gray-800 dark:text-gray-100">2024</span>
+                                            class="font-semibold text-zinc-800 dark:text-zinc-100">2024</span>
                                             </div>
                                             <svg
-                                                class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
+                                                class="w-3 h-3 shrink-0 ml-1 fill-current text-zinc-400 dark:text-zinc-500"
                                                 viewBox="0 0 12 12">
                                                 <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z"/>
                                             </svg>
                                         </button>
                                         <div
-                                            class="origin-top-right z-10 absolute top-full left-0 min-w-60 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/60 py-1.5 rounded-lg shadow-lg overflow-hidden mt-1"
+                                            class="origin-top-right z-10 absolute top-full left-0 min-w-60 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/60 py-1.5 rounded-lg shadow-lg overflow-hidden mt-1"
                                             @click.outside="open = false" @keydown.escape.window="open = false"
                                             x-show="open"
                                             x-transition:enter="transition ease-out duration-200 transform"
@@ -346,7 +346,7 @@ new class extends Component {
                                             x-cloak>
                                             <ul>
                                                 <li>
-                                                    <a class="font-medium text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 block py-1.5 px-3"
+                                                    <a class="font-medium text-sm text-zinc-600 dark:text-zinc-300 hover:text-zinc-800 dark:hover:text-zinc-200 block py-1.5 px-3"
                                                    href="#0" @click="open = false" @focus="open = true"
                                                    @focusout="open = false">
                                                     <div class="flex items-center justify-between">
@@ -375,11 +375,11 @@ new class extends Component {
                                 <label for="inbox-search" class="sr-only">Search</label>
                                 <input
                                     wire:model.live.debounce="search"
-                                    id="inbox-search" class="form-input w-full pl-9 bg-white dark:bg-gray-800"
+                                    id="inbox-search" class="form-input w-full pl-9 bg-white dark:bg-zinc-800"
                                     type="search" placeholder="Suche…"/>
                                 <button class="absolute inset-0 right-auto group" type="submit" aria-label="Search">
                                     <svg
-                                        class="shrink-0 fill-current text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 ml-3 mr-2"
+                                        class="shrink-0 fill-current text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 ml-3 mr-2"
                                         width="16" height="16" viewBox="0 0 16 16"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -391,7 +391,7 @@ new class extends Component {
                             </form>
                             <!-- Inbox -->
                             <div class="mt-4">
-                                <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-3">
+                                <div class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase mb-3">
                                     Plebs
                                 </div>
                                 <ul class="mb-6">
@@ -408,16 +408,16 @@ new class extends Component {
                                                     <div class="flex items-center justify-between mb-1.5">
                                                         <div class="truncate">
                                                 <span
-                                                    class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{{ $pleb['profile']['name'] ?? $pleb['pubkey'] }}</span>
+                                                    class="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate">{{ $pleb['profile']['name'] ?? $pleb['pubkey'] }}</span>
                                                         </div>
-                                                        <div class="text-xs text-gray-500 font-medium">
+                                                        <div class="text-xs text-zinc-500 font-medium">
                                                             <x-badge
                                                                 :color="\App\Enums\AssociationStatus::from($pleb['association_status'])->color()"
                                                                 :label="\App\Enums\AssociationStatus::from($pleb['association_status'])->label()"/>
                                                         </div>
                                                     </div>
                                                     <div
-                                                        class="text-xs font-medium text-gray-800 dark:text-gray-100 truncate mb-0.5">
+                                                        class="text-xs font-medium text-zinc-800 dark:text-zinc-100 truncate mb-0.5">
                                                         <div class="flex items-center space-x-2 h-5">
                                                             @foreach($positions as $name => $p)
                                                                 @php
@@ -451,7 +451,7 @@ new class extends Component {
                         <!-- Header -->
                         <div class="sticky top-16">
                             <div
-                                class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-gray-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-gray-200 dark:border-gray-700/60 px-4 sm:px-6 md:px-5 h-16">
+                                class="flex items-center justify-between before:absolute before:inset-0 before:backdrop-blur-md before:bg-zinc-50/90 dark:before:bg-[#1B1B1B]/90 before:-z-10 border-b border-zinc-200 dark:border-zinc-700/60 px-4 sm:px-6 md:px-5 h-16">
                                 <div
                                      class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row justify-between items-center w-full">
                                      <div>
@@ -476,7 +476,7 @@ new class extends Component {
 
                             <!-- Mail subject -->
                             <header class="sm:flex sm:items-start space-x-4 mb-4">
-                                <h1 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                <h1 class="text-xl leading-snug text-zinc-800 dark:text-zinc-100 font-bold mb-1 sm:mb-0 ml-2">
                                     Wahlen
                                 </h1>
                                 <button
@@ -487,11 +487,11 @@ new class extends Component {
 
                             <!-- Messages box -->
                             <div
-                                class="shadow-sm rounded-xl px-6 divide-y divide-gray-200 dark:divide-gray-700/60">
+                                class="shadow-sm rounded-xl px-6 divide-y divide-zinc-200 dark:divide-zinc-700/60">
 
                                 <!-- Mail -->
                                 <div class="py-6">
-                                    <h1 class="text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                    <h1 class="text-xl leading-snug text-zinc-800 dark:text-zinc-100 font-bold mb-1 sm:mb-0 ml-2">
                                         Wahl des Präsidiums
                                     </h1>
                                     <div class="grid sm:grid-cols-2 gap-6">
@@ -503,7 +503,7 @@ new class extends Component {
                                                 </header>
                                                 <div class="grow mt-2">
                                                     <div
-                                                        class="inline-flex text-gray-800 dark:text-gray-100 hover:text-gray-900 dark:hover:text-white mb-1">
+                                                        class="inline-flex text-zinc-800 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white mb-1">
                                                         <h2 class="text-xl leading-snug font-semibold">{{ $positions['presidency']['title'] }}</h2>
                                                     </div>
                                                     <div class="text-sm">
@@ -541,7 +541,7 @@ new class extends Component {
                                         </flux:card>
                                     </div>
 
-                                        <h1 class="mt-6 text-xl leading-snug text-gray-800 dark:text-gray-100 font-bold mb-1 sm:mb-0 ml-2">
+                                        <h1 class="mt-6 text-xl leading-snug text-zinc-800 dark:text-zinc-100 font-bold mb-1 sm:mb-0 ml-2">
                                         Wahl der übrigen Vorstandsmitglieder
                                     </h1>
                                     <div class="grid gap-6">
@@ -583,18 +583,18 @@ new class extends Component {
                             <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
                                 <flux:card mb-8>
                                     <header class="px-5 py-4">
-                                        <h2 class="font-semibold text-gray-800 dark:text-gray-100">Präsidium Log <span
-                                                class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedEvents) }}</span>
+                                        <h2 class="font-semibold text-zinc-800 dark:text-zinc-100">Präsidium Log <span
+                                                class="text-zinc-400 dark:text-zinc-500 font-medium">{{ count($this->loadedEvents) }}</span>
                                         </h2>
                                     </header>
                                     <div>
                                         <!-- Table -->
                                         <div class="overflow-x-auto">
                                             <table
-                                                class="table-auto w-full dark:text-gray-300 divide-y divide-gray-100 dark:divide-gray-700/60">
+                                                class="table-auto w-full dark:text-zinc-300 divide-y divide-zinc-100 dark:divide-zinc-700/60">
                                                 <!-- Table header -->
                                                 <thead
-                                                    class="text-xs uppercase text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20 border-t border-gray-100 dark:border-gray-700/60">
+                                                    class="text-xs uppercase text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/20 border-t border-zinc-100 dark:border-zinc-700/60">
                                                 <tr>
                                                     <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                         <div class="font-semibold text-left">ID</div>
@@ -650,18 +650,18 @@ new class extends Component {
                             <div x-cloak x-show="showLog" class="mt-6 hidden sm:block">
                                 <flux:card mb-8>
                                     <header class="px-5 py-4">
-                                        <h2 class="font-semibold text-gray-800 dark:text-gray-100">Board Log <span
-                                                class="text-gray-400 dark:text-gray-500 font-medium">{{ count($this->loadedBoardEvents) }}</span>
+                                        <h2 class="font-semibold text-zinc-800 dark:text-zinc-100">Board Log <span
+                                                class="text-zinc-400 dark:text-zinc-500 font-medium">{{ count($this->loadedBoardEvents) }}</span>
                                         </h2>
                                     </header>
                                     <div>
                                         <!-- Table -->
                                         <div class="overflow-x-auto">
                                             <table
-                                                class="table-auto w-full dark:text-gray-300 divide-y divide-gray-100 dark:divide-gray-700/60">
+                                                class="table-auto w-full dark:text-zinc-300 divide-y divide-zinc-100 dark:divide-zinc-700/60">
                                                 <!-- Table header -->
                                                 <thead
-                                                    class="text-xs uppercase text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20 border-t border-gray-100 dark:border-gray-700/60">
+                                                    class="text-xs uppercase text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/20 border-t border-zinc-100 dark:border-zinc-700/60">
                                                 <tr>
                                                     <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                         <div class="font-semibold text-left">ID</div>

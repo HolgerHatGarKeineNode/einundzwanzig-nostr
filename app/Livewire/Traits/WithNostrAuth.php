@@ -43,7 +43,7 @@ trait WithNostrAuth
         $this->canEdit = false;
     }
 
-    public function mountNostrAuth(): void
+    public function mountWithNostrAuth(): void
     {
         if ($user = NostrAuth::user()) {
             $this->currentPubkey = $user->getPubkey();

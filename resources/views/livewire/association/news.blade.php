@@ -129,7 +129,7 @@ class extends Component {
 
                                     <!-- Title -->
                                     <header class="mb-6">
-                                        <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                                        <h1 class="text-2xl md:text-3xl text-zinc-800 dark:text-zinc-100 font-bold">
                                             News
                                         </h1>
                                     </header>
@@ -142,7 +142,7 @@ class extends Component {
                                     <!-- Group 1 -->
                                     <div>
                                         <div
-                                            class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-3 md:sr-only">
+                                            class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase mb-3 md:sr-only">
                                             Menu
                                         </div>
                                         <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
@@ -180,7 +180,7 @@ class extends Component {
                                         <!-- Content -->
                                         <div class="grow">
                                             <!-- Title -->
-                                            <h2 class="font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                            <h2 class="font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
                                                 {{ $post->name }}
                                             </h2>
                                             <p class="mb-6">
@@ -189,7 +189,7 @@ class extends Component {
                                             <!-- Footer -->
                                             <footer class="flex flex-wrap text-sm">
                                                 <div
-                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
+                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-zinc-400 dark:after:text-zinc-600 after:px-2">
                                                     <div
                                                         class="font-medium text-amber-500 hover:text-amber-600 dark:hover:text-amber-400">
                                                         <div class="flex items-center">
@@ -204,9 +204,9 @@ class extends Component {
                                                     </div>
                                                 </div>
                                                 <div
-                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-gray-400 dark:after:text-gray-600 after:px-2">
+                                                    class="flex items-center after:block after:content-['·'] last:after:content-[''] after:text-sm after:text-zinc-400 dark:after:text-zinc-600 after:px-2">
                                                             <span
-                                                                class="text-gray-500">{{ $post->created_at->format('d.m.Y') }}</span>
+                                                                class="text-zinc-500">{{ $post->created_at->format('d.m.Y') }}</span>
                                                 </div>
                                             </footer>
                                         </div>
@@ -274,7 +274,7 @@ class extends Component {
                                 @if($canEdit)
                                     <flux:card>
                                         <div
-                                            class="text-xs font-semibold text-gray-400 dark:text-gray-200 uppercase mb-4">
+                                            class="text-xs font-semibold text-zinc-400 dark:text-zinc-200 uppercase mb-4">
                                             News anlegen
                                         </div>
                                         <div class="mt-4 flex flex-col space-y-2">
@@ -348,7 +348,7 @@ class extends Component {
                 <flux:heading>Zugriff auf News nicht möglich</flux:heading>
                 <p>Um die News einzusehen, benötigst du:</p>
                 <ul class="list-disc ml-5 mt-2 space-y-1">
-                    <li>Einen Vereinsstatus von mindestens 2 (Aktives Mitglied)</li>
+                    <li>Einen Vereinsstatus von "Aktives Mitglied"</li>
                     <li>Eine bezahlte Mitgliedschaft für das aktuelle Jahr ({{ date('Y') }})</li>
                 </ul>
                 <p class="mt-3">

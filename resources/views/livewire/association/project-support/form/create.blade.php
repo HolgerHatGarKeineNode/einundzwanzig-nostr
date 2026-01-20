@@ -69,7 +69,7 @@ class extends Component
                 <div
                     class="flex flex-col md:flex-row items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
                     <div class="flex items-center justify-between w-full">
-                        <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                        <h1 class="text-2xl md:text-3xl text-zinc-800 dark:text-zinc-100 font-bold">
                             Projektförderung anlegen
                         </h1>
                     </div>
@@ -102,7 +102,7 @@ class extends Component
 
                                     @if($isAdmin)
                                         <flux:separator />
-                                        <flux:heading level="3" class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Admin Felder</flux:heading>
+                                        <flux:heading level="3" class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Admin Felder</flux:heading>
                                         <div class="space-y-3 mt-3">
                                             <flux:field>
                                                 <flux:label>Akzeptiert</flux:label>
@@ -127,7 +127,7 @@ class extends Component
                     <div>
                         <flux:card>
                             <flux:heading level="2">Information</flux:heading>
-                            <p class="text-sm text-gray-800 dark:text-gray-100 mt-4">
+                            <p class="text-sm text-zinc-800 dark:text-zinc-100 mt-4">
                                 Fülle das Formular aus, um eine neue Projektförderung anzulegen.
                             </p>
                         </flux:card>
