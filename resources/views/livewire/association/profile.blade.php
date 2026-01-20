@@ -362,28 +362,30 @@ new class extends Component
                                     <p class="text-sm text-zinc-600 dark:text-zinc-400">
                                         Exklusive Schreib-Rechte auf Premium Nostr Relay von Einundzwanzig.
                                     </p>
-                                    <div class="mt-3 space-y-2">
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                            Ein Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es speichert und
-                                            verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in deinem
-                                            Nostr-Client hinzufügen.
-                                        </p>
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                            Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings" oder
-                                            "Relays") und füge folgende Relay-Adresse hinzu:
-                                        </p>
-                                        <div class="flex items-center gap-2 mt-2">
-                                            <code
-                                                class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                                                wire:click="copyRelayUrl">
-                                                wss://nostr.einundzwanzig.space
-                                            </code>
+                                    @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
+                                        <div class="mt-3 space-y-2">
+                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es speichert und
+                                                verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in deinem
+                                                Nostr-Client hinzufügen.
+                                            </p>
+                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings" oder
+                                                "Relays") und füge folgende Outbox-Relay-Adresse hinzu:
+                                            </p>
+                                            <div class="flex items-center gap-2 mt-2">
+                                                <code
+                                                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                                    wire:click="copyRelayUrl">
+                                                    wss://nostr.einundzwanzig.space
+                                                </code>
+                                            </div>
+                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren Relays gleichzeitig
+                                                veröffentlichen. So stellst du sicher, dass deine Inhalte auch über unser Relay erreichbar sind.
+                                            </p>
                                         </div>
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                            <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren Relays gleichzeitig
-                                            veröffentlichen. So stellst du sicher, dass deine Inhalte auch über unser Relay erreichbar sind.
-                                        </p>
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
