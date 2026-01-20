@@ -317,6 +317,13 @@ new class extends Component
             ->unique('id')
             ->toArray();
     }
+
+    public function copyRelayUrl(): void
+    {
+        $relayUrl = 'wss://nostr.einundzwanzig.space';
+        $this->js("navigator.clipboard.writeText('{$relayUrl}')");
+        Flux::toast('Relay-Adresse in die Zwischenablage kopiert!');
+    }
 }
 ?>
 
@@ -337,7 +344,7 @@ new class extends Component
                     <flux:separator variant="subtle" class="mb-6"/>
 
                     <!-- Benefits Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <!-- Benefit 1 -->
                         <div
                             class="bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-300/10 dark:to-orange-900/10 rounded-lg p-4 border border-amber-200 dark:border-amber-200/30">
@@ -355,6 +362,28 @@ new class extends Component
                                     <p class="text-sm text-zinc-600 dark:text-zinc-400">
                                         Exklusive Schreib-Rechte auf Premium Nostr Relay von Einundzwanzig.
                                     </p>
+                                    <div class="mt-3 space-y-2">
+                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            Ein Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es speichert und
+                                            verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in deinem
+                                            Nostr-Client hinzufügen.
+                                        </p>
+                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings" oder
+                                            "Relays") und füge folgende Relay-Adresse hinzu:
+                                        </p>
+                                        <div class="flex items-center gap-2 mt-2">
+                                            <code
+                                                class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                                wire:click="copyRelayUrl">
+                                                wss://nostr.einundzwanzig.space
+                                            </code>
+                                        </div>
+                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren Relays gleichzeitig
+                                            veröffentlichen. So stellst du sicher, dass deine Inhalte auch über unser Relay erreichbar sind.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
