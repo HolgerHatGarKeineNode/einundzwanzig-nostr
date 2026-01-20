@@ -73,7 +73,7 @@
                              +{{ $project->votes->where('value', true)->count() }} Unterstützer
                          </flux:badge>
                      @endif
-                     <flux:link href="https://njump.me/{{ $project->einundzwanzigPleb->npub }}" target="_blank">Anstragssteller</flux:link>
+                     <flux:link href="https://njump.me/{{ $project->einundzwanzigPleb->npub }}" target="_blank">Antragssteller</flux:link>
                  </div>
 
                  <!-- Second row: Action buttons -->
