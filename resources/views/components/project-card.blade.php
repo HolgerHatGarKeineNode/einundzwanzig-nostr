@@ -65,8 +65,7 @@
                      <flux:badge color="amber">{{ number_format($project->support_in_sats, 0, ',', '.') }} Sats</flux:badge>
                      <flux:link
                          href="{{ $project->website }}"
-                         target="_blank"
-                         class="text-xs font-bold border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-200 rounded-full px-2.5 py-1">
+                         target="_blank">
                          Webseite
                      </flux:link>
                      @if($project->votes->where('value', true)->count() > 0)
@@ -74,6 +73,7 @@
                              +{{ $project->votes->where('value', true)->count() }} Unterstützer
                          </flux:badge>
                      @endif
+                     <flux:link href="https://njump.me/{{ $project->einundzwanzigPleb->npub }}" target="_blank">Anstragssteller</flux:link>
                  </div>
 
                  <!-- Second row: Action buttons -->
