@@ -49,8 +49,9 @@
         <div class="grow p-5 flex flex-col">
             <div class="grow">
                 <div class="text-sm font-semibold text-amber-500 uppercase mb-2">
-                    Eingereicht
-                    von: {{ $project->einundzwanzigPleb->profile?->name ?? str($project->einundzwanzigPleb->npub)->limit(32) }}
+                    Eingereicht von: <flux:link href="https://njump.me/{{ $project->einundzwanzigPleb->npub }}" target="_blank">
+                        {{ $project->einundzwanzigPleb->profile?->name ?? str($project->einundzwanzigPleb->npub)->limit(32) }}
+                    </flux:link>
                 </div>
                 <div class="inline-flex mb-2">
                     <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">
@@ -73,7 +74,6 @@
                              +{{ $project->votes->where('value', true)->count() }} Unterstützer
                          </flux:badge>
                      @endif
-                     <flux:link href="https://njump.me/{{ $project->einundzwanzigPleb->npub }}" target="_blank">Antragssteller</flux:link>
                  </div>
 
                  <!-- Second row: Action buttons -->
