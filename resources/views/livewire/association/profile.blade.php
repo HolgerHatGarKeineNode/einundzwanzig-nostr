@@ -581,80 +581,190 @@ new class extends Component
                         </h3>
 
                         <!-- Grid of App Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <flux:card>
-                                <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div class="flex-1">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                        <div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-4 gap-4">
+                            <flux:card class="h-full">
+                                <div class="flex flex-col h-full gap-3 p-1">
+                                    <div class="flex-1 min-w-0">
+                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://github.com/greenart7c3/Amber">
                                             Amber
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                                             Perfekt für mobile Android Geräte. Eine App, in der man alle Keys/nsecs
                                             verwalten kann.
                                         </p>
                                     </div>
-                                    <div class="shrink-0">
-                                        <flux:badge color="success">Android</flux:badge>
+                                    <div class="flex items-start sm:items-center">
+                                        <flux:badge color="green">Android</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
 
-                            <flux:card>
-                                <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div class="flex-1">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                            <flux:card class="h-full">
+                                <div class="flex flex-col h-full gap-3 p-1">
+                                    <div class="flex-1 min-w-0">
+                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://addons.mozilla.org/en-US/firefox/addon/alby/">
                                             Alby - Bitcoin Lightning Wallet & Nostr
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                                             Browser-Erweiterung in die man seinen Key/nsec eingeben kann. Pro Alby-Konto
                                             ein nsec.
                                         </p>
                                     </div>
-                                    <div class="shrink-0">
-                                        <flux:badge color="warning">Browser Chrome/Firefox</flux:badge>
+                                    <div class="flex items-start sm:items-center">
+                                        <flux:badge color="green">Browser Chrome/Firefox</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
 
-                            <flux:card>
-                                <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div class="flex-1">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                            <flux:card class="h-full">
+                                <div class="flex flex-col h-full gap-3 p-1">
+                                    <div class="flex-1 min-w-0">
+                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://chromewebstore.google.com/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp">
                                             nos2x
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                                             Browser-Erweiterung für Chrome Browser. Multi-Key fähig.
                                         </p>
                                     </div>
-                                    <div class="shrink-0">
-                                        <flux:badge color="danger">Browser Chrome</flux:badge>
+                                    <div class="flex items-start sm:items-center">
+                                        <flux:badge color="green">Browser Chrome</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
 
-                            <flux:card>
-                                <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div class="flex-1">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+                            <flux:card class="h-full">
+                                <div class="flex flex-col h-full gap-3 p-1">
+                                    <div class="flex-1 min-w-0">
+                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
                                             nos2x-fox
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                                             Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
                                         </p>
                                     </div>
-                                    <div class="shrink-0">
-                                        <flux:badge color="amber">Browser Firefox</flux:badge>
+                                    <div class="flex items-start sm:items-center">
+                                        <flux:badge color="green">Browser Firefox</flux:badge>
                                     </div>
                                 </div>
                             </flux:card>
+                        </div>
+
+                        <!-- Screenshots Gallery -->
+                        <div class="mt-8">
+                            <h3 class="text-lg md:text-xl text-zinc-800 dark:text-zinc-100 font-semibold mb-4">
+                                Amber App - Nostr Signer
+                            </h3>
+
+                            <!-- Responsive Gallery Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                                <!-- Screenshot 1 -->
+                                <a href="{{ asset('img/1.png') }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group block">
+                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        <img src="{{ asset('img/1.png') }}"
+                                             alt="Amber App Screenshot 1"
+                                             loading="lazy"
+                                             class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="absolute top-3 left-3 right-3">
+                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                    Startseite
+                                                </h4>
+                                            </div>
+                                            <div class="absolute bottom-3 left-3 right-3">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square text-white text-sm"></i>
+                                                    <span class="text-white text-xs font-medium">Vollbild</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Screenshot 2 -->
+                                <a href="{{ asset('img/2.png') }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group block">
+                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        <img src="{{ asset('img/2.png') }}"
+                                             alt="Amber App Screenshot 2"
+                                             loading="lazy"
+                                             class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="absolute top-3 left-3 right-3">
+                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                    Profileinstellungen
+                                                </h4>
+                                            </div>
+                                            <div class="absolute bottom-3 left-3 right-3">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square text-white text-sm"></i>
+                                                    <span class="text-white text-xs font-medium">Vollbild</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Screenshot 3 -->
+                                <a href="{{ asset('img/3.png') }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group block">
+                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        <img src="{{ asset('img/3.png') }}"
+                                             alt="Amber App Screenshot 3"
+                                             loading="lazy"
+                                             class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="absolute top-3 left-3 right-3">
+                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                    Keyverwaltung
+                                                </h4>
+                                            </div>
+                                            <div class="absolute bottom-3 left-3 right-3">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square text-white text-sm"></i>
+                                                    <span class="text-white text-xs font-medium">Vollbild</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Screenshot 4 -->
+                                <a href="{{ asset('img/4.png') }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group block">
+                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        <img src="{{ asset('img/4.png') }}"
+                                             alt="Amber App Screenshot 4"
+                                             loading="lazy"
+                                             class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="absolute top-3 left-3 right-3">
+                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                    Connect/nsec-Bunker
+                                                </h4>
+                                            </div>
+                                            <div class="absolute bottom-3 left-3 right-3">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square text-white text-sm"></i>
+                                                    <span class="text-white text-xs font-medium">Vollbild</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
 
                         <!-- User Profile Display -->
