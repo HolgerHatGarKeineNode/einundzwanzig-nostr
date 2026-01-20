@@ -226,3 +226,81 @@ it('displays project details', function () {
         ->assertSee('Test Project Name')
         ->assertSee('Test Project Description');
 });
+
+it('initializes currentPleb when authenticated', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['project' => $project])
+        ->assertSet('currentPleb.id', $pleb->id);
+});
+
+it('initializes ownVoteExists to false when no vote exists', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['project' => $project])
+        ->assertSet('ownVoteExists', false)
+        ->assertSee('Zustimmen')
+        ->assertSee('Ablehnen');
+});
+
+it('initializes ownVoteExists to true when vote exists', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+    \App\Models\Vote::create([
+        'project_proposal_id' => $project->id,
+        'einundzwanzig_pleb_id' => $pleb->id,
+        'value' => true,
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['project' => $project])
+        ->assertSet('ownVoteExists', true)
+        ->assertDontSee('Zustimmen')
+        ->assertDontSee('Ablehnen')
+        ->assertSee('Du hast bereits abgestimmt.');
+});
+
+it('can handle approve vote', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['project' => $project])
+        ->call('handleApprove')
+        ->assertHasNoErrors();
+
+    $vote = \App\Models\Vote::query()
+        ->where('project_proposal_id', $project->id)
+        ->where('einundzwanzig_pleb_id', $pleb->id)
+        ->first();
+
+    expect($vote)->not->toBeNull()
+        ->and($vote->value)->toBeTrue();
+});
+
+it('can handle not approve vote', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['project' => $project])
+        ->call('handleNotApprove')
+        ->assertHasNoErrors();
+
+    $vote = \App\Models\Vote::query()
+        ->where('project_proposal_id', $project->id)
+        ->where('einundzwanzig_pleb_id', $pleb->id)
+        ->first();
+
+    expect($vote)->not->toBeNull()
+        ->and($vote->value)->toBeFalse();
+});

@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Traits\WithNostrAuth;
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
@@ -8,6 +9,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 
 new class extends Component {
+    use WithNostrAuth;
+
     public string $activeFilter = 'all';
 
     public ?string $confirmDeleteId = null;
@@ -20,8 +23,6 @@ new class extends Component {
 
     public ?string $currentPubkey = null;
 
-    public ?EinundzwanzigPleb $currentPleb = null;
-
     public ?ProjectProposal $projectToDelete = null;
 
     protected $listeners = [
@@ -33,11 +34,6 @@ new class extends Component {
     public function mount(): void
     {
         $this->loadProjects();
-        if (NostrAuth::check()) {
-            $this->currentPubkey = NostrAuth::pubkey();
-            $this->currentPleb = EinundzwanzigPleb::query()->where('pubkey', $this->currentPubkey)->first();
-            $this->isAllowed = true;
-        }
     }
 
     public function updatedSearch(): void
@@ -134,44 +130,46 @@ new class extends Component {
                     </flux:button>
                 </li>
                 <li class="m-1">
-                    <flux:button wire:click="setFilter('supported')" :variant="$activeFilter === 'supported' ? 'primary' : 'ghost'">
+                    <flux:button wire:click="setFilter('supported')"
+                                 :variant="$activeFilter === 'supported' ? 'primary' : 'ghost'">
                         Unterstützt
                     </flux:button>
                 </li>
                 <li class="m-1">
-                    <flux:button wire:click="setFilter('rejected')" :variant="$activeFilter === 'rejected' ? 'primary' : 'ghost'">
+                    <flux:button wire:click="setFilter('rejected')"
+                                 :variant="$activeFilter === 'rejected' ? 'primary' : 'ghost'">
                         Abgelehnt
                     </flux:button>
                 </li>
             </ul>
         </div>
-         <div class="text-sm text-zinc-500 dark:text-zinc-400 italic mb-4">{{ $projects->count() }} Projekte</div>
+        <div class="text-sm text-zinc-500 dark:text-zinc-400 italic mb-4">{{ $projects->count() }} Projekte</div>
 
-         <!-- Content -->
-         <div class="grid xl:grid-cols-2 gap-6 mb-8">
-             @foreach($this->projects as $project)
-                 <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
-             @endforeach
-         </div>
+        <!-- Content -->
+        <div class="grid xl:grid-cols-2 gap-6 mb-8">
+            @foreach($this->projects as $project)
+                <x-project-card :project="$project" :currentPleb="$currentPleb" :section="$activeFilter"/>
+            @endforeach
+        </div>
 
-         <!-- Delete confirmation modal -->
-         <flux:modal name="delete-project" class="min-w-88">
-             <div class="space-y-6">
-                 <div>
-                     <flux:heading size="lg">Projektunterstützung löschen?</flux:heading>
-                     <flux:text class="mt-2">
-                         <p>Du bist dabei, diese Projektunterstützung zu löschen.</p>
-                         <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
-                     </flux:text>
-                 </div>
-                 <div class="flex gap-2">
-                     <flux:spacer/>
-                     <flux:modal.close>
-                         <flux:button variant="ghost">Abbrechen</flux:button>
-                     </flux:modal.close>
-                     <flux:button wire:click="delete" variant="danger">Löschen</flux:button>
-                 </div>
-             </div>
-         </flux:modal>
-     </div>
+        <!-- Delete confirmation modal -->
+        <flux:modal name="delete-project" class="min-w-88">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Projektunterstützung löschen?</flux:heading>
+                    <flux:text class="mt-2">
+                        <p>Du bist dabei, diese Projektunterstützung zu löschen.</p>
+                        <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                    </flux:text>
+                </div>
+                <div class="flex gap-2">
+                    <flux:spacer/>
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Abbrechen</flux:button>
+                    </flux:modal.close>
+                    <flux:button wire:click="delete" variant="danger">Löschen</flux:button>
+                </div>
+            </div>
+        </flux:modal>
+    </div>
 </div>

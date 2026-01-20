@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Traits\WithNostrAuth;
+use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
 use Livewire\Component;
@@ -20,10 +21,15 @@ new class extends Component {
 
     public function mount($projectProposal): void
     {
-        $this->projectProposal = \App\Models\ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
+        $this->projectProposal = ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
         if (NostrAuth::check()) {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->isAllowed = true;
+            $this->mountWithNostrAuth();
+            $this->ownVoteExists = Vote::query()
+                ->where('project_proposal_id', $this->projectProposal->id)
+                ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
+                ->exists();
         }
     }
 
@@ -54,6 +60,10 @@ new class extends Component {
         ], [
             'value' => true,
         ]);
+        $this->ownVoteExists = Vote::query()
+            ->where('project_proposal_id', $this->projectProposal->id)
+            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
+            ->exists();
     }
 
     public function handleNotApprove(): void
@@ -64,6 +74,10 @@ new class extends Component {
         ], [
             'value' => false,
         ]);
+        $this->ownVoteExists = Vote::query()
+            ->where('project_proposal_id', $this->projectProposal->id)
+            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
+            ->exists();
     }
 }
 ?>

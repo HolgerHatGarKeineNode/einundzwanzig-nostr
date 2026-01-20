@@ -5,12 +5,15 @@ use App\Support\NostrAuth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 new
 #[Layout('layouts.app')]
 #[Title('Projektförderung anlegen')]
 class extends Component
 {
+    use WithFileUploads;
+
     public array $form = [
         'name' => '',
         'description' => '',
@@ -19,6 +22,8 @@ class extends Component
         'accepted' => false,
         'sats_paid' => 0,
     ];
+
+    public $file = null;
 
     public bool $isAllowed = false;
 
@@ -40,6 +45,14 @@ class extends Component
         }
     }
 
+    public function removeFile(): void
+    {
+        if ($this->file) {
+            $this->file->delete();
+            $this->file = null;
+        }
+    }
+
     public function save(): void
     {
         $this->validate([
@@ -47,9 +60,10 @@ class extends Component
             'form.description' => 'required|string',
             'form.support_in_sats' => 'required|integer|min:0',
             'form.website' => 'required|url|max:255',
+            'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
-        ProjectProposal::query()->create([
+        $projectProposal = ProjectProposal::query()->create([
             'name' => $this->form['name'],
             'description' => $this->form['description'],
             'support_in_sats' => (int) $this->form['support_in_sats'],
@@ -58,6 +72,10 @@ class extends Component
             'sats_paid' => $this->form['sats_paid'],
             'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id,
         ]);
+
+        if ($this->file) {
+            $projectProposal->addMedia($this->file)->toMediaCollection('main');
+        }
 
         $this->redirectRoute('association.projectSupport');
     }
@@ -70,8 +88,11 @@ class extends Component
                     class="flex flex-col md:flex-row items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
                     <div class="flex items-center justify-between w-full">
                         <h1 class="text-2xl md:text-3xl text-zinc-800 dark:text-zinc-100 font-bold">
-                            Projektförderung anlegen
+                            Projektförderungs-Antrag anlegen
                         </h1>
+                        <flux:button :href="route('association.projectSupport')" variant="ghost" icon="arrow-left">
+                            Zurück
+                        </flux:button>
                     </div>
                 </div>
 
@@ -96,6 +117,30 @@ class extends Component
                                         <flux:label>Unterstützung (Sats)</flux:label>
                                         <flux:input wire:model="form.support_in_sats" type="number" placeholder="100000" />
                                         <flux:error name="form.support_in_sats" />
+                                    </flux:field>
+                                    <flux:field>
+                                        <flux:label>Bild</flux:label>
+                                        <flux:file-upload wire:model="file" label="Bild hochladen">
+                                            <flux:file-upload.dropzone
+                                                heading="Bild hier ablegen oder zum Durchsuchen klicken"
+                                                text="JPG, PNG, GIF, WebP bis zu 10MB"
+                                            />
+                                        </flux:file-upload>
+                                        <flux:error name="file" />
+
+                                        @if($file)
+                                            <div class="mt-4 flex flex-col gap-2">
+                                                <flux:file-item
+                                                    :heading="$file->getClientOriginalName()"
+                                                    :image="$file->temporaryUrl()"
+                                                    :size="$file->getSize()"
+                                                >
+                                                    <x-slot name="actions">
+                                                        <flux:file-item.remove wire:click="removeFile" />
+                                                    </x-slot>
+                                                </flux:file-item>
+                                            </div>
+                                        @endif
                                     </flux:field>
                                     <flux:editor wire:model="form.description" label="Beschreibung" description="Projektbeschreibung..." />
                                     <flux:error name="form.description" />

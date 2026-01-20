@@ -29,6 +29,12 @@ new class extends Component {
 
     public ?string $nip05Handle = '';
 
+    public bool $nip05Verified = false;
+
+    public ?string $nip05VerifiedHandle = null;
+
+    public bool $nip05HandleMismatch = false;
+
     public array $yearsPaid = [];
 
     public array $events = [];
@@ -63,8 +69,30 @@ new class extends Component {
             if ($this->currentPleb) {
                 $this->email = $this->currentPleb->email;
                 if ($this->currentPleb->nip05_handle) {
-                    $this->nip05Handle = strtolower(str_replace('@einundzwanzig.space', '',
-                        $this->currentPleb->nip05_handle));
+                    $this->nip05Handle = $this->currentPleb->nip05_handle;
+
+                    // Verify NIP-05 handle against nostr.json
+                    try {
+                        $response = \Illuminate\Support\Facades\Http::get(
+                            'https://einundzwanzig.space/.well-known/nostr.json',
+                        );
+                        $data = $response->json();
+                        if (isset($data['names'])) {
+                            foreach ($data['names'] as $handle => $pubkey) {
+                                if ($pubkey === $this->currentPubkey) {
+                                    $this->nip05Verified = true;
+                                    $this->nip05VerifiedHandle = $handle;
+                                    // Check if verified handle differs from database handle
+                                    if ($handle !== $this->nip05Handle) {
+                                        $this->nip05HandleMismatch = true;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (\Exception) {
+                        // Silently fail if nostr.json is not accessible
+                    }
                 }
                 $this->no = $this->currentPleb->no_email;
                 $this->showEmail = !$this->no;
@@ -114,7 +142,7 @@ new class extends Component {
             'nip05Handle' => 'required|string|max:255|regex:/^[a-z0-9_-]+$/|unique:einundzwanzig_plebs,nip05_handle',
         ]);
 
-        $nip05Handle = strtolower($this->nip05Handle).'@einundzwanzig.space';
+        $nip05Handle = strtolower($this->nip05Handle);
 
         $this->currentPleb->update([
             'nip05_handle' => $nip05Handle,
@@ -399,6 +427,39 @@ new class extends Component {
                                             vertrauenswürdiger.
                                         </p>
                                     </div>
+
+                                    <!-- NIP-05 Verification Status -->
+                                    @if($nip05Verified)
+                                        @if($nip05HandleMismatch)
+                                            <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
+                                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                                    Dein aktiviertes Handle ist <strong>{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
+                                                </p>
+                                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                                    Die Synchronisation zu <strong>{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
+                                                </p>
+                                            </flux:callout>
+                                        @else
+                                            <flux:callout variant="success" icon="check-circle" class="mt-4">
+                                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                                    Dein Handle <strong>{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong> ist aktiv verifiziert!
+                                                </p>
+                                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                                    Dein Handle ist in der NIP-05 Konfiguration eingetragen und bereit für die Verwendung.
+                                                </p>
+                                            </flux:callout>
+                                        @endif
+                                    @elseif($nip05Handle)
+                                        <flux:callout variant="secondary" icon="information-circle" class="mt-4">
+                                            <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                                Dein Handle <strong>{{ $nip05Handle }}@einundzwanzig.space</strong> ist noch nicht aktiv.
+                                            </p>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                                Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration veröffentlicht.
+                                                Der Vorstand wird dies bald aktivieren.
+                                            </p>
+                                        </flux:callout>
+                                    @endif
                                 </div>
                             @else
                                 <div class="text-xs text-zinc-500 dark:text-zinc-400 italic">
