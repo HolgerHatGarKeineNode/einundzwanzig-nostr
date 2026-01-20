@@ -30,7 +30,6 @@ trait NostrFetcherTrait
                 'npub' => $item,
             ]);
         }
-
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
 
@@ -41,13 +40,14 @@ trait NostrFetcherTrait
         $requestMessage = new RequestMessage($subscriptionId, $filters);
 
         $relayUrls = [
-            'wss://relay.primal.net',
             'wss://purplepag.es',
             'wss://nostr.wine',
             'wss://relay.damus.io',
+            'wss://relay.primal.net',
         ];
 
-        $data = null;
+        // Collect all responses from all relays
+        $allResponses = collect([]);
         foreach ($relayUrls as $relayUrl) {
             $relay = new Relay($relayUrl);
             $relay->setMessage($requestMessage);
@@ -57,25 +57,30 @@ trait NostrFetcherTrait
                 $data = $response[$relayUrl];
                 if (! empty($data)) {
                     \Log::info('Successfully fetched data from relay: '.$relayUrl);
-                    break; // Exit the loop if data is not empty
+                    $allResponses = $allResponses->concat($data);
                 }
             } catch (\Exception $e) {
                 \Log::warning('Failed to fetch from relay '.$relayUrl.': '.$e->getMessage());
             }
         }
 
-        if (empty($data)) {
+        if ($allResponses->isEmpty()) {
             \Log::warning('No data found from any relay');
 
             return;
         }
-        foreach ($data as $item) {
+
+        // Group responses by pubkey and merge profile data
+        $mergedProfiles = [];
+        foreach ($allResponses as $item) {
             try {
                 if (isset($item->event)) {
+                    $pubkey = $item->event->pubkey;
                     $result = json_decode($item->event->content, true, 512, JSON_THROW_ON_ERROR);
-                    Profile::query()->updateOrCreate(
-                        ['pubkey' => $item->event->pubkey],
-                        [
+
+                    if (! isset($mergedProfiles[$pubkey])) {
+                        $mergedProfiles[$pubkey] = [
+                            'pubkey' => $pubkey,
                             'name' => $result['name'] ?? null,
                             'display_name' => $result['display_name'] ?? null,
                             'picture' => $result['picture'] ?? null,
@@ -86,13 +91,36 @@ trait NostrFetcherTrait
                             'lud16' => $result['lud16'] ?? null,
                             'lud06' => $result['lud06'] ?? null,
                             'deleted' => $result['deleted'] ?? false,
-                        ],
-                    );
-                    \Log::info('Profile updated/created for pubkey: '.$item->event->pubkey);
+                        ];
+                    } else {
+                        // Merge data: keep existing non-null values, use new values if existing is null
+                        $fields = ['name', 'display_name', 'picture', 'banner', 'website', 'about', 'nip05', 'lud16', 'lud06', 'deleted'];
+                        foreach ($fields as $field) {
+                            if (array_key_exists($field, $result)) {
+                                $mergedProfiles[$pubkey][$field] = $result[$field];
+                            }
+                        }
+                    }
                 }
             } catch (\JsonException $e) {
-                \Log::error('Error decoding JSON: '.$e->getMessage());
-                throw new \RuntimeException('Error decoding JSON: '.$e->getMessage());
+                \Log::error('Error decoding JSON for pubkey: '.$item->event->pubkey ?? 'unknown', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Update/create profiles with merged data
+        foreach ($mergedProfiles as $profileData) {
+            try {
+                Profile::query()->updateOrCreate(
+                    ['pubkey' => $profileData['pubkey']],
+                    $profileData,
+                );
+                \Log::info('Profile updated/created for pubkey: '.$profileData['pubkey']);
+            } catch (\Exception $e) {
+                \Log::error('Failed to save profile for pubkey: '.$profileData['pubkey'], [
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
     }

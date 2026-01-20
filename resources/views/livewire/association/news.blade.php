@@ -114,8 +114,6 @@ class extends Component {
 
 <div>
     @if($isAllowed)
-        <div class="px-4 sm:px-6 lg:px-8 py-8 md:py-0 w-full max-w-9xl mx-auto">
-
             <div class="xl:flex">
 
                 <!-- Left + Middle content -->
@@ -344,10 +342,8 @@ class extends Component {
                 </div>
 
             </div>
-
-        </div>
     @else
-        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+        <div class="">
             <flux:callout variant="warning" icon="exclamation-circle">
                 <flux:heading>Zugriff auf News nicht möglich</flux:heading>
                 <p>Um die News einzusehen, benötigst du:</p>

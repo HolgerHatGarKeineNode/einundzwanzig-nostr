@@ -49,6 +49,60 @@ it('validates email format', function () {
         ->assertHasErrors(['email']);
 });
 
+it('can save nip05 handle', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->set('nip05Handle', 'user@example.com')
+        ->call('saveNip05Handle')
+        ->assertHasNoErrors();
+
+    expect($pleb->fresh()->nip05_handle)->toBe('user@example.com');
+});
+
+it('validates nip05 handle format', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->set('nip05Handle', 'not-an-email')
+        ->call('saveNip05Handle')
+        ->assertHasErrors(['nip05Handle']);
+});
+
+it('validates nip05 handle uniqueness', function () {
+    $pleb1 = EinundzwanzigPleb::factory()->active()->create([
+        'nip05_handle' => 'taken@example.com',
+    ]);
+
+    $pleb2 = EinundzwanzigPleb::factory()->active()->create();
+
+    NostrAuth::login($pleb2->pubkey);
+
+    Livewire::test('association.profile')
+        ->set('nip05Handle', 'taken@example.com')
+        ->call('saveNip05Handle')
+        ->assertHasErrors(['nip05Handle']);
+});
+
+it('can save null nip05 handle', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create([
+        'nip05_handle' => 'old@example.com',
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->set('nip05Handle', null)
+        ->call('saveNip05Handle')
+        ->assertHasNoErrors();
+
+    expect($pleb->fresh()->nip05_handle)->toBeNull();
+});
+
 it('can update no email preference', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
