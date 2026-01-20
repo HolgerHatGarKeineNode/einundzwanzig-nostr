@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\AssociationStatus;
 use App\Livewire\Forms\ApplicationForm;
 use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
@@ -16,7 +15,8 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Sign\Sign;
 use swentel\nostr\Subscription\Subscription;
 
-new class extends Component {
+new class extends Component
+{
     public ApplicationForm $form;
 
     public bool $no = false;
@@ -62,7 +62,7 @@ new class extends Component {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->currentPleb = EinundzwanzigPleb::query()
                 ->with([
-                    'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+                    'paymentEvents' => fn ($query) => $query->where('year', date('Y')),
                     'profile',
                 ])
                 ->where('pubkey', $this->currentPubkey)->first();
@@ -95,7 +95,7 @@ new class extends Component {
                     }
                 }
                 $this->no = $this->currentPleb->no_email;
-                $this->showEmail = !$this->no;
+                $this->showEmail = ! $this->no;
                 $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
                 if ($this->currentPleb->paymentEvents->count() < 1) {
                     $this->createPaymentEvent();
@@ -109,7 +109,7 @@ new class extends Component {
 
     public function updatedNo(): void
     {
-        $this->showEmail = !$this->no;
+        $this->showEmail = ! $this->no;
         $this->currentPleb->update([
             'no_email' => $this->no,
         ]);
@@ -235,7 +235,7 @@ new class extends Component {
     public function save($type): void
     {
         $this->form->validate();
-        if (!$this->form->check) {
+        if (! $this->form->check) {
             $this->js('alert("Du musst den Statuten zustimmen.")');
 
             return;
@@ -300,7 +300,7 @@ new class extends Component {
 
         $this->events = collect($response[config('services.relay')])
             ->map(function ($event) {
-                if (!isset($event->event)) {
+                if (! isset($event->event)) {
                     return false;
                 }
 
@@ -328,16 +328,16 @@ new class extends Component {
         </h1>
     </div>
 
-    <div class="flex gap-6">
+    <div class="flex flex-col md:flex-row gap-6">
         <!-- Membership Benefits Section -->
-        <flux:card class="w-1/3">
+        <flux:card class="w-full md:w-1/3">
             <div class="flex max-md:flex-col items-start">
                 <div class="flex-1 max-md:pt-6 self-stretch">
                     <flux:heading size="xl" level="1">Vorteile deiner Mitgliedschaft</flux:heading>
                     <flux:separator variant="subtle" class="mb-6"/>
 
                     <!-- Benefits Grid -->
-                    <div class="grid grid-cols-1 gap-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <!-- Benefit 1 -->
                         <div
                             class="bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-300/10 dark:to-orange-900/10 rounded-lg p-4 border border-amber-200 dark:border-amber-200/30">
@@ -433,16 +433,16 @@ new class extends Component {
                                         @if($nip05HandleMismatch)
                                             <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
                                                 <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                    Dein aktiviertes Handle ist <strong>{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
+                                                    Dein aktiviertes Handle ist <strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
                                                 </p>
                                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                                                    Die Synchronisation zu <strong>{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
+                                                    Die Synchronisation zu <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
                                                 </p>
                                             </flux:callout>
                                         @else
                                             <flux:callout variant="success" icon="check-circle" class="mt-4">
                                                 <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                    Dein Handle <strong>{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong> ist aktiv verifiziert!
+                                                    Dein Handle <strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong> ist aktiv verifiziert!
                                                 </p>
                                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                                                     Dein Handle ist in der NIP-05 Konfiguration eingetragen und bereit für die Verwendung.
@@ -452,7 +452,7 @@ new class extends Component {
                                     @elseif($nip05Handle)
                                         <flux:callout variant="secondary" icon="information-circle" class="mt-4">
                                             <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                Dein Handle <strong>{{ $nip05Handle }}@einundzwanzig.space</strong> ist noch nicht aktiv.
+                                                Dein Handle <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> ist noch nicht aktiv.
                                             </p>
                                             <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                                                 Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration veröffentlicht.
@@ -488,7 +488,7 @@ new class extends Component {
             </div>
         </flux:card>
         <!-- Main Grid Layout -->
-        <div class="w-2/3 grid grid-cols-1 gap-6">
+        <div class="w-full md:w-2/3 grid grid-cols-1 gap-6">
 
             @if($currentPleb)
                 <!-- Logged-in User Info -->
@@ -511,25 +511,25 @@ new class extends Component {
                                 </p>
                             </div>
                             <div class="space-y-1 text-xs">
-                                <div class="flex items-center gap-2">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                     <span class="text-zinc-500 dark:text-zinc-400 shrink-0">Pubkey:</span>
                                     <code
-                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 truncate font-mono">
+                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono">
                                         {{ $currentPleb->pubkey }}
                                     </code>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                     <span class="text-zinc-500 dark:text-zinc-400 shrink-0">Npub:</span>
                                     <code
-                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 truncate font-mono text-xs">
+                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono text-xs">
                                         {{ $currentPleb->npub }}
                                     </code>
                                 </div>
                                 @if($currentPleb->nip05_handle)
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                         <span class="text-zinc-500 dark:text-zinc-400 shrink-0">NIP-05:</span>
                                         <code
-                                            class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 font-mono text-xs">
+                                            class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono text-xs">
                                             {{ $currentPleb->nip05_handle }}
                                         </code>
                                     </div>
@@ -550,7 +550,7 @@ new class extends Component {
                         </h3>
 
                         <!-- Grid of App Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <flux:card>
                                 <div
                                     class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
