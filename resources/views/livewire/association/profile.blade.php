@@ -822,7 +822,7 @@ new class extends Component
                                 <flux:error name="form.check"/>
                             </flux:field>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <flux:button wire:click="save({{ AssociationStatus::PASSIVE() }})" variant="primary">
+                                <flux:button wire:click="save({{ \App\Enums\AssociationStatus::PASSIVE() }})" variant="primary">
                                     Mit deinem aktuellen Nostr-Profil Mitglied werden
                                 </flux:button>
                                 <flux:button href="https://einundzwanzig.space/verein/" target="_blank"
