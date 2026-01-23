@@ -65,16 +65,6 @@ services:
                 - ping
             retries: 3
             timeout: 5s
-    relay:
-        ports:
-            - "7000:7000"
-        volumes:
-            - ./relay:/usr/src/app/db
-            - ./relay/config.toml:/usr/src/app/config.toml
-        image: scsibug/nostr-rs-relay:latest
-        user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
-        networks:
-            - sail
 networks:
     sail:
         driver: bridge

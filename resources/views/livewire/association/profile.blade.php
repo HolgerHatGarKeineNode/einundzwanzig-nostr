@@ -353,7 +353,7 @@ new class extends Component {
 <div>
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-2xl md:text-3xl text-[#1B1B1B] dark:text-zinc-100 font-bold">
+        <h1 class="text-2xl md:text-3xl text-text-primary font-bold">
             Einundzwanzig ist, was du draus machst
         </h1>
     </div>
@@ -379,34 +379,34 @@ new class extends Component {
                                     </div>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-1">
+                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
                                         Nostr Relay
                                     </h3>
-                                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    <p class="text-sm text-text-secondary">
                                         Exklusive Schreib-Rechte auf Premium Nostr Relay von Einundzwanzig.
                                     </p>
                                     @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
                                         <div class="mt-3 space-y-2">
-                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            <p class="text-xs text-text-secondary leading-relaxed">
                                                 Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es
                                                 speichert und
                                                 verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in
                                                 deinem
                                                 Nostr-Client hinzufügen.
                                             </p>
-                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            <p class="text-xs text-text-secondary leading-relaxed">
                                                 Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings"
                                                 oder
                                                 "Relays") und füge folgende Outbox-Relay-Adresse hinzu:
                                             </p>
                                             <div class="flex items-center gap-2 mt-2">
                                                 <code
-                                                    class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                                    class="text-xs bg-bg-elevated px-2 py-1 rounded text-text-secondary font-mono cursor-pointer hover:bg-bg-surface transition-colors"
                                                     wire:click="copyRelayUrl">
                                                     wss://nostr.einundzwanzig.space
                                                 </code>
                                             </div>
-                                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            <p class="text-xs text-text-secondary leading-relaxed">
                                                 <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren
                                                 Relays gleichzeitig
                                                 veröffentlichen. So stellst du sicher, dass deine Inhalte auch über
@@ -429,10 +429,10 @@ new class extends Component {
                                     </div>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-1">
+                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
                                         Get NIP-05 verified
                                     </h3>
-                                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    <p class="text-sm text-text-secondary">
                                         Verifiziere deine Identität mit einem menschenlesbaren Nostr-Namen.
                                     </p>
                                 </div>
@@ -449,7 +449,7 @@ new class extends Component {
                                                 placeholder="dein-name"
                                                 wire:dirty.class="border-amber-500 dark:border-amber-400"
                                             />
-                                            <flux:input.group.suffix>@einundzwanzig.space</flux:input.group.suffix>
+                                            <flux:input.group.suffix class="!bg-[#4a7c59] !text-white font-medium">@einundzwanzig.space</flux:input.group.suffix>
                                         </flux:input.group>
                                         <flux:error name="profileForm.nip05Handle"/>
                                         <div wire:dirty wire:target="profileForm.nip05Handle" class="text-xs text-amber-600 dark:text-amber-400 mt-1">
@@ -462,7 +462,7 @@ new class extends Component {
                                             wire:click="saveNip05Handle"
                                             wire:loading.attr="disabled"
                                             size="sm"
-                                            variant="primary">
+                                            variant="outline">
                                             <span wire:loading.remove wire:target="saveNip05Handle">Speichern</span>
                                             <span wire:loading wire:target="saveNip05Handle">Speichert...</span>
                                         </flux:button>
@@ -470,8 +470,8 @@ new class extends Component {
 
                                     <!-- Rules Info -->
                                     <div
-                                        class="mt-3 p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        class="mt-3 p-3 bg-bg-elevated rounded border border-border-default">
+                                        <p class="text-xs text-text-secondary leading-relaxed">
                                             <strong>Regeln für dein Handle:</strong> Nur Kleinbuchstaben (a-z), Zahlen
                                             (0-9) und die Zeichen "-" und "_" sind erlaubt. Dein Handle wird automatisch
                                             kleingeschrieben.
@@ -480,8 +480,8 @@ new class extends Component {
 
                                     <!-- Explanation -->
                                     <div
-                                        class="mt-4 p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        class="mt-4 p-3 bg-bg-elevated rounded border border-border-default">
+                                        <p class="text-xs text-text-secondary leading-relaxed">
                                             <flux:link href="https://nostr.how/en/guides/get-verified#self-hosted"
                                                        target="_blank">NIP-05
                                             </flux:link>
@@ -495,12 +495,12 @@ new class extends Component {
                                     <!-- NIP-05 Verification Status -->
                                     @if($nip05Verified)
                                         <flux:callout variant="success" icon="check-circle" class="mt-4">
-                                            <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                            <p class="font-medium text-text-primary">
                                                 Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen
                                                 Pubkey!
                                             </p>
                                             @if($nip05HandleMismatch)
-                                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                                <p class="text-sm text-text-secondary mt-1">
                                                     Die Synchronisation zu <strong
                                                         class="break-all">{{ $profileForm->nip05Handle }}
                                                         @einundzwanzig.space</strong> wird automatisch im Hintergrund
@@ -511,15 +511,15 @@ new class extends Component {
 
                                         <!-- List of all active handles -->
                                         <div
-                                            class="mt-4 p-4 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
-                                            <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                                            class="mt-4 p-4 bg-bg-elevated rounded border border-border-default">
+                                            <p class="text-sm font-medium text-text-secondary mb-2">
                                                 Deine aktivierten Handles:
                                             </p>
                                             <ul class="space-y-2">
                                                 @foreach($nip05VerifiedHandles as $handle)
                                                     <li class="flex items-center gap-2 text-sm">
                                                         <span
-                                                            class="break-all text-zinc-800 dark:text-zinc-200 font-mono">
+                                                            class="break-all text-text-primary font-mono">
                                                             {{ $handle }}@einundzwanzig.space
                                                         </span>
                                                         <flux:badge color="green" size="xs">OK</flux:badge>
@@ -529,11 +529,11 @@ new class extends Component {
                                         </div>
                                     @elseif($profileForm->nip05Handle)
                                         <flux:callout variant="secondary" icon="information-circle" class="mt-4">
-                                            <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                            <p class="font-medium text-text-primary">
                                                 Dein Handle <strong class="break-all">{{ $profileForm->nip05Handle }}
                                                     @einundzwanzig.space</strong> ist noch nicht aktiv.
                                             </p>
-                                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                                            <p class="text-sm text-text-secondary mt-1">
                                                 Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration
                                                 veröffentlicht.
                                                 Der Vorstand wird dies bald aktivieren.
@@ -542,7 +542,7 @@ new class extends Component {
                                     @endif
                                 </div>
                             @else
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                <div class="text-xs text-text-tertiary italic">
                                     Aktiviere deine Mitgliedschaft, um NIP-05 zu verifizieren.
                                 </div>
                             @endif
@@ -559,10 +559,10 @@ new class extends Component {
                                     </div>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-1">
+                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
                                         Lightning Watchtower
                                     </h3>
-                                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    <p class="text-sm text-text-secondary">
                                         Nutze unseren Watchtower zum Schutz deiner Lightning Channel.
                                     </p>
                                 </div>
@@ -570,7 +570,7 @@ new class extends Component {
 
                             @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
                                 <div class="space-y-3">
-                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                    <p class="text-xs text-text-secondary leading-relaxed">
                                         Ein Watchtower überwacht deine Lightning Channel und schützt sie, falls deine
                                         Node
                                         offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst,
@@ -578,25 +578,25 @@ new class extends Component {
                                         der Watchtower darum und verhindert den Verlust deiner Sats.
                                     </p>
 
-                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                    <p class="text-xs text-text-secondary leading-relaxed">
                                         Um unseren Watchtower zu nutzen, füge folgende URI in deiner Lightning Node
                                         Konfiguration hinzu:
                                     </p>
 
                                     <div class="flex items-center gap-2">
                                         <code
-                                            class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors break-all"
+                                            class="text-xs bg-bg-elevated px-2 py-1 rounded text-text-secondary font-mono cursor-pointer hover:bg-bg-surface transition-colors break-all"
                                             wire:click="copyWatchtowerUrl">
                                             03a09f56bba3d2c200cc55eda2f1f069564a97c1fb74345e1560e2868a8ab3d7d0@62.171.139.240:9911
                                         </code>
                                     </div>
 
                                     <div
-                                        class="mt-3 p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium mb-2">
+                                        class="mt-3 p-3 bg-bg-elevated rounded border border-border-default">
+                                        <p class="text-xs text-text-secondary leading-relaxed font-medium mb-2">
                                             Einrichtung für gängige Lightning Clients:
                                         </p>
-                                        <ul class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-1 list-disc list-inside">
+                                        <ul class="text-xs text-text-secondary leading-relaxed space-y-1 list-disc list-inside">
                                             <li><strong>LND:</strong>
                                                 <flux:link
                                                     href="https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower"
@@ -605,7 +605,7 @@ new class extends Component {
                                                 </flux:link>
                                             </li>
                                             <li><strong>Core Lightning:</strong> Nutze den <code
-                                                    class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">watchtower-client</code>
+                                                    class="bg-bg-elevated px-1 rounded">watchtower-client</code>
                                                 Plugin mit der URI
                                             </li>
                                             <li><strong>Eclair:</strong> Füge die URI zu den Watchtower-Einstellungen in
@@ -614,14 +614,14 @@ new class extends Component {
                                         </ul>
                                     </div>
 
-                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                    <p class="text-xs text-text-secondary leading-relaxed">
                                         <strong>Wichtig:</strong> Der Watchtower überwacht deine Channel passiv. Er hat
                                         keinen Zugriff auf
                                         deine privaten Schlüssel oder dein Guthaben.
                                     </p>
                                 </div>
                             @else
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                <div class="text-xs text-text-tertiary italic">
                                     Aktiviere deine Mitgliedschaft, um den Lightning Watchtower zu nutzen.
                                 </div>
                             @endif
@@ -636,19 +636,19 @@ new class extends Component {
 
             @if($currentPleb)
                 <!-- Logged-in User Info -->
-                <flux:callout variant="info">
+                <flux:card class="!bg-bg-surface !border-border-subtle">
                     <div class="flex items-start gap-4">
                         <img
-                            class="w-12 h-12 rounded-full shrink-0 border-2 border-zinc-200 dark:border-zinc-600"
+                            class="w-12 h-12 rounded-full shrink-0 border-2 border-border-default"
                             src="{{ $currentPleb->profile?->picture ?? asset('apple-touch-icon.png') }}"
                             alt="Avatar"
                         >
                         <div class="flex-1 min-w-0">
                             <div class="mb-2">
-                                <h4 class="font-semibold text-zinc-800 dark:text-zinc-100 text-base">
+                                <h4 class="font-semibold text-text-primary text-base">
                                     {{ $currentPleb->profile?->display_name ?? $currentPleb->profile?->name ?? 'Unbekannt' }}
                                 </h4>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                <p class="text-xs text-text-tertiary mt-0.5">
                                     @if($currentPleb->profile?->name)
                                         {{ $currentPleb->profile->name }}
                                     @endif
@@ -656,24 +656,24 @@ new class extends Component {
                             </div>
                             <div class="space-y-1 text-xs">
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                                    <span class="text-zinc-500 dark:text-zinc-400 shrink-0">Pubkey:</span>
+                                    <span class="text-text-tertiary shrink-0">Pubkey:</span>
                                     <code
-                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono">
+                                        class="bg-bg-elevated px-2 py-0.5 rounded text-text-secondary break-all font-mono">
                                         {{ $currentPleb->pubkey }}
                                     </code>
                                 </div>
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                                    <span class="text-zinc-500 dark:text-zinc-400 shrink-0">Npub:</span>
+                                    <span class="text-text-tertiary shrink-0">Npub:</span>
                                     <code
-                                        class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono text-xs">
+                                        class="bg-bg-elevated px-2 py-0.5 rounded text-text-secondary break-all font-mono text-xs">
                                         {{ $currentPleb->npub }}
                                     </code>
                                 </div>
                                 @if($currentPleb->nip05_handle)
                                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                                        <span class="text-zinc-500 dark:text-zinc-400 shrink-0">NIP-05:</span>
+                                        <span class="text-text-tertiary shrink-0">NIP-05:</span>
                                         <code
-                                            class="bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300 break-all font-mono text-xs">
+                                            class="bg-bg-elevated px-2 py-0.5 rounded text-text-secondary break-all font-mono text-xs">
                                             {{ $currentPleb->nip05_handle }}
                                         </code>
                                     </div>
@@ -681,7 +681,7 @@ new class extends Component {
                             </div>
                         </div>
                     </div>
-                </flux:callout>
+                </flux:card>
             @endif
 
             <!-- Status Section -->
@@ -689,7 +689,7 @@ new class extends Component {
                 @if(!$currentPleb)
                     <!-- Nostr Login Apps Section -->
                     <div class="space-y-4 mb-8">
-                        <h3 class="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 italic mb-4">
+                        <h3 class="text-lg md:text-xl text-text-tertiary italic mb-4">
                             Empfohlene Nostr Login und Signer-Apps
                         </h3>
 
@@ -698,11 +698,11 @@ new class extends Component {
                             <flux:card class="h-full">
                                 <div class="flex flex-col h-full gap-3 p-1">
                                     <div class="flex-1 min-w-0">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
+                                        <a class="font-semibold text-text-primary hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://github.com/greenart7c3/Amber">
                                             Amber
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
+                                        <p class="text-sm text-text-secondary mt-2 leading-relaxed">
                                             Perfekt für mobile Android Geräte. Eine App, in der man alle Keys/nsecs
                                             verwalten kann.
                                         </p>
@@ -716,11 +716,11 @@ new class extends Component {
                             <flux:card class="h-full">
                                 <div class="flex flex-col h-full gap-3 p-1">
                                     <div class="flex-1 min-w-0">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
+                                        <a class="font-semibold text-text-primary hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://addons.mozilla.org/en-US/firefox/addon/alby/">
                                             Alby - Bitcoin Lightning Wallet & Nostr
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
+                                        <p class="text-sm text-text-secondary mt-2 leading-relaxed">
                                             Browser-Erweiterung in die man seinen Key/nsec eingeben kann. Pro Alby-Konto
                                             ein nsec.
                                         </p>
@@ -734,11 +734,11 @@ new class extends Component {
                             <flux:card class="h-full">
                                 <div class="flex flex-col h-full gap-3 p-1">
                                     <div class="flex-1 min-w-0">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
+                                        <a class="font-semibold text-text-primary hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://chromewebstore.google.com/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp">
                                             nos2x
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
+                                        <p class="text-sm text-text-secondary mt-2 leading-relaxed">
                                             Browser-Erweiterung für Chrome Browser. Multi-Key fähig.
                                         </p>
                                     </div>
@@ -751,11 +751,11 @@ new class extends Component {
                             <flux:card class="h-full">
                                 <div class="flex flex-col h-full gap-3 p-1">
                                     <div class="flex-1 min-w-0">
-                                        <a class="font-semibold text-zinc-800 dark:text-zinc-100 hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
+                                        <a class="font-semibold text-text-primary hover:text-amber-500 dark:hover:text-amber-400 transition-colors block"
                                            href="https://addons.mozilla.org/en-US/firefox/addon/nos2x-fox/">
                                             nos2x-fox
                                         </a>
-                                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
+                                        <p class="text-sm text-text-secondary mt-2 leading-relaxed">
                                             Browser-Erweiterung für Firefox Browser. Multi-Key fähig.
                                         </p>
                                     </div>
@@ -768,7 +768,7 @@ new class extends Component {
 
                         <!-- Screenshots Gallery -->
                         <div class="mt-8">
-                            <h3 class="text-lg md:text-xl text-zinc-800 dark:text-zinc-100 font-semibold mb-4">
+                            <h3 class="text-lg md:text-xl text-text-primary font-semibold mb-4">
                                 Amber App - Nostr Signer
                             </h3>
 
@@ -780,7 +780,7 @@ new class extends Component {
                                    rel="noopener noreferrer"
                                    class="group block">
                                     <div
-                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        class="relative overflow-hidden rounded-lg border border-border-default bg-bg-surface shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/1.png') }}"
                                              alt="Amber App Screenshot 1"
                                              loading="lazy"
@@ -808,7 +808,7 @@ new class extends Component {
                                    rel="noopener noreferrer"
                                    class="group block">
                                     <div
-                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        class="relative overflow-hidden rounded-lg border border-border-default bg-bg-surface shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/2.png') }}"
                                              alt="Amber App Screenshot 2"
                                              loading="lazy"
@@ -836,7 +836,7 @@ new class extends Component {
                                    rel="noopener noreferrer"
                                    class="group block">
                                     <div
-                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        class="relative overflow-hidden rounded-lg border border-border-default bg-bg-surface shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/3.png') }}"
                                              alt="Amber App Screenshot 3"
                                              loading="lazy"
@@ -864,7 +864,7 @@ new class extends Component {
                                    rel="noopener noreferrer"
                                    class="group block">
                                     <div
-                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                        class="relative overflow-hidden rounded-lg border border-border-default bg-bg-surface shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/4.png') }}"
                                              alt="Amber App Screenshot 4"
                                              loading="lazy"
@@ -891,14 +891,14 @@ new class extends Component {
                         <!-- User Profile Display -->
                         <div class="mt-6">
                             <template x-if="$store.nostr.user">
-                                <div class="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+                                <div class="flex items-center gap-4 p-4 bg-bg-elevated rounded-lg">
                                     <img class="w-12 h-12 rounded-full"
                                          x-bind:src="$store.nostr.user.picture || '{{ asset('apple-touch-icon.png') }}'"
                                          alt="Avatar">
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="truncate text-lg leading-snug text-[#1B1B1B] dark:text-zinc-100 font-bold"
+                                        <h3 class="truncate text-lg leading-snug text-text-primary font-bold"
                                             x-text="$store.nostr.user.display_name"></h3>
-                                        <div class="truncate text-sm text-zinc-500 dark:text-zinc-400"
+                                        <div class="truncate text-sm text-text-tertiary"
                                              x-text="$store.nostr.user.name"></div>
                                     </div>
                                 </div>
@@ -912,7 +912,7 @@ new class extends Component {
                                             <path
                                                 d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
                                         </svg>
-                                        <p class="text-sm text-zinc-700 dark:text-zinc-300">Profil in der Datenbank
+                                        <p class="text-sm text-text-secondary">Profil in der Datenbank
                                             vorhanden.</p>
                                     </div>
                                 </flux:card>
@@ -925,10 +925,10 @@ new class extends Component {
                     <!-- Membership Registration Section -->
                     <div class="space-y-4 py-6">
                         <div>
-                            <h3 class="text-xl md:text-2xl text-[#1B1B1B] dark:text-zinc-100 font-bold mb-2">
+                            <h3 class="text-xl md:text-2xl text-text-primary font-bold mb-2">
                                 Einundzwanzig Mitglied werden
                             </h3>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                            <p class="text-sm text-text-secondary">
                                 Nur Personen können Mitglied werden und zahlen 21.000 Satoshis im Jahr.
                                 <a href="https://einundzwanzig.space/verein/"
                                    class="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 font-medium">
@@ -961,11 +961,11 @@ new class extends Component {
                     <div class="py-6">
                         <flux:callout variant="warning" class="mb-6">
                             <div class="space-y-4">
-                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                <p class="font-medium text-text-primary">
                                     Falls du möchtest, kannst du hier eine E-Mail Adresse hinterlegen, damit der Verein
                                     dich darüber informieren kann, wenn es Neuigkeiten gibt.
                                 </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                <p class="text-sm text-text-secondary">
                                     Am besten eine anonymisierte E-Mail Adresse verwenden. Wir sichern diese Adresse
                                     AES-256 verschlüsselt in der Datenbank ab.
                                 </p>
@@ -1025,7 +1025,7 @@ new class extends Component {
                                 d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3H7V4h2v5z"></path>
                         </svg>
                         <div>
-                            <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                            <p class="font-medium text-text-primary">
                                 @if($currentYearIsPaid)
                                     <span class="text-green-600 dark:text-green-400">Du bist derzeit ein Mitglied des Vereins. Das aktuelle Jahr ist bezahlt.</span>
                                 @else
@@ -1043,7 +1043,7 @@ new class extends Component {
                     <div class="space-y-6">
                         <!-- Payment Info -->
                         <div>
-                            <h3 class="text-xl md:text-2xl text-zinc-800 dark:text-zinc-100 font-bold mb-4">
+                            <h3 class="text-xl md:text-2xl text-text-primary font-bold mb-4">
                                 Mitgliedsbeitrag
                             </h3>
 
@@ -1060,7 +1060,7 @@ new class extends Component {
                             @endphp
 
                             @if(isset($latestEvent))
-                                <p class="text-zinc-700 dark:text-zinc-300 mb-6">{{ $latestEvent['content'] }}</p>
+                                <p class="text-text-secondary mb-6">{{ $latestEvent['content'] }}</p>
 
                                 <!-- Payment Button -->
                                 <div class="flex justify-center py-6">
@@ -1094,8 +1094,8 @@ new class extends Component {
 
                         <!-- Payment History -->
                         @if($payments && count($payments) > 0)
-                            <div class="pt-6 border-t border-zinc-200 dark:border-zinc-600">
-                                <h4 class="text-lg md:text-xl text-zinc-800 dark:text-zinc-100 font-bold mb-4">
+                            <div class="pt-6 border-t border-border-default">
+                                <h4 class="text-lg md:text-xl text-text-primary font-bold mb-4">
                                     Bisherige Zahlungen
                                 </h4>
 
@@ -1103,7 +1103,7 @@ new class extends Component {
                                 <div class="hidden md:block overflow-x-auto">
                                     <table class="table-auto w-full">
                                         <thead
-                                            class="text-xs font-semibold uppercase text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-600">
+                                            class="text-xs font-semibold uppercase text-text-tertiary border-b border-border-default">
                                         <tr>
                                             <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap text-left">
                                                 <div class="font-semibold">Satoshis</div>
@@ -1124,15 +1124,15 @@ new class extends Component {
                                             <tr>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div
-                                                        class="font-medium text-zinc-800 dark:text-zinc-100">{{ $payment->amount }}</div>
+                                                        class="font-medium text-text-primary">{{ $payment->amount }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     <div
-                                                        class="text-zinc-800 dark:text-zinc-100">{{ $payment->year }}</div>
+                                                        class="text-text-primary">{{ $payment->year }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3">
                                                     <div
-                                                        class="font-mono text-xs text-zinc-600 dark:text-zinc-400 break-all">{{ $payment->event_id }}</div>
+                                                        class="font-mono text-xs text-text-secondary break-all">{{ $payment->event_id }}</div>
                                                 </td>
                                                 <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
                                                     @if($payment->btc_pay_invoice)
@@ -1155,23 +1155,23 @@ new class extends Component {
                                 <div class="md:hidden space-y-4">
                                     @foreach($payments as $payment)
                                         <div
-                                            class="bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-600 p-4">
+                                            class="bg-bg-surface rounded-lg border border-border-default p-4">
                                             <div class="space-y-3">
                                                 <div class="flex justify-between items-center">
-                                                    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Satoshis</span>
+                                                    <span class="text-sm font-medium text-text-tertiary">Satoshis</span>
                                                     <span
-                                                        class="font-semibold text-zinc-800 dark:text-zinc-100">{{ $payment->amount }}</span>
+                                                        class="font-semibold text-text-primary">{{ $payment->amount }}</span>
                                                 </div>
                                                 <div class="flex justify-between items-center">
-                                                    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Jahr</span>
+                                                    <span class="text-sm font-medium text-text-tertiary">Jahr</span>
                                                     <span
-                                                        class="text-zinc-800 dark:text-zinc-100">{{ $payment->year }}</span>
+                                                        class="text-text-primary">{{ $payment->year }}</span>
                                                 </div>
                                                 <div>
                                                     <span
-                                                        class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block mb-1">Event-ID</span>
+                                                        class="text-sm font-medium text-text-tertiary block mb-1">Event-ID</span>
                                                     <span
-                                                        class="font-mono text-xs text-zinc-600 dark:text-zinc-400 break-all">{{ $payment->event_id }}</span>
+                                                        class="font-mono text-xs text-text-secondary break-all">{{ $payment->event_id }}</span>
                                                 </div>
                                                 @if($payment->btc_pay_invoice)
                                                     <flux:button

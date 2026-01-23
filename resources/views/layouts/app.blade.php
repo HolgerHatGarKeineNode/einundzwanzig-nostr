@@ -20,10 +20,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
 </head>
-<body class="min-h-screen bg-white dark:bg-zinc-800 antialiased"
+<body class="min-h-screen bg-bg-page antialiased"
       x-data="nostrLogin"
 >
-<flux:header sticky class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+<flux:header sticky class="bg-bg-surface border-b border-border-default">
     <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left"/>
 
     <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden dark:hidden">
@@ -80,7 +80,7 @@
 </flux:header>
 
 <flux:sidebar sticky collapsible="mobile"
-              class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
+              class="lg:hidden bg-bg-surface border-r border-border-default">
     <flux:sidebar.header>
         <flux:sidebar.brand
             href="/"

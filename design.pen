@@ -1,0 +1,2075 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Desktop Layout",
+      "clip": true,
+      "width": 1440,
+      "fill": "$bg-page",
+      "children": [
+        {
+          "type": "frame",
+          "id": "dg1Zy",
+          "name": "Main Content",
+          "width": "fill_container",
+          "fill": "$bg-page",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "qdt1H",
+              "name": "Header",
+              "width": "fill_container",
+              "height": 64,
+              "fill": "$bg-surface",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "$border-default"
+              },
+              "padding": [
+                0,
+                40
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "PMcSC",
+                  "name": "headerLeft",
+                  "gap": 32,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "eRs44",
+                      "name": "brandLogo",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "O3KWW",
+                          "name": "brandIcon",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "$orange-primary",
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "O5tsg",
+                              "name": "brandIconImg",
+                              "fill": "$text-primary",
+                              "content": "₿",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Tpr9e",
+                          "name": "brandName",
+                          "fill": "$text-primary",
+                          "content": "EINUNDZWANZIG",
+                          "fontFamily": "Inconsolata",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "0lwaM",
+                      "name": "navBar",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "SOKYg",
+                          "name": "navNews",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": {
+                              "bottom": 1
+                            },
+                            "fill": "$border-default"
+                          },
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "aQ59w",
+                              "name": "navNewsIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "rss",
+                              "iconFontFamily": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Hp2l5",
+                              "name": "navNewsLabel",
+                              "fill": "$text-tertiary",
+                              "content": "News",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PJYqa",
+                          "name": "navProfile",
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": {
+                              "bottom": 2
+                            },
+                            "fill": "$orange-primary"
+                          },
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "zD1TC",
+                              "name": "navProfileIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "id-card",
+                              "iconFontFamily": "lucide",
+                              "fill": "$orange-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ptYQT",
+                              "name": "navProfileLabel",
+                              "fill": "$text-primary",
+                              "content": "Mitgliederstatus",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "IqSDS",
+                          "name": "navBenefits",
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "P0Ib3",
+                              "name": "navBenefitsIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "gift",
+                              "iconFontFamily": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "NylFs",
+                              "name": "navBenefitsLabel",
+                              "fill": "$text-tertiary",
+                              "content": "Vorteile",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H9h0U",
+                          "name": "navProjects",
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "xC7V5",
+                              "name": "navProjectsIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "heart",
+                              "iconFontFamily": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "LlUEG",
+                              "name": "navProjectsLabel",
+                              "fill": "$text-tertiary",
+                              "content": "Projekt-Unterstützungen",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HQd2W",
+                          "name": "adminNav",
+                          "gap": 4,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "YDFs6",
+                              "name": "adminNavIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "shield",
+                              "iconFontFamily": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "V8MUp",
+                              "name": "adminNavLabel",
+                              "fill": "$text-tertiary",
+                              "content": "Admin",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "Fwleu",
+                              "name": "adminNavChevron",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "chevron-down",
+                              "iconFontFamily": "lucide",
+                              "fill": "$text-tertiary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "f9JYT",
+                  "name": "headerRight",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "XAu9V",
+                      "name": "infoBtn",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$border-default"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "Xm3bS",
+                          "name": "infoIcon",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "info",
+                          "iconFontFamily": "lucide",
+                          "fill": "$text-tertiary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "o3VFC",
+                          "name": "infoLabel",
+                          "fill": "$text-secondary",
+                          "content": "Info",
+                          "fontFamily": "Inconsolata",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QA00x",
+                      "name": "loginBtn",
+                      "fill": "$orange-primary",
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "cEzU8",
+                          "name": "loginIcon",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "log-out",
+                          "iconFontFamily": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "SKS0I",
+                          "name": "loginLabel",
+                          "fill": "$text-primary",
+                          "content": "Logout",
+                          "fontFamily": "Inconsolata",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Impqf",
+              "name": "Content Area",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                32,
+                40
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "gnBOP",
+                  "name": "pageTitle",
+                  "fill": "$text-primary",
+                  "content": "Einundzwanzig ist, was du draus machst",
+                  "fontFamily": "Inconsolata",
+                  "fontSize": 28,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "Ne7VM",
+                  "name": "twoColLayout",
+                  "width": "fill_container",
+                  "gap": 32,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ybJKi",
+                      "name": "leftColumn",
+                      "width": 480,
+                      "layout": "vertical",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "D1duN",
+                          "name": "leftSectionTitle",
+                          "fill": "$text-primary",
+                          "content": "Vorteile deiner Mitgliedschaft",
+                          "fontFamily": "Inconsolata",
+                          "fontSize": 18,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "pOoqs",
+                          "name": "nostrCard",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#4a7c59"
+                          },
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "gpew4",
+                              "name": "nostrHeader",
+                              "width": "fill_container",
+                              "fill": {
+                                "type": "gradient",
+                                "gradientType": "linear",
+                                "enabled": true,
+                                "rotation": 90,
+                                "size": {
+                                  "height": 1
+                                },
+                                "colors": [
+                                  {
+                                    "color": "#4a7c5933",
+                                    "position": 0
+                                  },
+                                  {
+                                    "color": "#4a7c5900",
+                                    "position": 1
+                                  }
+                                ]
+                              },
+                              "gap": 12,
+                              "padding": 16,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "a8XSg",
+                                  "name": "nostrIcon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "iconFontName": "sparkles",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#4a7c59"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "K9IJi",
+                                  "name": "nostrTitle",
+                                  "fill": "#7cb686",
+                                  "content": "Nostr Relay",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "0Zb3o",
+                              "name": "nostrContent",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "padding": [
+                                0,
+                                16,
+                                16,
+                                16
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "7NdpO",
+                                  "name": "nostrDesc",
+                                  "fill": "$text-secondary",
+                                  "content": "Exklusive Schreib-Rechte auf Premium Nostr-Relay von Einundzwanzig.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "t0tKt",
+                                  "name": "nostrSubDesc",
+                                  "fill": "$text-disabled",
+                                  "content": "Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es speichert und verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in deinem Nostr-Client hinzufügen.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Tj8iW",
+                                  "name": "nostrUrlBox",
+                                  "fill": "$bg-elevated",
+                                  "cornerRadius": 6,
+                                  "padding": [
+                                    8,
+                                    12
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "GfUQx",
+                                      "name": "nostrUrl",
+                                      "fill": "$text-secondary",
+                                      "content": "wss://nostr.einundzwanzig.space",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "4KvkT",
+                                  "name": "nostrHint",
+                                  "fill": "$text-disabled",
+                                  "content": "Wichtige Hinweise: Du kannst deine Posts auf mehreren Relays gleichzeitig veröffentlichen. So stellst du sicher, dass deine Inhalte auch über unser Relay erreichbar sind.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "wC7KV",
+                          "name": "nip05Card",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#4a7c59"
+                          },
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "AzItb",
+                              "name": "nip05Header",
+                              "width": "fill_container",
+                              "fill": {
+                                "type": "gradient",
+                                "gradientType": "linear",
+                                "enabled": true,
+                                "rotation": 90,
+                                "size": {
+                                  "height": 1
+                                },
+                                "colors": [
+                                  {
+                                    "color": "#4a7c5933",
+                                    "position": 0
+                                  },
+                                  {
+                                    "color": "#4a7c5900",
+                                    "position": 1
+                                  }
+                                ]
+                              },
+                              "gap": 12,
+                              "padding": 16,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "FITH4",
+                                  "name": "nip05Dot",
+                                  "fill": "#4a7c59",
+                                  "width": 10,
+                                  "height": 10
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "pWD2b",
+                                  "name": "nip05Title",
+                                  "fill": "#7cb686",
+                                  "content": "Get NIP-05 verified",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "tEWUM",
+                              "name": "nip05Content",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 16,
+                              "padding": [
+                                0,
+                                16,
+                                16,
+                                16
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kVnBC",
+                                  "name": "nip05Desc",
+                                  "fill": "$text-secondary",
+                                  "content": "Verifiziere deine Identität mit einem menschenlesbaren Nostr-Namen.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "etJCg",
+                                  "name": "nip05Label",
+                                  "fill": "$text-disabled",
+                                  "content": "Dein NIP-05 Handle",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Di3vF",
+                                  "name": "nip05InputRow",
+                                  "width": "fill_container",
+                                  "cornerRadius": 8,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 1,
+                                    "fill": "$border-default"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "yf7XV",
+                                      "name": "nip05Input",
+                                      "width": "fill_container",
+                                      "fill": "$bg-elevated",
+                                      "padding": [
+                                        12,
+                                        14
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "s0H25",
+                                          "name": "nip05InputText",
+                                          "fill": "$text-secondary",
+                                          "content": "el-presidente-benito",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "NtQsv",
+                                      "name": "nip05Domain",
+                                      "fill": "#4a7c59",
+                                      "cornerRadius": [
+                                        0,
+                                        8,
+                                        8,
+                                        0
+                                      ],
+                                      "padding": [
+                                        12,
+                                        14
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "1BZX3",
+                                          "name": "nip05DomainText",
+                                          "fill": "$text-primary",
+                                          "content": "@einundzwanzig.space",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 13,
+                                          "fontWeight": "500"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "O8EQs",
+                                  "name": "nip05SaveBtn",
+                                  "cornerRadius": 6,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 1,
+                                    "fill": "$border-default"
+                                  },
+                                  "padding": [
+                                    8,
+                                    16
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "4HLlR",
+                                      "name": "nip05SaveText",
+                                      "fill": "$text-secondary",
+                                      "content": "Speichern",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "nLUyt",
+                                  "name": "nip05Rules",
+                                  "fill": "$text-disabled",
+                                  "content": "Regeln für dein Handle: Nur Kleinbuchstaben (a-z), Zahlen (0-9) und die Zeichen \"-\" und \"_\" sind erlaubt. Dein Handle wird automatisch kleingeschrieben.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "mLWPb",
+                                  "name": "nip05Info",
+                                  "fill": "$text-disabled",
+                                  "content": "NIP-05 verifiziert deine Identität auf Nostr. Das Handle ist wie eine E-Mail-Adresse (z.B. name@einundzwanzig.space). Clients zeigen ein Häkchen für verifizierte Benutzer.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "0vjqw",
+                          "name": "handlesBox",
+                          "width": "fill_container",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 90,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "#4a7c5933",
+                                "position": 0
+                              },
+                              {
+                                "color": "#4a7c5900",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "cornerRadius": 8,
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "YSVWb",
+                              "name": "handlesHeader",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "grIlY",
+                                  "name": "handlesDot",
+                                  "fill": "#4a7c59",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Seri5",
+                                  "name": "handlesTitle",
+                                  "fill": "#7cb686",
+                                  "content": "Du hast 2 aktive Handles für deinen Pubkey!",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AyVpc",
+                              "name": "handlesContent",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "4RwI4",
+                                  "name": "handlesLabel",
+                                  "fill": "$text-disabled",
+                                  "content": "Deine aktivierten Handles:",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "s2qZZ",
+                                  "name": "handle1",
+                                  "gap": 8,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "iDa03",
+                                      "name": "handle1Text",
+                                      "fill": "$text-secondary",
+                                      "content": "holgerhatgarkeinennode@einundzwanzig.space",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "ljmoG",
+                                      "name": "handle1Badge",
+                                      "fill": "#4a7c59",
+                                      "cornerRadius": 4,
+                                      "padding": [
+                                        2,
+                                        6
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "JEH68",
+                                          "name": "handle1BadgeText",
+                                          "fill": "$text-primary",
+                                          "content": "OK",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 10,
+                                          "fontWeight": "600"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "VOkcc",
+                                  "name": "handle2",
+                                  "gap": 8,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ZZA9W",
+                                      "name": "handle2Text",
+                                      "fill": "$text-secondary",
+                                      "content": "el-presidente-benito@einundzwanzig.space",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "2TPfA",
+                                      "name": "handle2Badge",
+                                      "fill": "#4a7c59",
+                                      "cornerRadius": 4,
+                                      "padding": [
+                                        2,
+                                        6
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "kQ38x",
+                                          "name": "handle2BadgeText",
+                                          "fill": "$text-primary",
+                                          "content": "OK",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 10,
+                                          "fontWeight": "600"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "AT2NG",
+                          "name": "lightningCard",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#7c3aed"
+                          },
+                          "layout": "vertical",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "exYhP",
+                              "name": "lightningHeader",
+                              "width": "fill_container",
+                              "fill": {
+                                "type": "gradient",
+                                "gradientType": "linear",
+                                "enabled": true,
+                                "rotation": 90,
+                                "size": {
+                                  "height": 1
+                                },
+                                "colors": [
+                                  {
+                                    "color": "#7c3aed33",
+                                    "position": 0
+                                  },
+                                  {
+                                    "color": "#7c3aed00",
+                                    "position": 1
+                                  }
+                                ]
+                              },
+                              "gap": 12,
+                              "padding": 16,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "ef9cP",
+                                  "name": "lightningIcon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "iconFontName": "zap",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "#7c3aed"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "hzj3o",
+                                  "name": "lightningTitle",
+                                  "fill": "#a78bfa",
+                                  "content": "Lightning Watchtower",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "jBE27",
+                              "name": "lightningContent",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "padding": [
+                                0,
+                                16,
+                                16,
+                                16
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "72pgm",
+                                  "name": "lightningDesc",
+                                  "fill": "$text-secondary",
+                                  "content": "Nutze unseren Watchtower zum Schutz deiner Lightning Channels.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "V3kUv",
+                                  "name": "lightningSubDesc",
+                                  "fill": "$text-disabled",
+                                  "content": "Ein Watchtower überwacht deine Lightning Channels und schützt sie, falls deine Node offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst, kümmert sich der Watchtower darum und verhindert den Verlust deiner Sats.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "fLGYi",
+                                  "name": "lightningUrlLabel",
+                                  "fill": "$text-disabled",
+                                  "content": "Um unseren Watchtower zu nutzen, füge folgende URI in deine Lightning Node Konfiguration hinzu:",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "n4OzU",
+                                  "name": "lightningUrlBox",
+                                  "width": "fill_container",
+                                  "fill": "$bg-elevated",
+                                  "cornerRadius": 6,
+                                  "padding": [
+                                    10,
+                                    12
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "YSVCp",
+                                      "name": "lightningUrl",
+                                      "fill": "$text-secondary",
+                                      "content": "03a0bf5b8a02c208cc5eda2f1f009564a97c15f743458a1568e2808a8ab3d7d0f0@42.171.139.240:9911",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "6nX8G",
+                                  "name": "lightningInstructions",
+                                  "width": "fill_container",
+                                  "fill": "$bg-elevated",
+                                  "cornerRadius": 8,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 12,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "DIuFO",
+                                      "name": "lightningInstrTitle",
+                                      "fill": "$text-disabled",
+                                      "content": "Einrichtung für gängige Lightning-Clients:",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Yx5yK",
+                                      "name": "lightningInstr1",
+                                      "fill": "$text-tertiary",
+                                      "content": "• LND: https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "ixrMw",
+                                      "name": "lightningInstr2",
+                                      "fill": "$text-tertiary",
+                                      "content": "• Core Lightning: Nutze das watchtower-client Plugin mit -W URI",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "1ycV7",
+                                      "name": "lightningInstr3",
+                                      "fill": "$text-tertiary",
+                                      "content": "• Eclair: Füge die URI zu den Watchtower-Einstellungen in eclair.conf hinzu",
+                                      "fontFamily": "Inconsolata",
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "iLs3k",
+                                  "name": "lightningWarning",
+                                  "fill": "#f59e0b",
+                                  "content": "Wichtig: Der Watchtower überwacht deine Channel-Panik. Er hat keinen Zugriff auf deine privaten Schlüssel oder dein Guthaben.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uR7yx",
+                      "name": "rightColumn",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "C2WiB",
+                          "name": "profileCard",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$border-subtle"
+                          },
+                          "gap": 16,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "XifVY",
+                              "name": "avatar",
+                              "width": 56,
+                              "height": 56,
+                              "fill": "$bg-elevated",
+                              "cornerRadius": 28,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "QiJQQ",
+                                  "name": "avatarImg",
+                                  "width": 56,
+                                  "height": 56,
+                                  "fill": "#6b7280",
+                                  "cornerRadius": 28
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "l71sY",
+                              "name": "profileInfo",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ydfVj",
+                                  "name": "profileName",
+                                  "fill": "$text-primary",
+                                  "content": "El Presidente Ben",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "JeXXW",
+                                  "name": "profileSubname",
+                                  "fill": "$text-disabled",
+                                  "content": "El Presidente Ben",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "7ICJE",
+                                  "name": "profileDetails",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "XgTr4",
+                                      "name": "profilePubkey",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "xI37j",
+                                          "name": "profilePubkeyLabel",
+                                          "fill": "$text-disabled",
+                                          "content": "Pubkey:",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "IxcIN",
+                                          "name": "profilePubkeyValue",
+                                          "fill": "$text-tertiary",
+                                          "content": "0adf6747Sccc5ca4b6fd3022e48ef3d520ebdaf628d0f05494acdbd7847f3e5033",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "ID31O",
+                                      "name": "profileNpub",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "RUjJh",
+                                          "name": "profileNpubLabel",
+                                          "fill": "$text-disabled",
+                                          "content": "Npub:",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Dv6wA",
+                                          "name": "profileNpubValue",
+                                          "fill": "$text-tertiary",
+                                          "content": "npub1pt0ba3um3w2q4hasx3hqe94a2fhptars1jsz32vyphtcqla72gnqqPyc6",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "lMhLM",
+                                      "name": "profileNip",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "VLfTf",
+                                          "name": "profileNipLabel",
+                                          "fill": "$text-disabled",
+                                          "content": "NIP-05:",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "RhphK",
+                                          "name": "profileNipValue",
+                                          "fill": "$text-tertiary",
+                                          "content": "el-presidente-benito",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JEx3m",
+                          "name": "emailInfoBox",
+                          "width": "fill_container",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 90,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "#f59e0b33",
+                                "position": 0
+                              },
+                              {
+                                "color": "#f59e0b00",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#f59e0b"
+                          },
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jtlcn",
+                              "name": "emailInfoTitle",
+                              "fill": "#f59e0b",
+                              "content": "Falls du möchtest, kannst du hier eine E-Mail Adresse hinterlegen, damit der Verein dich darüber informieren kann, wenn es Neuigkeiten gibt.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "mov61",
+                              "name": "emailInfoDesc",
+                              "fill": "$text-disabled",
+                              "content": "Am besten eine anonymisierte E-Mail-Adresse verwenden. Wir sichern diese Adresse AES-256 verschlüsselt in der Datenbank ab.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GfQzC",
+                          "name": "emailCheckbox",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "SAxXO",
+                              "name": "checkboxBox",
+                              "width": 18,
+                              "height": 18,
+                              "fill": "#4a7c59",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "xiVka",
+                                  "name": "checkboxIcon",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$text-primary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "PwbfA",
+                              "name": "checkboxContent",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "OWLga",
+                                  "name": "checkboxLabel",
+                                  "fill": "$text-primary",
+                                  "content": "Keine E-Mail Adresse angeben",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "0SosD",
+                                  "name": "checkboxDesc",
+                                  "fill": "$text-disabled",
+                                  "content": "Ich informiere mich selbst in der News Sektion und gebe keine E-Mail Adresse raus.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Wz28i",
+                          "name": "statusBadge",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "qHuuk",
+                              "name": "statusDot",
+                              "fill": "#4a7c59",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "text",
+                              "id": "iAEn9",
+                              "name": "statusText",
+                              "fill": "#4a7c59",
+                              "content": "Du bist derzeit ein Mitglied des Vereins. Das aktuelle Jahr ist bezahlt.",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "zoEGT",
+                          "name": "beitragSection",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$border-subtle"
+                          },
+                          "layout": "vertical",
+                          "gap": 16,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "vytPV",
+                              "name": "beitragTitle",
+                              "fill": "$text-primary",
+                              "content": "Mitgliedsbeitrag",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wWX2m",
+                              "name": "beitragEventBox",
+                              "width": "fill_container",
+                              "fill": "$bg-elevated",
+                              "cornerRadius": 8,
+                              "layout": "vertical",
+                              "gap": 8,
+                              "padding": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "8cFlV",
+                                  "name": "beitragEventLabel",
+                                  "fill": "$text-disabled",
+                                  "content": "Nostr Event für die Zahlung des Mitgliedsbeitrags:",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ukDjy",
+                                  "name": "beitragEventId",
+                                  "fill": "$text-tertiary",
+                                  "content": "ed16b0cbe7006cb0b2f53045c507f55c04350409c03004350db0ef362db32c2a4",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "VMBrw",
+                              "name": "beitragDesc",
+                              "fill": "$text-secondary",
+                              "content": "Dieses Event dient der Zahlung des Mitgliedsbeitrags für das Jahr 2026. Bitte bezahle den Betrag von 21.000 Satoshis.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "SuY1b",
+                              "name": "beitragPaidBtn",
+                              "fill": "#4a7c59",
+                              "cornerRadius": 8,
+                              "gap": 8,
+                              "padding": [
+                                10,
+                                20
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "VoJGE",
+                                  "name": "beitragPaidIcon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "circle-check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$text-primary"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "HQTjM",
+                                  "name": "beitragPaidText",
+                                  "fill": "$text-primary",
+                                  "content": "Aktuelles Jahr bezahlt",
+                                  "fontFamily": "Inconsolata",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XCoi9",
+                          "name": "paymentSection",
+                          "width": "fill_container",
+                          "fill": "$bg-surface",
+                          "cornerRadius": 12,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$border-subtle"
+                          },
+                          "layout": "vertical",
+                          "gap": 16,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "J8hRq",
+                              "name": "paymentTitle",
+                              "fill": "$text-primary",
+                              "content": "Bisherige Zahlungen",
+                              "fontFamily": "Inconsolata",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "9eZ6F",
+                              "name": "paymentTable",
+                              "width": "fill_container",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$border-subtle"
+                              },
+                              "layout": "vertical",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "bVMqf",
+                                  "name": "tableHeader",
+                                  "width": "fill_container",
+                                  "fill": "$bg-elevated",
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": {
+                                      "bottom": 1
+                                    },
+                                    "fill": "$border-subtle"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "RTUnd",
+                                      "name": "thSatoshis",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "oMZbg",
+                                          "name": "thSatoshisText",
+                                          "fill": "$text-disabled",
+                                          "content": "SATOSHIS",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "600",
+                                          "letterSpacing": 0.5
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "S8I9b",
+                                      "name": "thJahr",
+                                      "width": 80,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "Zq2c1",
+                                          "name": "thJahrText",
+                                          "fill": "$text-disabled",
+                                          "content": "JAHR",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "600",
+                                          "letterSpacing": 0.5
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "eB6qv",
+                                      "name": "thEventId",
+                                      "width": "fill_container",
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "KGQDE",
+                                          "name": "thEventIdText",
+                                          "fill": "$text-disabled",
+                                          "content": "EVENT-ID",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "600",
+                                          "letterSpacing": 0.5
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "gn6Uz",
+                                      "name": "thQuittung",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "justifyContent": "end",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "JpLXh",
+                                          "name": "thQuittungText",
+                                          "fill": "$text-disabled",
+                                          "content": "QUITTUNG",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "600",
+                                          "letterSpacing": 0.5
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "yDvMs",
+                                  "name": "row1",
+                                  "width": "fill_container",
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": {
+                                      "bottom": 1
+                                    },
+                                    "fill": "$border-subtle"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "tBxhc",
+                                      "name": "row1Sat",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "fehm7",
+                                          "name": "row1SatText",
+                                          "fill": "$text-secondary",
+                                          "content": "21000",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "yVgRH",
+                                      "name": "row1Jahr",
+                                      "width": 80,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "skJ2X",
+                                          "name": "row1JahrText",
+                                          "fill": "$text-secondary",
+                                          "content": "2024",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "qRWXu",
+                                      "name": "row1Event",
+                                      "width": "fill_container",
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "2LHc0",
+                                          "name": "row1EventText",
+                                          "fill": "$text-tertiary",
+                                          "content": "cf14edf475e53e0822bf2357779e7bf75030732d39021c08547c050315002ac",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "xHwQd",
+                                      "name": "row1Quittung",
+                                      "width": 100,
+                                      "height": "fit_content(0)",
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "justifyContent": "end"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "vo32k",
+                                  "name": "row2",
+                                  "width": "fill_container",
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": {
+                                      "bottom": 1
+                                    },
+                                    "fill": "$border-subtle"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "AC49r",
+                                      "name": "row2Sat",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "Wjhbq",
+                                          "name": "row2SatText",
+                                          "fill": "$text-secondary",
+                                          "content": "21000",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "8hTyi",
+                                      "name": "row2Jahr",
+                                      "width": 80,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "qqgH7",
+                                          "name": "row2JahrText",
+                                          "fill": "$text-secondary",
+                                          "content": "2025",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "Le1i4",
+                                      "name": "row2Event",
+                                      "width": "fill_container",
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "iW6QK",
+                                          "name": "row2EventText",
+                                          "fill": "$text-tertiary",
+                                          "content": "3e51a0d3508aac727fcf1ncc2033af5b8b5719524bca4eacadba15bccc20090",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "j80lo",
+                                      "name": "row2Quittung",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "justifyContent": "end",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "kEZ7M",
+                                          "name": "row2QuittungLink",
+                                          "fill": "$text-tertiary",
+                                          "content": "Quittung",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "hfrun",
+                                  "name": "row3",
+                                  "width": "fill_container",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "3ZTOE",
+                                      "name": "row3Sat",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "X6EML",
+                                          "name": "row3SatText",
+                                          "fill": "$text-secondary",
+                                          "content": "21000",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "2n6CJ",
+                                      "name": "row3Jahr",
+                                      "width": 80,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "oyxlZ",
+                                          "name": "row3JahrText",
+                                          "fill": "$text-secondary",
+                                          "content": "2026",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "eRRTo",
+                                      "name": "row3Event",
+                                      "width": "fill_container",
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "6XpLh",
+                                          "name": "row3EventText",
+                                          "fill": "$text-tertiary",
+                                          "content": "ed16b0cbe7006cb0b2f53045c507f55c04350409c03004350db0ef362db32c2a4",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 11,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "K4FZe",
+                                      "name": "row3Quittung",
+                                      "width": 100,
+                                      "padding": [
+                                        12,
+                                        16
+                                      ],
+                                      "justifyContent": "end",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "KbLQ6",
+                                          "name": "row3QuittungLink",
+                                          "fill": "$text-tertiary",
+                                          "content": "Quittung",
+                                          "fontFamily": "Inconsolata",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg-elevated": {
+      "type": "color",
+      "value": "#1A1A1D"
+    },
+    "bg-page": {
+      "type": "color",
+      "value": "#0A0A0B"
+    },
+    "bg-surface": {
+      "type": "color",
+      "value": "#111113"
+    },
+    "border-default": {
+      "type": "color",
+      "value": "#2A2A2E"
+    },
+    "border-subtle": {
+      "type": "color",
+      "value": "#1F1F23"
+    },
+    "green-success": {
+      "type": "color",
+      "value": "#22C55E"
+    },
+    "orange-light": {
+      "type": "color",
+      "value": "#FF8A4C"
+    },
+    "orange-primary": {
+      "type": "color",
+      "value": "#FF5C00"
+    },
+    "text-disabled": {
+      "type": "color",
+      "value": "#6B6B70"
+    },
+    "text-muted": {
+      "type": "color",
+      "value": "#FFFFFFCC"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#ADADB0"
+    },
+    "text-tertiary": {
+      "type": "color",
+      "value": "#8B8B90"
+    }
+  }
+}

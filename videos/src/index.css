@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Set Inconsolata as the default font for everything */
+* {
+  font-family: "Inconsolata", monospace;
+}
