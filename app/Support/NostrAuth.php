@@ -50,12 +50,4 @@ class NostrAuth
     {
         return self::user()?->getPubkey();
     }
-
-    /**
-     * Get the current pleb (convenience method)
-     */
-    public static function pleb(): ?object
-    {
-        return self::user()?->getPleb();
-    }
 }
