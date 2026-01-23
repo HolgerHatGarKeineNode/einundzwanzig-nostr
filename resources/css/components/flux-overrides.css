@@ -1,0 +1,130 @@
+/**
+ * Flux UI Component Overrides
+ *
+ * Anpassungen der Flux UI Komponenten an das Einundzwanzig Design System.
+ * Überschreibt Standard-Flux-Styles mit den Brand-Farben.
+ */
+
+@layer components {
+    /* Page backgrounds */
+    body {
+        @apply bg-bg-page text-text-primary;
+    }
+
+    /* Cards and surfaces */
+    [data-flux-card] {
+        @apply bg-bg-surface border-border-subtle;
+    }
+
+    /* Primary buttons (orange) */
+    [data-flux-button][data-variant="primary"] {
+        @apply bg-orange-primary text-text-primary hover:bg-orange-light;
+    }
+
+    /* Default/ghost buttons */
+    [data-flux-button]:not([data-variant]) {
+        @apply border-border-default text-text-secondary hover:text-text-primary hover:border-border-default;
+    }
+
+    /* Input fields */
+    [data-flux-input],
+    [data-flux-control] {
+        @apply bg-bg-surface border-border-default text-text-primary placeholder:text-text-disabled;
+    }
+
+    [data-flux-input]:focus,
+    [data-flux-control]:focus {
+        @apply border-orange-primary ring-orange-primary/20;
+    }
+
+    /* Navigation */
+    [data-flux-navbar] {
+        @apply bg-bg-surface border-b border-border-default;
+    }
+
+    [data-flux-navbar-item][data-current="true"] {
+        @apply border-b-2 border-orange-primary text-text-primary;
+    }
+
+    /* Modals */
+    [data-flux-modal] {
+        @apply bg-bg-surface border-border-subtle;
+    }
+
+    /* Dropdowns/Menus */
+    [data-flux-menu] {
+        @apply bg-bg-elevated border-border-default;
+    }
+
+    [data-flux-menu-item]:hover {
+        @apply bg-bg-surface;
+    }
+
+    /* Tables */
+    [data-flux-table] {
+        @apply bg-bg-surface;
+    }
+
+    [data-flux-table] th {
+        @apply bg-bg-elevated text-text-secondary border-border-default;
+    }
+
+    [data-flux-table] td {
+        @apply border-border-subtle text-text-primary;
+    }
+
+    /* Badges */
+    [data-flux-badge] {
+        @apply bg-bg-elevated text-text-secondary border-border-default;
+    }
+
+    [data-flux-badge][data-color="green"] {
+        @apply bg-green-success/20 text-green-success border-green-success/30;
+    }
+
+    [data-flux-badge][data-color="orange"] {
+        @apply bg-orange-primary/20 text-orange-primary border-orange-primary/30;
+    }
+
+    /* Tabs */
+    [data-flux-tab][data-selected="true"] {
+        @apply border-orange-primary text-text-primary;
+    }
+
+    /* Switch */
+    [data-flux-switch][data-checked="true"] {
+        @apply bg-orange-primary;
+    }
+
+    /* Checkbox */
+    [data-flux-checkbox]:checked {
+        @apply bg-orange-primary border-orange-primary;
+    }
+
+    /* Radio */
+    [data-flux-radio]:checked {
+        @apply border-orange-primary;
+    }
+
+    [data-flux-radio]:checked::before {
+        @apply bg-orange-primary;
+    }
+
+    /* Separators */
+    [data-flux-separator] {
+        @apply bg-border-default;
+    }
+
+    /* Callouts - Info boxes */
+    .callout-warning {
+        @apply bg-gradient-to-b from-amber-500/20 to-transparent border border-amber-500;
+    }
+
+    .callout-success {
+        @apply bg-gradient-to-b from-green-nostr/20 to-transparent border border-green-nostr;
+    }
+
+    .callout-purple {
+        @apply bg-gradient-to-b from-purple-accent/20 to-transparent border border-purple-accent;
+    }
+}

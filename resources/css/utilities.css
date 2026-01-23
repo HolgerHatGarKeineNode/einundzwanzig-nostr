@@ -1,0 +1,35 @@
+/**
+ * Utility Styles
+ *
+ * Alpine.js Helfer und allgemeine Utility-Klassen.
+ */
+
+/* Alpine.js x-cloak - verhindert FOUC (Flash of Unstyled Content) */
+[x-cloak=""] {
+    display: none;
+}
+
+@media screen and (max-width: theme(screens.lg)) {
+    [x-cloak="lg"] {
+        display: none;
+    }
+}
+
+/**
+ * Flux UI Field Helpers
+ *
+ * Verbesserte Darstellung von Flux-Formularfeldern.
+ */
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}

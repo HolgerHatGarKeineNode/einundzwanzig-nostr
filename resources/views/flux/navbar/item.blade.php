@@ -24,11 +24,8 @@ $iconClasses = Flux::classes($square ? 'size-6' : 'size-5');
 
 $classes = Flux::classes()
     ->add('px-3 h-8 flex items-center rounded-lg')
-    ->add('relative') // This is here for the "active" bar at the bottom to be positioned correctly...
     ->add($square ? '' : 'px-2.5!')
     ->add('text-text-secondary')
-    // Styles for when this link is the "current" one...
-    ->add('data-current:after:absolute data-current:after:-bottom-3 data-current:after:inset-x-0 data-current:after:h-[2px]')
     ->add([
         '[--hover-fill:var(--color-bg-elevated)]',
     ])
@@ -36,12 +33,10 @@ $classes = Flux::classes()
         true => [
             'hover:text-text-primary',
             'data-current:text-text-primary hover:data-current:text-text-primary hover:bg-bg-elevated hover:data-current:bg-(--hover-fill)',
-            'data-current:after:bg-orange-primary',
         ],
         false => [
             'hover:text-text-primary',
             'data-current:text-text-primary hover:bg-bg-elevated',
-            'data-current:after:bg-text-primary',
         ],
     })
     ;

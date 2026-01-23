@@ -1,356 +1,42 @@
+/**
+ * Einundzwanzig Verein - Main Stylesheet
+ *
+ * Modulare CSS-Architektur für bessere Wartbarkeit.
+ *
+ * Struktur:
+ * - theme.css         → Design System Tokens (Farben, Fonts)
+ * - base.css          → Base HTML Element Styles
+ * - utilities.css     → Alpine.js & Flux UI Helpers
+ * - vendors/          → Third-Party Overrides (Leaflet)
+ * - components/       → UI Component Styles
+ *   - flux-overrides  → Flux UI Framework Anpassungen
+ *   - custom          → Einundzwanzig Custom Components
+ */
+
+/* ----------------------------------------
+   ALL IMPORTS FIRST (CSS requirement)
+----------------------------------------- */
 @import "tailwindcss";
 @import "../../vendor/livewire/flux/dist/flux.css";
 @import '../../vendor/power-components/livewire-powergrid/resources/css/tailwind4.css';
+@import "./theme.css";
+@import "./base.css";
+@import "./utilities.css";
+@import "./vendors/leaflet.css";
+@import "./components/flux-overrides.css";
+@import "./components/custom.css";
 
 /* ----------------------------------------
-   CONTENT SCANNING (Tailwind v4 CSS-first)
+   Content Scanning (Tailwind v4 CSS-first)
    Keep paths MINIMAL and NON-RECURSIVE
 ----------------------------------------- */
 @source "../views/**/*.blade.php";
 @source "../js/**/*.js";
 @source '../../vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php';
 @source '../../vendor/power-components/livewire-powergrid/resources/views/**/*.php';
-
-/* Flux runtime templates ONLY (no stubs) */
 @source "../../vendor/livewire/flux/dist/**/*.blade.php";
 
 /* ----------------------------------------
-   Custom variants
+   Custom Variants
 ----------------------------------------- */
 @custom-variant dark (&:where(.dark, .dark *));
-
-/* ----------------------------------------
-   Theme tokens (Einundzwanzig Design System)
------------------------------------------ */
-@theme {
-    --font-sans: "Inconsolata", monospace;
-
-    /* Background colors */
-    --color-bg-page: #0A0A0B;
-    --color-bg-surface: #111113;
-    --color-bg-elevated: #1A1A1D;
-
-    /* Border colors */
-    --color-border-default: #2A2A2E;
-    --color-border-subtle: #1F1F23;
-
-    /* Text colors */
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #ADADB0;
-    --color-text-tertiary: #8B8B90;
-    --color-text-muted: #FFFFFFCC;
-    --color-text-disabled: #6B6B70;
-
-    /* Brand colors */
-    --color-orange-primary: #FF5C00;
-    --color-orange-light: #FF8A4C;
-    --color-green-success: #22C55E;
-    --color-purple-accent: #7c3aed;
-    --color-green-nostr: #4a7c59;
-
-    /* Zinc aliases for compatibility */
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f4f4f5;
-    --color-zinc-200: #e4e4e7;
-    --color-zinc-300: #d4d4d8;
-    --color-zinc-400: #a1a1aa;
-    --color-zinc-500: #71717a;
-    --color-zinc-600: #52525b;
-    --color-zinc-700: #3f3f46;
-    --color-zinc-800: #27272a;
-    --color-zinc-900: #18181b;
-    --color-zinc-950: #09090b;
-
-    /* Accent colors (orange brand) */
-    --color-accent: var(--color-orange-primary);
-    --color-accent-content: var(--color-orange-primary);
-    --color-accent-foreground: var(--color-text-primary);
-}
-
-/* ----------------------------------------
-   Dark mode overrides (Dark is default for Einundzwanzig)
------------------------------------------ */
-@layer theme {
-    .dark,
-    :root {
-        --color-accent: var(--color-orange-primary);
-        --color-accent-content: var(--color-orange-primary);
-        --color-accent-foreground: var(--color-text-primary);
-
-        /* Flux UI color overrides */
-        --white: var(--color-text-primary);
-        --black: var(--color-bg-page);
-
-        /* Zinc scale for dark mode */
-        --zinc-50: var(--color-bg-elevated);
-        --zinc-100: var(--color-bg-surface);
-        --zinc-200: var(--color-border-default);
-        --zinc-300: var(--color-border-subtle);
-        --zinc-400: var(--color-text-disabled);
-        --zinc-500: var(--color-text-tertiary);
-        --zinc-600: var(--color-text-secondary);
-        --zinc-700: var(--color-text-secondary);
-        --zinc-800: var(--color-text-primary);
-        --zinc-900: var(--color-text-primary);
-        --zinc-950: var(--color-text-primary);
-    }
-}
-
-/* ----------------------------------------
-   Base layer tweaks
------------------------------------------ */
-@layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
-
-    button {
-        @apply cursor-pointer;
-    }
-
-    /* Ensure body has grid layout for Flux components */
-    body:has(>[data-flux-main]) {
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        grid-template-columns: min-content minmax(0, 1fr) min-content;
-        grid-template-areas:
-            "header  header  header"
-            "sidebar main    aside"
-            "sidebar footer  aside";
-    }
-}
-
-/* ----------------------------------------
-   Alpine.js helpers
------------------------------------------ */
-[x-cloak=""] {
-    display: none;
-}
-
-@media screen and (max-width: theme(screens.lg)) {
-    [x-cloak="lg"] {
-        display: none;
-    }
-}
-
-/* ----------------------------------------
-   Flux UI helpers
------------------------------------------ */
-[data-flux-field]:not(ui-radio, ui-checkbox) {
-    @apply grid gap-2;
-}
-
-[data-flux-label] {
-    @apply !mb-0 !leading-tight;
-}
-
-input:focus[data-flux-control],
-textarea:focus[data-flux-control],
-select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
-}
-
-/* ----------------------------------------
-   Leaflet overrides
------------------------------------------ */
-.leaflet-popup-content-wrapper {
-    background-color: #404040 !important;
-}
-
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out {
-    background-color: #404040 !important;
-}
-
-.leaflet-container a {
-    color: unset !important;
-}
-
-/* ----------------------------------------
-   Einundzwanzig Design System - Flux Overrides
------------------------------------------ */
-@layer components {
-    /* Page backgrounds */
-    body {
-        @apply bg-bg-page text-text-primary;
-    }
-
-    /* Cards and surfaces */
-    [data-flux-card] {
-        @apply bg-bg-surface border-border-subtle;
-    }
-
-    /* Primary buttons (orange) */
-    [data-flux-button][data-variant="primary"] {
-        @apply bg-orange-primary text-text-primary hover:bg-orange-light;
-    }
-
-    /* Default/ghost buttons */
-    [data-flux-button]:not([data-variant]) {
-        @apply border-border-default text-text-secondary hover:text-text-primary hover:border-border-default;
-    }
-
-    /* Input fields */
-    [data-flux-input],
-    [data-flux-control] {
-        @apply bg-bg-surface border-border-default text-text-primary placeholder:text-text-disabled;
-    }
-
-    [data-flux-input]:focus,
-    [data-flux-control]:focus {
-        @apply border-orange-primary ring-orange-primary/20;
-    }
-
-    /* Navigation */
-    [data-flux-navbar] {
-        @apply bg-bg-surface border-b border-border-default;
-    }
-
-    [data-flux-navbar-item][data-current="true"] {
-        @apply border-b-2 border-orange-primary text-text-primary;
-    }
-
-    /* Modals */
-    [data-flux-modal] {
-        @apply bg-bg-surface border-border-subtle;
-    }
-
-    /* Dropdowns/Menus */
-    [data-flux-menu] {
-        @apply bg-bg-elevated border-border-default;
-    }
-
-    [data-flux-menu-item]:hover {
-        @apply bg-bg-surface;
-    }
-
-    /* Tables */
-    [data-flux-table] {
-        @apply bg-bg-surface;
-    }
-
-    [data-flux-table] th {
-        @apply bg-bg-elevated text-text-secondary border-border-default;
-    }
-
-    [data-flux-table] td {
-        @apply border-border-subtle text-text-primary;
-    }
-
-    /* Badges */
-    [data-flux-badge] {
-        @apply bg-bg-elevated text-text-secondary border-border-default;
-    }
-
-    [data-flux-badge][data-color="green"] {
-        @apply bg-green-success/20 text-green-success border-green-success/30;
-    }
-
-    [data-flux-badge][data-color="orange"] {
-        @apply bg-orange-primary/20 text-orange-primary border-orange-primary/30;
-    }
-
-    /* Tabs */
-    [data-flux-tab][data-selected="true"] {
-        @apply border-orange-primary text-text-primary;
-    }
-
-    /* Switch */
-    [data-flux-switch][data-checked="true"] {
-        @apply bg-orange-primary;
-    }
-
-    /* Checkbox */
-    [data-flux-checkbox]:checked {
-        @apply bg-orange-primary border-orange-primary;
-    }
-
-    /* Radio */
-    [data-flux-radio]:checked {
-        @apply border-orange-primary;
-    }
-
-    [data-flux-radio]:checked::before {
-        @apply bg-orange-primary;
-    }
-
-    /* Separators */
-    [data-flux-separator] {
-        @apply bg-border-default;
-    }
-
-    /* Callouts - Info boxes */
-    .callout-warning {
-        @apply bg-gradient-to-b from-amber-500/20 to-transparent border border-amber-500;
-    }
-
-    .callout-success {
-        @apply bg-gradient-to-b from-green-nostr/20 to-transparent border border-green-nostr;
-    }
-
-    .callout-purple {
-        @apply bg-gradient-to-b from-purple-accent/20 to-transparent border border-purple-accent;
-    }
-}
-
-/* ----------------------------------------
-   Einundzwanzig Custom Components
------------------------------------------ */
-@layer components {
-    /* Feature cards with accent borders */
-    .feature-card {
-        @apply bg-bg-surface rounded-xl p-5 border border-border-subtle;
-    }
-
-    .feature-card-nostr {
-        @apply bg-bg-surface rounded-xl p-5 border border-green-nostr;
-    }
-
-    .feature-card-lightning {
-        @apply bg-bg-surface rounded-xl p-5 border border-purple-accent;
-    }
-
-    /* Info boxes with gradients */
-    .info-box {
-        @apply rounded-xl p-4 border;
-    }
-
-    .info-box-warning {
-        @apply rounded-xl p-4 border border-amber-500 bg-gradient-to-b from-amber-500/20 to-transparent;
-    }
-
-    .info-box-success {
-        @apply rounded-xl p-4 border border-green-nostr bg-gradient-to-b from-green-nostr/20 to-transparent;
-    }
-
-    /* Header navigation */
-    .nav-item {
-        @apply px-4 py-3 text-text-secondary hover:text-text-primary transition-colors;
-    }
-
-    .nav-item-active {
-        @apply px-4 py-3 text-text-primary hover:text-text-primary transition-colors border-b-2 border-orange-primary;
-    }
-
-    /* Status badges */
-    .status-badge {
-        @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm;
-    }
-
-    .status-badge-active {
-        @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-green-success/20 text-green-success;
-    }
-
-    .status-badge-pending {
-        @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-amber-500/20 text-amber-500;
-    }
-
-    /* Brand icon container */
-    .brand-icon {
-        @apply w-8 h-8 rounded-lg bg-orange-primary flex items-center justify-center;
-    }
-}

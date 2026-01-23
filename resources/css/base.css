@@ -1,0 +1,30 @@
+/**
+ * Base Layer Styles
+ *
+ * Grundlegende HTML-Element-Stile und Layout-Definitionen.
+ */
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+
+    /* Grid layout for Flux components */
+    body:has(>[data-flux-main]) {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: min-content minmax(0, 1fr) min-content;
+        grid-template-areas:
+            "header  header  header"
+            "sidebar main    aside"
+            "sidebar footer  aside";
+    }
+}

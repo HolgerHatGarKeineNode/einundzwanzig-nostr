@@ -1,0 +1,83 @@
+/**
+ * Einundzwanzig Design System - Theme Tokens
+ *
+ * Zentrale Farbdefinitionen und Design-Variablen für das gesamte Projekt.
+ * Verwendet Tailwind CSS v4 @theme Direktive.
+ */
+
+@theme {
+    --font-sans: "Inconsolata", monospace;
+
+    /* Background colors */
+    --color-bg-page: #0A0A0B;
+    --color-bg-surface: #111113;
+    --color-bg-elevated: #1A1A1D;
+
+    /* Border colors */
+    --color-border-default: #2A2A2E;
+    --color-border-subtle: #1F1F23;
+
+    /* Text colors */
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #ADADB0;
+    --color-text-tertiary: #8B8B90;
+    --color-text-muted: #FFFFFFCC;
+    --color-text-disabled: #6B6B70;
+
+    /* Brand colors */
+    --color-orange-primary: #FF5C00;
+    --color-orange-light: #FF8A4C;
+    --color-green-success: #22C55E;
+    --color-purple-accent: #7c3aed;
+    --color-green-nostr: #4a7c59;
+
+    /* Zinc aliases for compatibility */
+    --color-zinc-50: #fafafa;
+    --color-zinc-100: #f4f4f5;
+    --color-zinc-200: #e4e4e7;
+    --color-zinc-300: #d4d4d8;
+    --color-zinc-400: #a1a1aa;
+    --color-zinc-500: #71717a;
+    --color-zinc-600: #52525b;
+    --color-zinc-700: #3f3f46;
+    --color-zinc-800: #27272a;
+    --color-zinc-900: #18181b;
+    --color-zinc-950: #09090b;
+
+    /* Accent colors (orange brand) */
+    --color-accent: var(--color-orange-primary);
+    --color-accent-content: var(--color-orange-primary);
+    --color-accent-foreground: var(--color-text-primary);
+}
+
+/**
+ * Dark Mode Overrides
+ *
+ * Dark ist der Standard für Einundzwanzig.
+ * Diese Überschreibungen stellen sicher, dass Flux UI korrekt dargestellt wird.
+ */
+@layer theme {
+    .dark,
+    :root {
+        --color-accent: var(--color-orange-primary);
+        --color-accent-content: var(--color-orange-primary);
+        --color-accent-foreground: var(--color-text-primary);
+
+        /* Flux UI color overrides */
+        --white: var(--color-text-primary);
+        --black: var(--color-bg-page);
+
+        /* Zinc scale for dark mode */
+        --zinc-50: var(--color-bg-elevated);
+        --zinc-100: var(--color-bg-surface);
+        --zinc-200: var(--color-border-default);
+        --zinc-300: var(--color-border-subtle);
+        --zinc-400: var(--color-text-disabled);
+        --zinc-500: var(--color-text-tertiary);
+        --zinc-600: var(--color-text-secondary);
+        --zinc-700: var(--color-text-secondary);
+        --zinc-800: var(--color-text-primary);
+        --zinc-900: var(--color-text-primary);
+        --zinc-950: var(--color-text-primary);
+    }
+}

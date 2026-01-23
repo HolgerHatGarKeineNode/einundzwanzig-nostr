@@ -23,7 +23,7 @@
 <body class="min-h-screen bg-bg-page antialiased"
       x-data="nostrLogin"
 >
-<flux:header sticky class="bg-bg-surface border-b border-border-default">
+<flux:header sticky class="bg-bg-surface h-18">
     <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left"/>
 
     <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden dark:hidden">
