@@ -324,6 +324,13 @@ new class extends Component
         $this->js("navigator.clipboard.writeText('{$relayUrl}')");
         Flux::toast('Relay-Adresse in die Zwischenablage kopiert!');
     }
+
+    public function copyWatchtowerUrl(): void
+    {
+        $watchtowerUrl = '03a09f56bba3d2c200cc55eda2f1f069564a97c1fb74345e1560e2868a8ab3d7d0@62.171.139.240:9911';
+        $this->js("navigator.clipboard.writeText('{$watchtowerUrl}')");
+        Flux::toast('Watchtower-Adresse in die Zwischenablage kopiert!');
+    }
 }
 ?>
 
@@ -498,23 +505,73 @@ new class extends Component
                                 </div>
                             @endif
                         </div>
-                    </div>
 
-                    <!-- Additional Information -->
-                    <flux:callout variant="success" class="mt-6">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-sharp-duotone fa-solid fa-star text-amber-500 mt-0.5"></i>
-                            <div>
-                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                    Mehr Vorteile kommen bald!
-                                </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                                    Wir arbeiten ständig daran, unsere Mitglieder-Vorteile auszubauen.
-                                    Bleib dran für neue exklusive Services und Kooperationen.
-                                </p>
+                        <!-- Benefit 3: Lightning Watchtower -->
+                        <div
+                            class="bg-linear-to-br from-purple-50 to-blue-50 dark:from-purple-300/10 dark:to-blue-900/10 rounded-lg p-4 border border-purple-200 dark:border-purple-200/30">
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="shrink-0">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/60 flex items-center justify-center">
+                                        <i class="fa-sharp-duotone fa-solid fa-shield-halved text-purple-600 dark:text-purple-400 text-base"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-1">
+                                        Lightning Watchtower
+                                    </h3>
+                                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                        Nutze unseren Watchtower zum Schutz deiner Lightning Channel.
+                                    </p>
+                                </div>
                             </div>
+
+                            @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
+                                <div class="space-y-3">
+                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        Ein Watchtower überwacht deine Lightning Channel und schützt sie, falls deine Node
+                                        offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst, kümmert sich
+                                        der Watchtower darum und verhindert den Verlust deiner Sats.
+                                    </p>
+
+                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        Um unseren Watchtower zu nutzen, füge folgende URI in deiner Lightning Node
+                                        Konfiguration hinzu:
+                                    </p>
+
+                                    <div class="flex items-center gap-2">
+                                        <code
+                                            class="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors break-all"
+                                            wire:click="copyWatchtowerUrl">
+                                            03a09f56bba3d2c200cc55eda2f1f069564a97c1fb74345e1560e2868a8ab3d7d0@62.171.139.240:9911
+                                        </code>
+                                    </div>
+
+                                    <div
+                                        class="mt-3 p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
+                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium mb-2">
+                                            Einrichtung für gängige Lightning Clients:
+                                        </p>
+                                        <ul class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-1 list-disc list-inside">
+                                            <li><strong>LND:</strong> <flux:link href="https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower" target="_blank">https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower</flux:link></li>
+                                            <li><strong>Core Lightning:</strong> Nutze den <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">watchtower-client</code> Plugin mit der URI</li>
+                                            <li><strong>Eclair:</strong> Füge die URI zu den Watchtower-Einstellungen in deiner eclair.conf hinzu</li>
+                                        </ul>
+                                    </div>
+
+                                    <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        <strong>Wichtig:</strong> Der Watchtower überwacht deine Channel passiv. Er hat keinen Zugriff auf
+                                        deine privaten Schlüssel oder dein Guthaben.
+                                    </p>
+                                </div>
+                            @else
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                    Aktiviere deine Mitgliedschaft, um den Lightning Watchtower zu nutzen.
+                                </div>
+                            @endif
                         </div>
-                    </flux:callout>
+
+                    </div>
                 </div>
             </div>
         </flux:card>

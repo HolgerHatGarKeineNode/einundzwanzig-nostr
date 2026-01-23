@@ -35,19 +35,19 @@ new class extends Component
         @if($location === 'sidebar')
             <form method="post" action="{{ route('logout') }}">
                 @csrf
-                <flux:sidebar.item icon="arrow-right-start-on-rectangle" type="submit" wire:click="$dispatch('nostrLoggedOut')">Logout</flux:sidebar.item>
+                <flux:button variant="ghost" icon="arrow-right-start-on-rectangle" type="submit" wire:click="$dispatch('nostrLoggedOut')">Logout</flux:button>
             </form>
         @else
             <form method="post" action="{{ route('logout') }}">
                 @csrf
-                <flux:navbar.item type="submit" icon="arrow-right-start-on-rectangle" wire:click="$dispatch('nostrLoggedOut')">Logout</flux:navbar.item>
+                <flux:button variant="ghost" icon="arrow-right-start-on-rectangle" type="submit" wire:click="$dispatch('nostrLoggedOut')">Logout</flux:button>
             </form>
         @endif
     @else
         @if($location === 'sidebar')
-            <flux:sidebar.item icon="user" @click="openNostrLogin">Mit Nostr verbinden</flux:sidebar.item>
+            <flux:button variant="primary" icon="user" @click="openNostrLogin">Mit Nostr verbinden</flux:button>
         @else
-            <flux:navbar.item icon="user" @click="openNostrLogin">Mit Nostr verbinden</flux:navbar.item>
+            <flux:button variant="primary" icon="user" @click="openNostrLogin">Mit Nostr verbinden</flux:button>
         @endif
     @endif
 </div>

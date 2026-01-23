@@ -20,4 +20,6 @@ yarn-error.log
 /.vscode
 /relay
 /storage/media-library
-.sisyphus
+/.sisyphus
+/.opencode
+.switch-omo-config*
