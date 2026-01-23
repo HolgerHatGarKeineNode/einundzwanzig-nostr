@@ -43,6 +43,10 @@
                               :current="request()->routeIs('association.profile')">
                 Mitgliederstatus
             </flux:navbar.item>
+            <flux:navbar.item icon="gift" :href="route('association.benefits')"
+                              :current="request()->routeIs('association.benefits')">
+                Vorteile
+            </flux:navbar.item>
             <flux:navbar.item icon="heart" :href="route('association.projectSupport')"
                               :current="request()->routeIs('association.projectSupport')">
                 Projekt-Unterstützungen
@@ -100,6 +104,9 @@
             </flux:sidebar.item>
             <flux:sidebar.item icon="identification" :href="route('association.profile')"
                                :current="request()->routeIs('association.profile')">Meine Mitgliedschaft
+            </flux:sidebar.item>
+            <flux:sidebar.item icon="gift" :href="route('association.benefits')"
+                               :current="request()->routeIs('association.benefits')">Vorteile
             </flux:sidebar.item>
             <flux:sidebar.item icon="heart" :href="route('association.projectSupport')"
                                :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen
