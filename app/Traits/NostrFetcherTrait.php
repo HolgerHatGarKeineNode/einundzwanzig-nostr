@@ -12,6 +12,37 @@ use swentel\nostr\Subscription\Subscription;
 
 trait NostrFetcherTrait
 {
+    /**
+     * Get all NIP-05 handles for a given pubkey from nostr.json
+     *
+     * @param  string  $pubkey  The public key in hex format
+     * @return array Array of handles associated with the pubkey
+     */
+    public function getNip05HandlesForPubkey(string $pubkey): array
+    {
+        try {
+            $response = \Illuminate\Support\Facades\Http::get(
+                'https://einundzwanzig.space/.well-known/nostr.json',
+            );
+            $data = $response->json();
+
+            if (! isset($data['names'])) {
+                return [];
+            }
+
+            $handles = [];
+            foreach ($data['names'] as $handle => $handlePubkey) {
+                if ($handlePubkey === $pubkey) {
+                    $handles[] = $handle;
+                }
+            }
+
+            return $handles;
+        } catch (\Exception) {
+            return [];
+        }
+    }
+
     public function fetchProfile($npubs)
     {
         $hex = collect([]);

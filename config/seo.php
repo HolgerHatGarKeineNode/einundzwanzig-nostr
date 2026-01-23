@@ -12,7 +12,7 @@ return [
     /**
      * Use this setting to specify the site name that will be used in OpenGraph tags.
      */
-    'site_name' => 'Einundzwanzig Verein',
+    'site_name' => 'EINUNDZWANZIG Verein',
 
     /**
      * Use this setting to specify the path to the sitemap of your website. This exact path will outputted, so
@@ -75,7 +75,7 @@ return [
          * Use this setting to provide a suffix that will be added after the title on each page.
          * If you don't want a suffix, you should specify an empty string.
          */
-        'suffix' => ' - Einundzwanzig Verein',
+        'suffix' => ' - EINUNDZWANZIG Verein',
 
         /**
          * Use this setting to provide a custom title for the homepage. We will not use the suffix on the homepage,

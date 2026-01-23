@@ -26,10 +26,10 @@
 <flux:header sticky class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
     <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left"/>
 
-    <flux:brand href="/" name="Einundzwanzig" class="max-lg:hidden dark:hidden">
+    <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden dark:hidden">
         <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
     </flux:brand>
-    <flux:brand href="/" name="Einundzwanzig" class="max-lg:hidden! hidden dark:flex">
+    <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden! hidden dark:flex">
         <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
     </flux:brand>
 
@@ -84,7 +84,7 @@
     <flux:sidebar.header>
         <flux:sidebar.brand
             href="/"
-            name="Einundzwanzig"
+            name="EINUNDZWANZIG"
         >
             <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
         </flux:sidebar.brand>

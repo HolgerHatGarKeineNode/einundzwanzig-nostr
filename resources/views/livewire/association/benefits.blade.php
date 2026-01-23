@@ -2,11 +2,14 @@
 
 use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
+use App\Traits\NostrFetcherTrait;
 use Flux\Flux;
 use Livewire\Component;
 
 new class extends Component
 {
+    use NostrFetcherTrait;
+
     public ?EinundzwanzigPleb $currentPleb = null;
 
     public ?string $currentPubkey = null;
@@ -20,6 +23,8 @@ new class extends Component
     public ?string $nip05VerifiedHandle = null;
 
     public bool $nip05HandleMismatch = false;
+
+    public array $nip05VerifiedHandles = [];
 
     protected $listeners = [
         'nostrLoggedIn' => 'handleNostrLoggedIn',
@@ -40,27 +45,17 @@ new class extends Component
                 if ($this->currentPleb->nip05_handle) {
                     $this->nip05Handle = $this->currentPleb->nip05_handle;
 
-                    // Verify NIP-05 handle against nostr.json
-                    try {
-                        $response = \Illuminate\Support\Facades\Http::get(
-                            'https://einundzwanzig.space/.well-known/nostr.json',
-                        );
-                        $data = $response->json();
-                        if (isset($data['names'])) {
-                            foreach ($data['names'] as $handle => $pubkey) {
-                                if ($pubkey === $this->currentPubkey) {
-                                    $this->nip05Verified = true;
-                                    $this->nip05VerifiedHandle = $handle;
-                                    // Check if verified handle differs from database handle
-                                    if ($handle !== $this->nip05Handle) {
-                                        $this->nip05HandleMismatch = true;
-                                    }
-                                    break;
-                                }
-                            }
+                    // Get all NIP-05 handles for current pubkey
+                    $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
+
+                    if (count($this->nip05VerifiedHandles) > 0) {
+                        $this->nip05Verified = true;
+                        $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
+
+                        // Check if verified handle differs from database handle
+                        if (! in_array($this->nip05Handle, $this->nip05VerifiedHandles, true)) {
+                            $this->nip05HandleMismatch = true;
                         }
-                    } catch (\Exception) {
-                        // Silently fail if nostr.json is not accessible
                     }
                 }
 
@@ -121,6 +116,7 @@ new class extends Component
         $this->nip05Verified = false;
         $this->nip05VerifiedHandle = null;
         $this->nip05HandleMismatch = false;
+        $this->nip05VerifiedHandles = [];
     }
 }
 ?>
@@ -251,25 +247,33 @@ new class extends Component
 
                     <!-- NIP-05 Verification Status -->
                     @if($nip05Verified)
-                        @if($nip05HandleMismatch)
-                            <flux:callout variant="warning" icon="exclamation-triangle" class="mt-4">
-                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                    Dein aktiviertes Handle ist <br><strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong>
-                                </p>
+                        <flux:callout variant="success" icon="check-circle" class="mt-4">
+                            <p class="font-medium text-zinc-800 dark:text-zinc-100">
+                                Du hast {{ count($nip05VerifiedHandles) }} aktiv{{ count($nip05VerifiedHandles) > 1 ? 'ierte' : 'isiert' }}e{{ count($nip05VerifiedHandles) > 1 ? ' Handles' : 'es Handle' }} für deinen Pubkey!
+                            </p>
+                            @if($nip05HandleMismatch)
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                                     Die Synchronisation zu <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
                                 </p>
-                            </flux:callout>
-                        @else
-                            <flux:callout variant="success" icon="check-circle" class="mt-4">
-                                <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                    Dein Handle <strong class="break-all">{{ $nip05VerifiedHandle }}@einundzwanzig.space</strong> ist aktiv verifiziert!
-                                </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                                    Dein Handle ist in der NIP-05 Konfiguration eingetragen und bereit für die Verwendung.
-                                </p>
-                            </flux:callout>
-                        @endif
+                            @endif
+                        </flux:callout>
+
+                        <!-- List of all active handles -->
+                        <div class="mt-4 p-4 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
+                            <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                                Deine aktivierten Handles:
+                            </p>
+                            <ul class="space-y-2">
+                                @foreach($nip05VerifiedHandles as $handle)
+                                    <li class="flex items-center gap-2 text-sm">
+                                        <span class="break-all text-zinc-800 dark:text-zinc-200 font-mono">
+                                            {{ $handle }}@einundzwanzig.space
+                                        </span>
+                                        <flux:badge color="green" size="xs">OK</flux:badge>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @elseif($nip05Handle)
                         <flux:callout variant="secondary" icon="information-circle" class="mt-4">
                             <p class="font-medium text-zinc-800 dark:text-zinc-100">
