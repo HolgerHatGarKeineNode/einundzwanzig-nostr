@@ -31,7 +31,7 @@ it('can save email address', function () {
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.profile')
-        ->set('email', 'test@example.com')
+        ->set('profileForm.email', 'test@example.com')
         ->call('saveEmail')
         ->assertHasNoErrors();
 
@@ -44,9 +44,9 @@ it('validates email format', function () {
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.profile')
-        ->set('email', 'invalid-email')
+        ->set('profileForm.email', 'invalid-email')
         ->call('saveEmail')
-        ->assertHasErrors(['email']);
+        ->assertHasErrors(['profileForm.email']);
 });
 
 it('can save nip05 handle', function () {
@@ -55,11 +55,11 @@ it('can save nip05 handle', function () {
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.profile')
-        ->set('nip05Handle', 'user@example.com')
+        ->set('profileForm.nip05Handle', 'test-handle')
         ->call('saveNip05Handle')
         ->assertHasNoErrors();
 
-    expect($pleb->fresh()->nip05_handle)->toBe('user@example.com');
+    expect($pleb->fresh()->nip05_handle)->toBe('test-handle');
 });
 
 it('validates nip05 handle format', function () {
@@ -68,14 +68,14 @@ it('validates nip05 handle format', function () {
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.profile')
-        ->set('nip05Handle', 'not-an-email')
+        ->set('profileForm.nip05Handle', 'invalid handle with spaces')
         ->call('saveNip05Handle')
-        ->assertHasErrors(['nip05Handle']);
+        ->assertHasErrors(['profileForm.nip05Handle']);
 });
 
 it('validates nip05 handle uniqueness', function () {
     $pleb1 = EinundzwanzigPleb::factory()->active()->create([
-        'nip05_handle' => 'taken@example.com',
+        'nip05_handle' => 'taken-handle',
     ]);
 
     $pleb2 = EinundzwanzigPleb::factory()->active()->create();
@@ -83,20 +83,20 @@ it('validates nip05 handle uniqueness', function () {
     NostrAuth::login($pleb2->pubkey);
 
     Livewire::test('association.profile')
-        ->set('nip05Handle', 'taken@example.com')
+        ->set('profileForm.nip05Handle', 'taken-handle')
         ->call('saveNip05Handle')
-        ->assertHasErrors(['nip05Handle']);
+        ->assertHasErrors(['profileForm.nip05Handle']);
 });
 
 it('can save null nip05 handle', function () {
     $pleb = EinundzwanzigPleb::factory()->active()->create([
-        'nip05_handle' => 'old@example.com',
+        'nip05_handle' => 'old-handle',
     ]);
 
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.profile')
-        ->set('nip05Handle', null)
+        ->set('profileForm.nip05Handle', null)
         ->call('saveNip05Handle')
         ->assertHasNoErrors();
 

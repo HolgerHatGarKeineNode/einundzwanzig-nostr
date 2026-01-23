@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Forms\ApplicationForm;
+use App\Livewire\Forms\ProfileForm;
 use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
 use App\Traits\NostrFetcherTrait;
@@ -16,21 +17,18 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Sign\Sign;
 use swentel\nostr\Subscription\Subscription;
 
-new class extends Component
-{
+new class extends Component {
     use NostrFetcherTrait;
 
     public ApplicationForm $form;
+
+    public ProfileForm $profileForm;
 
     public bool $no = false;
 
     public bool $showEmail = true;
 
     public string $fax = '';
-
-    public ?string $email = '';
-
-    public ?string $nip05Handle = '';
 
     public bool $nip05Verified = false;
 
@@ -67,15 +65,15 @@ new class extends Component
             $this->currentPubkey = NostrAuth::pubkey();
             $this->currentPleb = EinundzwanzigPleb::query()
                 ->with([
-                    'paymentEvents' => fn ($query) => $query->where('year', date('Y')),
+                    'paymentEvents' => fn($query) => $query->where('year', date('Y')),
                     'profile',
                 ])
                 ->where('pubkey', $this->currentPubkey)->first();
             if ($this->currentPleb) {
-                $this->email = $this->currentPleb->email;
-                if ($this->currentPleb->nip05_handle) {
-                    $this->nip05Handle = $this->currentPleb->nip05_handle;
+                $this->profileForm->setPleb($this->currentPleb);
+                $this->form->setPleb($this->currentPleb);
 
+                if ($this->currentPleb->nip05_handle) {
                     // Get all NIP-05 handles for the current pubkey
                     $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
 
@@ -84,13 +82,13 @@ new class extends Component
                         $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
 
                         // Check if verified handle differs from database handle
-                        if (! in_array($this->nip05Handle, $this->nip05VerifiedHandles, true)) {
+                        if (!in_array($this->profileForm->nip05Handle, $this->nip05VerifiedHandles, true)) {
                             $this->nip05HandleMismatch = true;
                         }
                     }
                 }
                 $this->no = $this->currentPleb->no_email;
-                $this->showEmail = ! $this->no;
+                $this->showEmail = !$this->no;
                 $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
                 if ($this->currentPleb->paymentEvents->count() < 1) {
                     $this->createPaymentEvent();
@@ -104,7 +102,7 @@ new class extends Component
 
     public function updatedNo(): void
     {
-        $this->showEmail = ! $this->no;
+        $this->showEmail = !$this->no;
         $this->currentPleb->update([
             'no_email' => $this->no,
         ]);
@@ -115,34 +113,59 @@ new class extends Component
         $this->js('alert("Markus Turm wird sich per Fax melden!")');
     }
 
-    public function updatedNip05Handle(): void
+    public function updatedProfileFormNip05Handle(): void
     {
-        $this->nip05Handle = strtolower($this->nip05Handle);
+        $this->profileForm->nip05Handle = strtolower($this->profileForm->nip05Handle);
+    }
+
+    public function handleNostrLoggedIn(string $pubkey): void
+    {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = EinundzwanzigPleb::query()
+            ->with([
+                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+                'profile',
+            ])
+            ->where('pubkey', $pubkey)->first();
+
+        if ($this->currentPleb) {
+            $this->profileForm->setPleb($this->currentPleb);
+            $this->form->setPleb($this->currentPleb);
+            $this->no = $this->currentPleb->no_email;
+            $this->showEmail = !$this->no;
+        }
+    }
+
+    public function handleNostrLoggedOut(): void
+    {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
     }
 
     public function saveEmail(): void
     {
-        $this->validate([
-            'email' => 'required|email',
-        ]);
-        $this->currentPleb->update([
-            'email' => $this->email,
-        ]);
-        Flux::toast('E-Mail Adresse gespeichert.');
+        $this->profileForm->saveEmail();
     }
 
     public function saveNip05Handle(): void
     {
-        $this->validate([
-            'nip05Handle' => 'required|string|max:255|regex:/^[a-z0-9_-]+$/|unique:einundzwanzig_plebs,nip05_handle',
-        ]);
+        $this->profileForm->saveNip05Handle();
 
-        $nip05Handle = strtolower($this->nip05Handle);
+        // Refresh NIP-05 verification status after saving
+        if ($this->currentPleb->nip05_handle) {
+            $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
 
-        $this->currentPleb->update([
-            'nip05_handle' => $nip05Handle,
-        ]);
-        Flux::toast('NIP-05 Handle gespeichert.');
+            if (count($this->nip05VerifiedHandles) > 0) {
+                $this->nip05Verified = true;
+                $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
+
+                if (!in_array($this->profileForm->nip05Handle, $this->nip05VerifiedHandles, true)) {
+                    $this->nip05HandleMismatch = true;
+                } else {
+                    $this->nip05HandleMismatch = false;
+                }
+            }
+        }
     }
 
     public function pay($comment): mixed
@@ -229,17 +252,15 @@ new class extends Component
 
     public function save($type): void
     {
-        $this->form->validate();
-        if (! $this->form->check) {
-            $this->js('alert("Du musst den Statuten zustimmen.")');
-
-            return;
+        try {
+            $this->form->apply($type);
+            Flux::toast('Mitgliedschaft erfolgreich beantragt!', variant: 'success');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if (!$this->form->check) {
+                $this->js('alert("Du musst den Statuten zustimmen.")');
+            }
+            throw $e;
         }
-
-        $this->currentPleb
-            ->update([
-                'association_status' => $type,
-            ]);
     }
 
     public function createPaymentEvent(): void
@@ -295,7 +316,7 @@ new class extends Component
 
         $this->events = collect($response[config('services.relay')])
             ->map(function ($event) {
-                if (! isset($event->event)) {
+                if (!isset($event->event)) {
                     return false;
                 }
 
@@ -367,12 +388,15 @@ new class extends Component
                                     @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
                                         <div class="mt-3 space-y-2">
                                             <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                                Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es speichert und
-                                                verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in deinem
+                                                Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es
+                                                speichert und
+                                                verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in
+                                                deinem
                                                 Nostr-Client hinzufügen.
                                             </p>
                                             <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                                Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings" oder
+                                                Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings"
+                                                oder
                                                 "Relays") und füge folgende Outbox-Relay-Adresse hinzu:
                                             </p>
                                             <div class="flex items-center gap-2 mt-2">
@@ -383,8 +407,10 @@ new class extends Component
                                                 </code>
                                             </div>
                                             <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                                <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren Relays gleichzeitig
-                                                veröffentlichen. So stellst du sicher, dass deine Inhalte auch über unser Relay erreichbar sind.
+                                                <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren
+                                                Relays gleichzeitig
+                                                veröffentlichen. So stellst du sicher, dass deine Inhalte auch über
+                                                unser Relay erreichbar sind.
                                             </p>
                                         </div>
                                     @endif
@@ -419,12 +445,16 @@ new class extends Component
                                         <flux:label>Dein NIP-05 Handle</flux:label>
                                         <flux:input.group>
                                             <flux:input
-                                                wire:model.live.debounce="nip05Handle"
+                                                wire:model.live.debounce="profileForm.nip05Handle"
                                                 placeholder="dein-name"
+                                                wire:dirty.class="border-amber-500 dark:border-amber-400"
                                             />
                                             <flux:input.group.suffix>@einundzwanzig.space</flux:input.group.suffix>
                                         </flux:input.group>
-                                        <flux:error name="nip05Handle"/>
+                                        <flux:error name="profileForm.nip05Handle"/>
+                                        <div wire:dirty wire:target="profileForm.nip05Handle" class="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                                            Nicht gespeichert...
+                                        </div>
                                     </flux:field>
 
                                     <div class="flex gap-3">
@@ -433,7 +463,8 @@ new class extends Component
                                             wire:loading.attr="disabled"
                                             size="sm"
                                             variant="primary">
-                                            Speichern
+                                            <span wire:loading.remove wire:target="saveNip05Handle">Speichern</span>
+                                            <span wire:loading wire:target="saveNip05Handle">Speichert...</span>
                                         </flux:button>
                                     </div>
 
@@ -465,24 +496,30 @@ new class extends Component
                                     @if($nip05Verified)
                                         <flux:callout variant="success" icon="check-circle" class="mt-4">
                                             <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen Pubkey!
+                                                Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen
+                                                Pubkey!
                                             </p>
                                             @if($nip05HandleMismatch)
                                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                                                    Die Synchronisation zu <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> wird automatisch im Hintergrund durchgeführt.
+                                                    Die Synchronisation zu <strong
+                                                        class="break-all">{{ $profileForm->nip05Handle }}
+                                                        @einundzwanzig.space</strong> wird automatisch im Hintergrund
+                                                    durchgeführt.
                                                 </p>
                                             @endif
                                         </flux:callout>
 
                                         <!-- List of all active handles -->
-                                        <div class="mt-4 p-4 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
+                                        <div
+                                            class="mt-4 p-4 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
                                             <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                                                 Deine aktivierten Handles:
                                             </p>
                                             <ul class="space-y-2">
                                                 @foreach($nip05VerifiedHandles as $handle)
                                                     <li class="flex items-center gap-2 text-sm">
-                                                        <span class="break-all text-zinc-800 dark:text-zinc-200 font-mono">
+                                                        <span
+                                                            class="break-all text-zinc-800 dark:text-zinc-200 font-mono">
                                                             {{ $handle }}@einundzwanzig.space
                                                         </span>
                                                         <flux:badge color="green" size="xs">OK</flux:badge>
@@ -490,13 +527,15 @@ new class extends Component
                                                 @endforeach
                                             </ul>
                                         </div>
-                                    @elseif($nip05Handle)
+                                    @elseif($profileForm->nip05Handle)
                                         <flux:callout variant="secondary" icon="information-circle" class="mt-4">
                                             <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                Dein Handle <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong> ist noch nicht aktiv.
+                                                Dein Handle <strong class="break-all">{{ $profileForm->nip05Handle }}
+                                                    @einundzwanzig.space</strong> ist noch nicht aktiv.
                                             </p>
                                             <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
-                                                Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration veröffentlicht.
+                                                Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration
+                                                veröffentlicht.
                                                 Der Vorstand wird dies bald aktivieren.
                                             </p>
                                         </flux:callout>
@@ -532,8 +571,10 @@ new class extends Component
                             @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
                                 <div class="space-y-3">
                                     <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                        Ein Watchtower überwacht deine Lightning Channel und schützt sie, falls deine Node
-                                        offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst, kümmert sich
+                                        Ein Watchtower überwacht deine Lightning Channel und schützt sie, falls deine
+                                        Node
+                                        offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst,
+                                        kümmert sich
                                         der Watchtower darum und verhindert den Verlust deiner Sats.
                                     </p>
 
@@ -556,14 +597,26 @@ new class extends Component
                                             Einrichtung für gängige Lightning Clients:
                                         </p>
                                         <ul class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-1 list-disc list-inside">
-                                            <li><strong>LND:</strong> <flux:link href="https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower" target="_blank">https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower</flux:link></li>
-                                            <li><strong>Core Lightning:</strong> Nutze den <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">watchtower-client</code> Plugin mit der URI</li>
-                                            <li><strong>Eclair:</strong> Füge die URI zu den Watchtower-Einstellungen in deiner eclair.conf hinzu</li>
+                                            <li><strong>LND:</strong>
+                                                <flux:link
+                                                    href="https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower"
+                                                    target="_blank">
+                                                    https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower
+                                                </flux:link>
+                                            </li>
+                                            <li><strong>Core Lightning:</strong> Nutze den <code
+                                                    class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">watchtower-client</code>
+                                                Plugin mit der URI
+                                            </li>
+                                            <li><strong>Eclair:</strong> Füge die URI zu den Watchtower-Einstellungen in
+                                                deiner eclair.conf hinzu
+                                            </li>
                                         </ul>
                                     </div>
 
                                     <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                        <strong>Wichtig:</strong> Der Watchtower überwacht deine Channel passiv. Er hat keinen Zugriff auf
+                                        <strong>Wichtig:</strong> Der Watchtower überwacht deine Channel passiv. Er hat
+                                        keinen Zugriff auf
                                         deine privaten Schlüssel oder dein Guthaben.
                                     </p>
                                 </div>
@@ -726,12 +779,14 @@ new class extends Component
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="group block">
-                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                    <div
+                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/1.png') }}"
                                              alt="Amber App Screenshot 1"
                                              loading="lazy"
                                              class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
-                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div
+                                            class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
                                                 <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Startseite
@@ -752,12 +807,14 @@ new class extends Component
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="group block">
-                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                    <div
+                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/2.png') }}"
                                              alt="Amber App Screenshot 2"
                                              loading="lazy"
                                              class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
-                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div
+                                            class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
                                                 <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Profileinstellungen
@@ -778,12 +835,14 @@ new class extends Component
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="group block">
-                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                    <div
+                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/3.png') }}"
                                              alt="Amber App Screenshot 3"
                                              loading="lazy"
                                              class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
-                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div
+                                            class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
                                                 <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Keyverwaltung
@@ -804,12 +863,14 @@ new class extends Component
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="group block">
-                                    <div class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
+                                    <div
+                                        class="relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md hover:shadow-amber-500/10 transition-all duration-300">
                                         <img src="{{ asset('img/4.png') }}"
                                              alt="Amber App Screenshot 4"
                                              loading="lazy"
                                              class="w-full h-auto object-cover aspect-9/16 md:aspect-9/18 group-hover:scale-105 transition-transform duration-300">
-                                        <div class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div
+                                            class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
                                                 <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Connect/nsec-Bunker
@@ -882,7 +943,8 @@ new class extends Component
                                 <flux:error name="form.check"/>
                             </flux:field>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <flux:button wire:click="save({{ \App\Enums\AssociationStatus::PASSIVE() }})" variant="primary">
+                                <flux:button wire:click="save({{ \App\Enums\AssociationStatus::PASSIVE() }})"
+                                             variant="primary">
                                     Mit deinem aktuellen Nostr-Profil Mitglied werden
                                 </flux:button>
                                 <flux:button href="https://einundzwanzig.space/verein/" target="_blank"
@@ -929,15 +991,22 @@ new class extends Component
 
                                     <flux:field>
                                         <flux:label>E-Mail Adresse</flux:label>
-                                        <flux:input type="email" wire:model.live.debounce="email"
-                                                    placeholder="E-Mail Adresse"/>
-                                        <flux:error name="email"/>
+                                        <flux:input
+                                            type="email"
+                                            wire:model.live.debounce="profileForm.email"
+                                            placeholder="E-Mail Adresse"
+                                            wire:dirty.class="border-amber-500 dark:border-amber-400"/>
+                                        <flux:error name="profileForm.email"/>
+                                        <div wire:dirty wire:target="profileForm.email" class="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                                            Nicht gespeichert...
+                                        </div>
                                     </flux:field>
                                 </div>
 
                                 <div wire:key="showSave">
                                     <flux:button wire:click="saveEmail" wire:loading.attr="disabled">
-                                        Speichern
+                                        <span wire:loading.remove wire:target="saveEmail">Speichern</span>
+                                        <span wire:loading wire:target="saveEmail">Speichert...</span>
                                     </flux:button>
                                 </div>
                             @endif
