@@ -20,3 +20,4 @@ yarn-error.log
 /.vscode
 /relay
 /storage/media-library
+.sisyphus
