@@ -465,7 +465,7 @@ new class extends Component
                                     @if($nip05Verified)
                                         <flux:callout variant="success" icon="check-circle" class="mt-4">
                                             <p class="font-medium text-zinc-800 dark:text-zinc-100">
-                                                Du hast {{ count($nip05VerifiedHandles) }} aktiv{{ count($nip05VerifiedHandles) > 1 ? 'ierte' : 'isiert' }}e{{ count($nip05VerifiedHandles) > 1 ? ' Handles' : 'es Handle' }} für deinen Pubkey!
+                                                Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen Pubkey!
                                             </p>
                                             @if($nip05HandleMismatch)
                                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
