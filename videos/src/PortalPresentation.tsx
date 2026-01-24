@@ -2,6 +2,7 @@ import { AbsoluteFill, Sequence, useVideoConfig, Img, staticFile } from "remotio
 import { inconsolataFont } from "./fonts/inconsolata";
 import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
 import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
+import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -144,7 +145,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.dashboardOverview.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Dashboard Overview" sceneNumber={3} />
+        <DashboardOverviewScene />
       </Sequence>
 
       {/* Scene 4: Meine Meetups (12s) */}
