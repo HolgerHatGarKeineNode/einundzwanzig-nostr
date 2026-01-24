@@ -16,7 +16,7 @@ import { PortalAudioManager } from "./components/PortalAudioManager";
  *
  * Resolution: 1080x1920 (9:16 portrait)
  *
- * Scene Structure (90 seconds total @ 30fps = 2700 frames):
+ * Scene Structure (108 seconds total @ 30fps = 3240 frames):
  * 1. Logo Reveal (6s) - Frames 0-180
  * 2. Portal Title (4s) - Frames 180-300
  * 3. Dashboard Overview (12s) - Frames 300-660
@@ -25,7 +25,7 @@ import { PortalAudioManager } from "./components/PortalAudioManager";
  * 6. Top Meetups (10s) - Frames 1380-1680
  * 7. Activity Feed (10s) - Frames 1680-1980
  * 8. Call to Action (12s) - Frames 1980-2340
- * 9. Outro (12s) - Frames 2340-2700
+ * 9. Outro - Cinematic Logo Matrix (30s) - Frames 2340-3240
  */
 export const PortalPresentationMobile: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -40,7 +40,7 @@ export const PortalPresentationMobile: React.FC = () => {
     topMeetups: 10,
     activityFeed: 10,
     callToAction: 12,
-    outro: 12,
+    outro: 30, // Extended for cinematic logo matrix animation
   };
 
   // Calculate frame positions for each scene

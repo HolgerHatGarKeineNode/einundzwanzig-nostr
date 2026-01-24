@@ -33,7 +33,7 @@ export const PortalTitleSceneMobile: React.FC = () => {
   const titleLine1 = "EINUNDZWANZIG";
   const titleLine2 = "PORTAL";
   const fullTitle = titleLine1 + " " + titleLine2;
-  const subtitleText = "Das Herzstück der deutschsprachigen Bitcoin-Community";
+  const subtitleText = "Das Herzstück der Bitcoin-Community";
 
   // Calculate typed characters for title
   const typedTitleChars = Math.min(

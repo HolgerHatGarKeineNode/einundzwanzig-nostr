@@ -192,7 +192,7 @@ export const CountryStatsSceneMobile: React.FC = () => {
                 transform: `translateY(${subtitleY}px)`,
               }}
             >
-              Die deutschsprachige Bitcoin-Community wächst
+              Die Bitcoin-Community wächst
             </p>
           </div>
 

@@ -63,7 +63,7 @@ describe("RemotionRoot", () => {
     expect(composition?.getAttribute("data-width")).toBe("1920");
     expect(composition?.getAttribute("data-height")).toBe("1080");
     expect(composition?.getAttribute("data-fps")).toBe("30");
-    expect(composition?.getAttribute("data-duration")).toBe("2700"); // 90 * 30
+    expect(composition?.getAttribute("data-duration")).toBe("3240"); // 108 * 30
   });
 
   it("renders PortalPresentationMobile composition in Portal folder", () => {
@@ -76,7 +76,7 @@ describe("RemotionRoot", () => {
     expect(composition?.getAttribute("data-width")).toBe("1080");
     expect(composition?.getAttribute("data-height")).toBe("1920");
     expect(composition?.getAttribute("data-fps")).toBe("30");
-    expect(composition?.getAttribute("data-duration")).toBe("2700"); // 90 * 30
+    expect(composition?.getAttribute("data-duration")).toBe("3240"); // 108 * 30
   });
 
   it("renders NIP-05-Tutorial folder", () => {

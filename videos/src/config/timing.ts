@@ -208,7 +208,7 @@ export const GLOW_CONFIG = {
 
 /**
  * Scene duration constants matching PortalPresentation.tsx.
- * Total: 90 seconds = 2700 frames @ 30fps
+ * Total: 108 seconds = 3240 frames @ 30fps
  */
 export const SCENE_DURATIONS = {
   LOGO_REVEAL: 6,
@@ -219,7 +219,7 @@ export const SCENE_DURATIONS = {
   TOP_MEETUPS: 10,
   ACTIVITY_FEED: 10,
   CALL_TO_ACTION: 12,
-  OUTRO: 12,
+  OUTRO: 30, // Extended for cinematic logo matrix animation
 } as const;
 
 // ============================================================================

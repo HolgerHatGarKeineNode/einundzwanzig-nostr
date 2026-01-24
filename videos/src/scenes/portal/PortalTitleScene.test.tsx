@@ -114,7 +114,7 @@ describe("PortalTitleScene", () => {
     const subtitle = container.querySelector("p");
     expect(subtitle).toBeInTheDocument();
     expect(subtitle).toHaveTextContent(
-      "Das Herzstück der deutschsprachigen Bitcoin-Community"
+      "Das Herzstück der Bitcoin-Community"
     );
     expect(subtitle).toHaveClass("text-zinc-300");
   });

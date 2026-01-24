@@ -20,6 +20,7 @@ vi.mock("remotion", () => ({
     return outMin + progress * (outMax - outMin);
   }),
   spring: vi.fn(() => 1),
+  random: vi.fn((seed: string) => 0.5),
   AbsoluteFill: vi.fn(({ children, className, style }) => (
     <div data-testid="absolute-fill" className={className} style={style}>
       {children}
@@ -64,25 +65,9 @@ vi.mock("../../components/DashboardSidebar", () => ({
   )),
 }));
 
-// Mock StatsCounter component
-vi.mock("../../components/StatsCounter", () => ({
-  StatsCounter: vi.fn(({ targetNumber, delay, label, fontSize, color }) => (
-    <div
-      data-testid="stats-counter"
-      data-target={targetNumber}
-      data-delay={delay}
-      data-label={label}
-      data-font-size={fontSize}
-      data-color={color}
-    >
-      {targetNumber}
-    </div>
-  )),
-}));
-
 // Mock SparklineChart component
 vi.mock("../../components/SparklineChart", () => ({
-  SparklineChart: vi.fn(({ data, width, height, delay, showFill }) => (
+  SparklineChart: vi.fn(({ data, width, height, delay, showFill, strokeColor }) => (
     <div
       data-testid="sparkline-chart"
       data-points={data.length}
@@ -90,6 +75,7 @@ vi.mock("../../components/SparklineChart", () => ({
       data-height={height}
       data-delay={delay}
       data-show-fill={showFill}
+      data-stroke-color={strokeColor}
     >
       SparklineChart
     </div>
@@ -131,7 +117,6 @@ describe("DashboardOverviewScene", () => {
     const { container } = render(<DashboardOverviewScene />);
     const absoluteFill = container.querySelector('[data-testid="absolute-fill"]');
     expect(absoluteFill).toBeInTheDocument();
-    expect(absoluteFill).toHaveClass("bg-zinc-900");
     expect(absoluteFill).toHaveClass("overflow-hidden");
   });
 
@@ -148,95 +133,91 @@ describe("DashboardOverviewScene", () => {
     const { container } = render(<DashboardOverviewScene />);
     const sidebar = container.querySelector('[data-testid="dashboard-sidebar"]');
     expect(sidebar).toBeInTheDocument();
-    expect(sidebar).toHaveAttribute("data-width", "280");
-    expect(sidebar).toHaveAttribute("data-height", "1080");
+    expect(sidebar).toHaveAttribute("data-width", "220");
     expect(sidebar).toHaveAttribute("data-delay", "0");
     // Should have navigation items
     expect(parseInt(sidebar?.getAttribute("data-nav-items") || "0")).toBeGreaterThan(0);
   });
 
-  it("renders the Dashboard header", () => {
+  it("renders the 'Meine nächsten Meetup Termine' section", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const header = container.querySelector("h1");
-    expect(header).toBeInTheDocument();
-    expect(header).toHaveTextContent("Dashboard");
-    expect(header).toHaveClass("text-5xl");
-    expect(header).toHaveClass("font-bold");
-    expect(header).toHaveClass("text-white");
-  });
-
-  it("renders the welcome subtitle", () => {
-    const { container } = render(<DashboardOverviewScene />);
-    const subtitle = container.querySelector("p");
-    expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("Willkommen im Einundzwanzig Portal");
-    expect(subtitle).toHaveClass("text-zinc-400");
-  });
-
-  it("renders three StatsCounter components", () => {
-    const { container } = render(<DashboardOverviewScene />);
-    const statsCounters = container.querySelectorAll('[data-testid="stats-counter"]');
-    expect(statsCounters.length).toBe(3);
-  });
-
-  it("renders StatsCounter for Meetups with target 204", () => {
-    const { container } = render(<DashboardOverviewScene />);
-    const statsCounters = container.querySelectorAll('[data-testid="stats-counter"]');
-    const meetupsCounter = Array.from(statsCounters).find(
-      (counter) => counter.getAttribute("data-target") === "204"
+    const sectionHeaders = container.querySelectorAll("h3");
+    const terminHeader = Array.from(sectionHeaders).find(
+      (h3) => h3.textContent === "Meine nächsten Meetup Termine"
     );
-    expect(meetupsCounter).toBeInTheDocument();
-    expect(meetupsCounter).toHaveAttribute("data-label", "Aktive Gruppen");
+    expect(terminHeader).toBeInTheDocument();
   });
 
-  it("renders StatsCounter for Users with target 1247", () => {
+  it("renders the upcoming Kempten meetup", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const statsCounters = container.querySelectorAll('[data-testid="stats-counter"]');
-    const usersCounter = Array.from(statsCounters).find(
-      (counter) => counter.getAttribute("data-target") === "1247"
-    );
-    expect(usersCounter).toBeInTheDocument();
-    expect(usersCounter).toHaveAttribute("data-label", "Registrierte Nutzer");
+    expect(container.textContent).toContain("Einundzwanzig Kempten");
+    expect(container.textContent).toContain("06.02.2026 19:00 (CET)");
   });
 
-  it("renders StatsCounter for Events with target 89", () => {
+  it("renders the 'Top Länder' section with countries", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const statsCounters = container.querySelectorAll('[data-testid="stats-counter"]');
-    const eventsCounter = Array.from(statsCounters).find(
-      (counter) => counter.getAttribute("data-target") === "89"
+    const sectionHeaders = container.querySelectorAll("h3");
+    const countryHeader = Array.from(sectionHeaders).find(
+      (h3) => h3.textContent === "Top Länder"
     );
-    expect(eventsCounter).toBeInTheDocument();
-    expect(eventsCounter).toHaveAttribute("data-label", "Diese Woche");
+    expect(countryHeader).toBeInTheDocument();
+
+    // Check for country names
+    expect(container.textContent).toContain("Germany");
+    expect(container.textContent).toContain("Austria");
+    expect(container.textContent).toContain("Switzerland");
   });
 
-  it("renders three SparklineChart components for trends", () => {
+  it("renders the 'Top Meetups' section", () => {
+    const { container } = render(<DashboardOverviewScene />);
+    const sectionHeaders = container.querySelectorAll("h3");
+    const meetupHeader = Array.from(sectionHeaders).find(
+      (h3) => h3.textContent === "Top Meetups"
+    );
+    expect(meetupHeader).toBeInTheDocument();
+
+    // Check for meetup names
+    expect(container.textContent).toContain("Einundzwanzig Saarland");
+    expect(container.textContent).toContain("Einundzwanzig Frankfurt am Main");
+  });
+
+  it("renders the 'Meine Meetups' section", () => {
+    const { container } = render(<DashboardOverviewScene />);
+    const sectionHeaders = container.querySelectorAll("h3");
+    const myMeetupsHeader = Array.from(sectionHeaders).find(
+      (h3) => h3.textContent === "Meine Meetups"
+    );
+    expect(myMeetupsHeader).toBeInTheDocument();
+  });
+
+  it("renders SparklineChart components for country and meetup trends", () => {
     const { container } = render(<DashboardOverviewScene />);
     const sparklines = container.querySelectorAll('[data-testid="sparkline-chart"]');
-    expect(sparklines.length).toBe(3);
+    // 5 countries + 5 meetups = 10 sparklines
+    expect(sparklines.length).toBe(10);
   });
 
-  it("renders SparklineCharts with fill enabled", () => {
+  it("renders SparklineCharts with green stroke color", () => {
     const { container } = render(<DashboardOverviewScene />);
     const sparklines = container.querySelectorAll('[data-testid="sparkline-chart"]');
     sparklines.forEach((sparkline) => {
-      expect(sparkline).toHaveAttribute("data-show-fill", "true");
+      expect(sparkline).toHaveAttribute("data-stroke-color", "#22c55e");
     });
   });
 
-  it("renders ActivityItem components for recent activities", () => {
+  it("renders ActivityItem components for activities", () => {
     const { container } = render(<DashboardOverviewScene />);
     const activityItems = container.querySelectorAll('[data-testid="activity-item"]');
-    expect(activityItems.length).toBe(3);
+    expect(activityItems.length).toBe(7);
   });
 
-  it("renders ActivityItem for EINUNDZWANZIG Kempten", () => {
+  it("renders the 'Aktivitäten' section", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const activityItems = container.querySelectorAll('[data-testid="activity-item"]');
-    const kemptenActivity = Array.from(activityItems).find(
-      (item) => item.getAttribute("data-event-name") === "EINUNDZWANZIG Kempten"
+    const sectionHeaders = container.querySelectorAll("h3");
+    const activityHeader = Array.from(sectionHeaders).find(
+      (h3) => h3.textContent === "Aktivitäten"
     );
-    expect(kemptenActivity).toBeInTheDocument();
-    expect(kemptenActivity).toHaveAttribute("data-timestamp", "vor 13 Stunden");
+    expect(activityHeader).toBeInTheDocument();
   });
 
   it("renders audio sequences for sound effects", () => {
@@ -269,38 +250,17 @@ describe("DashboardOverviewScene", () => {
     expect(vignettes.length).toBeGreaterThan(0);
   });
 
-  it("renders the Letzte Aktivitäten section header", () => {
+  it("renders country flags", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const sectionHeaders = container.querySelectorAll("h3");
-    const activityHeader = Array.from(sectionHeaders).find(
-      (h3) => h3.textContent === "Letzte Aktivitäten"
-    );
-    expect(activityHeader).toBeInTheDocument();
+    expect(container.textContent).toContain("🇩🇪");
+    expect(container.textContent).toContain("🇦🇹");
+    expect(container.textContent).toContain("🇨🇭");
   });
 
-  it("renders the Schnellübersicht section header", () => {
+  it("renders action buttons for user meetups", () => {
     const { container } = render(<DashboardOverviewScene />);
-    const sectionHeaders = container.querySelectorAll("h3");
-    const quickStatsHeader = Array.from(sectionHeaders).find(
-      (h3) => h3.textContent === "Schnellübersicht"
-    );
-    expect(quickStatsHeader).toBeInTheDocument();
-  });
-
-  it("renders quick stats labels", () => {
-    const { container } = render(<DashboardOverviewScene />);
-    expect(container.textContent).toContain("Länder");
-    expect(container.textContent).toContain("Neue diese Woche");
-    expect(container.textContent).toContain("Aktive Nutzer");
-  });
-
-  it("renders card section headers for stats", () => {
-    const { container } = render(<DashboardOverviewScene />);
-    const sectionHeaders = container.querySelectorAll("h3");
-    const headerTexts = Array.from(sectionHeaders).map((h3) => h3.textContent);
-    expect(headerTexts).toContain("Meetups");
-    expect(headerTexts).toContain("Benutzer");
-    expect(headerTexts).toContain("Events");
+    expect(container.textContent).toContain("Neues Event erstellen");
+    expect(container.textContent).toContain("Bearbeiten");
   });
 
   it("applies 3D perspective transform styles", () => {
@@ -308,5 +268,12 @@ describe("DashboardOverviewScene", () => {
     // Look for perspective transform in style attributes
     const elements = container.querySelectorAll('[style*="perspective"]');
     expect(elements.length).toBeGreaterThan(0);
+  });
+
+  it("renders film grain overlay", () => {
+    const { container } = render(<DashboardOverviewScene />);
+    // Film grain uses mixBlendMode: overlay
+    const grainElement = container.querySelector('[style*="overlay"]');
+    expect(grainElement).toBeInTheDocument();
   });
 });

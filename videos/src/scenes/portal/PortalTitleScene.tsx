@@ -31,7 +31,7 @@ export const PortalTitleScene: React.FC = () => {
 
   // Main title text
   const titleText = "EINUNDZWANZIG PORTAL";
-  const subtitleText = "Das Herzstück der deutschsprachigen Bitcoin-Community";
+  const subtitleText = "Das Herzstück der Bitcoin-Community";
 
   // Calculate typed characters for title using centralized timing
   const typedTitleChars = Math.min(

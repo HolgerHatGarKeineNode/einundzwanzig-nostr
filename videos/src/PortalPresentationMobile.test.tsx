@@ -10,7 +10,7 @@ vi.mock("remotion", () => ({
     fps: 30,
     width: 1080,
     height: 1920,
-    durationInFrames: 2700,
+    durationInFrames: 3240,
   })),
   interpolate: vi.fn((value, inputRange, outputRange, options) => {
     const [inMin, inMax] = inputRange;
@@ -246,16 +246,16 @@ describe("PortalPresentationMobile", () => {
     expect(scene).toBeInTheDocument();
   });
 
-  it("renders sequences with correct durations totaling 90 seconds", () => {
+  it("renders sequences with correct durations totaling 108 seconds", () => {
     const { container } = render(<PortalPresentationMobile />);
     const sequences = container.querySelectorAll('[data-testid="sequence"]');
     const durations = Array.from(sequences).map((seq) =>
       parseInt(seq.getAttribute("data-duration") || "0", 10)
     );
 
-    // 90 seconds * 30fps = 2700 frames total
+    // 108 seconds * 30fps = 3240 frames total
     const totalDuration = durations.reduce((sum, d) => sum + d, 0);
-    expect(totalDuration).toBe(2700);
+    expect(totalDuration).toBe(3240);
   });
 
   it("renders Scene 1 (Logo Reveal) with 6 second duration (180 frames)", () => {
@@ -266,11 +266,11 @@ describe("PortalPresentationMobile", () => {
     expect(firstSequence?.getAttribute("data-from")).toBe("0");
   });
 
-  it("renders Scene 9 (Outro) with 12 second duration (360 frames)", () => {
+  it("renders Scene 9 (Outro) with 30 second duration (900 frames)", () => {
     const { container } = render(<PortalPresentationMobile />);
     const sequences = container.querySelectorAll('[data-testid="sequence"]');
     const lastSequence = sequences[sequences.length - 1];
-    expect(lastSequence?.getAttribute("data-duration")).toBe("360");
+    expect(lastSequence?.getAttribute("data-duration")).toBe("900");
   });
 
   it("applies Inconsolata font family to the composition", () => {

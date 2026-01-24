@@ -178,10 +178,10 @@ describe("Timing Configuration", () => {
       expect(SCENE_DURATIONS.TOP_MEETUPS).toBe(10);
       expect(SCENE_DURATIONS.ACTIVITY_FEED).toBe(10);
       expect(SCENE_DURATIONS.CALL_TO_ACTION).toBe(12);
-      expect(SCENE_DURATIONS.OUTRO).toBe(12);
+      expect(SCENE_DURATIONS.OUTRO).toBe(30);
     });
 
-    it("total duration equals 90 seconds", () => {
+    it("total duration equals 108 seconds", () => {
       const totalDuration =
         SCENE_DURATIONS.LOGO_REVEAL +
         SCENE_DURATIONS.PORTAL_TITLE +
@@ -192,7 +192,7 @@ describe("Timing Configuration", () => {
         SCENE_DURATIONS.ACTIVITY_FEED +
         SCENE_DURATIONS.CALL_TO_ACTION +
         SCENE_DURATIONS.OUTRO;
-      expect(totalDuration).toBe(90);
+      expect(totalDuration).toBe(108);
     });
   });
 

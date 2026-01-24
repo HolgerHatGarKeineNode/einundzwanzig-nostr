@@ -83,10 +83,6 @@ export const PortalIntroSceneMobile: React.FC = () => {
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
-      {/* Audio: logo-whoosh at start */}
-      <Sequence durationInFrames={Math.floor(2 * fps)}>
-        <Audio src={staticFile("sfx/logo-whoosh.mp3")} volume={0.7} />
-      </Sequence>
 
       {/* Audio: logo-reveal when logo appears */}
       <Sequence from={logoEntranceDelay} durationInFrames={Math.floor(2 * fps)}>

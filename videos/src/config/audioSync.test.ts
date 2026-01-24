@@ -33,11 +33,11 @@ describe("Audio Sync Configuration Constants", () => {
   });
 
   it("defines correct total duration in frames", () => {
-    expect(TOTAL_DURATION_FRAMES).toBe(2700);
+    expect(TOTAL_DURATION_FRAMES).toBe(3240);
   });
 
   it("defines correct total duration in seconds", () => {
-    expect(TOTAL_DURATION_SECONDS).toBe(90);
+    expect(TOTAL_DURATION_SECONDS).toBe(108);
   });
 
   it("duration frames equals seconds times FPS", () => {
@@ -408,7 +408,7 @@ describe("calculateBackgroundMusicVolume", () => {
 
   describe("fade-out phase", () => {
     it("starts fade-out at correct frame", () => {
-      const fadeOutStart = TOTAL_DURATION_FRAMES - 90; // 2610
+      const fadeOutStart = TOTAL_DURATION_FRAMES - 90; // 3150
       const volumeJustBefore = calculateBackgroundMusicVolume(fadeOutStart - 1);
       const volumeAtStart = calculateBackgroundMusicVolume(fadeOutStart);
       const volumeAfterStart = calculateBackgroundMusicVolume(fadeOutStart + 1);
@@ -419,14 +419,14 @@ describe("calculateBackgroundMusicVolume", () => {
     });
 
     it("returns half volume midway through fade-out", () => {
-      const fadeOutStart = 2610;
+      const fadeOutStart = 3150; // 3240 - 90
       const midPoint = fadeOutStart + 45; // 45 frames into 90-frame fade
       const volume = calculateBackgroundMusicVolume(midPoint);
       expect(volume).toBeCloseTo(0.125, 4);
     });
 
     it("returns 0 at final frame", () => {
-      const volume = calculateBackgroundMusicVolume(2700);
+      const volume = calculateBackgroundMusicVolume(3240);
       expect(volume).toBe(0);
     });
   });

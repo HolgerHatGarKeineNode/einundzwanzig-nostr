@@ -12,7 +12,7 @@ vi.mock("remotion", () => ({
     fps: 30,
     width: 1920,
     height: 1080,
-    durationInFrames: 2700, // 90 seconds at 30fps
+    durationInFrames: 3240, // 108 seconds at 30fps
   })),
   interpolate: vi.fn((value, inputRange, outputRange, options) => {
     const [inMin, inMax] = inputRange;
@@ -166,7 +166,7 @@ describe("PortalAudioManager fade-out behavior", () => {
   });
 
   it("maintains base volume before fade-out starts", () => {
-    // Frame 2600 is before fade-out (starts at 2700 - 90 = 2610)
+    // Frame 2600 is before fade-out (starts at 3240 - 90 = 3150)
     mockCurrentFrame = 2600;
 
     const { container } = render(<PortalAudioManager />);
@@ -180,8 +180,8 @@ describe("PortalAudioManager fade-out behavior", () => {
   });
 
   it("has reduced volume during fade-out", () => {
-    // Frame 2655 is midway through fade-out (2610 + 45)
-    mockCurrentFrame = 2655;
+    // Frame 3195 is midway through fade-out (3150 + 45)
+    mockCurrentFrame = 3195;
 
     const { container } = render(<PortalAudioManager />);
     const audioElement = container.querySelector('[data-testid="audio"]');
@@ -195,7 +195,7 @@ describe("PortalAudioManager fade-out behavior", () => {
   });
 
   it("reaches zero volume at the final frame", () => {
-    mockCurrentFrame = 2700;
+    mockCurrentFrame = 3240;
 
     const { container } = render(<PortalAudioManager />);
     const audioElement = container.querySelector('[data-testid="audio"]');

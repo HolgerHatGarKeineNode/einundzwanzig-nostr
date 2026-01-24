@@ -7,70 +7,76 @@ import {
   Img,
   staticFile,
   Sequence,
+  Easing,
 } from "remotion";
 import { Audio } from "@remotion/media";
 import { BitcoinEffect } from "../../../components/BitcoinEffect";
+import { LogoMatrix3DMobile } from "../../../components/LogoMatrix3DMobile";
 
 // Spring configurations
 const SMOOTH = { damping: 200 };
-const SNAPPY = { damping: 15, stiffness: 80 };
 
 /**
- * PortalOutroSceneMobile - Scene 9: Outro for Mobile (12 seconds / 360 frames @ 30fps)
+ * PortalOutroSceneMobile - Scene 9: Cinematic Logo Matrix Outro for Mobile
+ * (30 seconds / 900 frames @ 30fps)
  *
  * Mobile layout adaptations:
- * - Smaller horizontal logo width (450px vs 600px)
- * - Adjusted text sizes for portrait orientation
- * - Smaller glow effects
+ * - Portrait-optimized 3D logo matrix
+ * - Smaller logo cards and text
+ * - Adjusted camera movements for vertical format
  */
 export const PortalOutroSceneMobile: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const durationInFrames = 12 * fps; // 360 frames
+  const durationInFrames = 30 * fps; // 900 frames
 
-  // Background fade-in from black (0-30 frames)
-  const backgroundSpring = spring({
-    frame,
-    fps,
-    config: SMOOTH,
-  });
-  const backgroundOpacity = interpolate(backgroundSpring, [0, 1], [0, 0.3]);
+  // Phase timing (in seconds)
+  const PHASE = {
+    MATRIX: { start: 0, end: 26 },
+    FINAL_LOGO: { start: 24, end: 30 },
+    FADE_OUT: { start: 28, end: 30 },
+  };
 
-  // Logo entrance animation (delayed 1 second)
-  const logoDelay = Math.floor(1 * fps);
+  // Background ambient glow
+  const backgroundGlow = interpolate(
+    Math.sin(frame * 0.04),
+    [-1, 1],
+    [0.1, 0.25]
+  );
+
+  // Final logo entrance
+  const logoEntranceFrame = PHASE.FINAL_LOGO.start * fps;
   const logoSpring = spring({
-    frame: frame - logoDelay,
+    frame: frame - logoEntranceFrame,
     fps,
-    config: SNAPPY,
+    config: { damping: 12, stiffness: 60 },
   });
-  const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1]);
-  const logoScale = interpolate(logoSpring, [0, 1], [0.8, 1]);
-  const logoY = interpolate(logoSpring, [0, 1], [30, 0]);
+  const logoOpacity = interpolate(
+    frame,
+    [logoEntranceFrame, logoEntranceFrame + fps],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+  );
+  const logoScale = interpolate(logoSpring, [0, 1], [0.3, 1]);
 
-  // Logo glow pulse effect
+  // Logo glow pulse
   const glowIntensity = interpolate(
-    Math.sin((frame - logoDelay) * 0.06),
+    Math.sin((frame - logoEntranceFrame) * 0.06),
     [-1, 1],
-    [0.4, 0.9]
-  );
-  const glowScale = interpolate(
-    Math.sin((frame - logoDelay) * 0.04),
-    [-1, 1],
-    [1.0, 1.2]
+    [0.5, 1.0]
   );
 
-  // Text entrance (delayed 2 seconds)
-  const textDelay = Math.floor(2 * fps);
+  // Text entrances
+  const textDelay = logoEntranceFrame + fps;
   const textSpring = spring({
     frame: frame - textDelay,
     fps,
     config: SMOOTH,
   });
   const textOpacity = interpolate(textSpring, [0, 1], [0, 1]);
-  const textY = interpolate(textSpring, [0, 1], [20, 0]);
+  const textY = interpolate(textSpring, [0, 1], [25, 0]);
 
-  // Subtitle entrance (delayed 2.5 seconds)
-  const subtitleDelay = Math.floor(2.5 * fps);
+  const subtitleDelay = textDelay + Math.floor(0.5 * fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
@@ -78,134 +84,189 @@ export const PortalOutroSceneMobile: React.FC = () => {
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
 
-  // Final fade out in last 2 seconds (frames 300-360)
-  const fadeOutStart = durationInFrames - 2 * fps;
+  // Final fade out
+  const fadeOutStart = PHASE.FADE_OUT.start * fps;
   const finalFadeOpacity = interpolate(
     frame,
     [fadeOutStart, durationInFrames],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) }
+  );
+
+  // Matrix visibility
+  const matrixOpacity = interpolate(
+    frame,
+    [PHASE.MATRIX.end * fps - fps * 2, PHASE.MATRIX.end * fps],
     [1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
-      {/* Audio: final-chime when logo appears */}
-      <Sequence from={logoDelay} durationInFrames={Math.floor(3 * fps)}>
-        <Audio src={staticFile("sfx/final-chime.mp3")} volume={0.6} />
+      {/* Audio */}
+      <Sequence from={Math.floor(4 * fps)} durationInFrames={Math.floor(2 * fps)}>
+        <Audio src={staticFile("sfx/logo-whoosh.mp3")} volume={0.3} />
+      </Sequence>
+      <Sequence from={logoEntranceFrame} durationInFrames={Math.floor(3 * fps)}>
+        <Audio src={staticFile("sfx/final-chime.mp3")} volume={0.7} />
       </Sequence>
 
       {/* Content wrapper with final fade */}
       <div style={{ opacity: finalFadeOpacity }}>
-        {/* Wallpaper Background */}
+        {/* Deep space background */}
         <div
           className="absolute inset-0"
           style={{
-            transform: "scale(1.05)",
-            transformOrigin: "center center",
-          }}
-        >
-          <Img
-            src={staticFile("einundzwanzig-wallpaper.png")}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ opacity: backgroundOpacity }}
-          />
-        </div>
-
-        {/* Dark gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at center, rgba(24, 24, 27, 0.6) 0%, rgba(24, 24, 27, 0.9) 70%, rgba(24, 24, 27, 0.98) 100%)",
+            background: `
+              radial-gradient(ellipse at 50% 20%, rgba(247, 147, 26, ${backgroundGlow * 0.4}) 0%, transparent 40%),
+              radial-gradient(ellipse at 50% 80%, rgba(247, 147, 26, ${backgroundGlow * 0.3}) 0%, transparent 35%),
+              radial-gradient(ellipse at 50% 50%, rgba(24, 24, 27, 1) 0%, rgba(0, 0, 0, 1) 100%)
+            `,
           }}
         />
+
+        {/* Wallpaper subtle background */}
+        <Img
+          src={staticFile("einundzwanzig-wallpaper.png")}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: 0.06 }}
+        />
+
+        {/* 3D Logo Matrix */}
+        <div style={{ opacity: matrixOpacity }}>
+          <LogoMatrix3DMobile />
+        </div>
 
         {/* Bitcoin particle effect */}
         <BitcoinEffect />
 
-        {/* Content container */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
-          {/* Outer glow effect behind logo - smaller for mobile */}
+        {/* Final Logo Reveal */}
+        {frame >= logoEntranceFrame && (
           <div
-            className="absolute"
-            style={{
-              width: 600,
-              height: 350,
-              background:
-                "radial-gradient(ellipse, rgba(247, 147, 26, 0.35) 0%, transparent 60%)",
-              opacity: glowIntensity * logoSpring,
-              transform: `scale(${glowScale * logoScale})`,
-              filter: "blur(50px)",
-            }}
-          />
-
-          {/* Horizontal Logo - smaller for mobile */}
-          <div
-            style={{
-              opacity: logoOpacity,
-              transform: `scale(${logoScale}) translateY(${logoY}px)`,
-            }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-6"
+            style={{ opacity: logoOpacity }}
           >
+            {/* Massive outer glow */}
+            <div
+              className="absolute"
+              style={{
+                width: 700,
+                height: 400,
+                background: `radial-gradient(ellipse, rgba(247, 147, 26, ${0.35 * glowIntensity}) 0%, transparent 60%)`,
+                filter: "blur(60px)",
+                transform: `scale(${logoScale})`,
+              }}
+            />
+
+            {/* Secondary glow ring */}
+            <div
+              className="absolute"
+              style={{
+                width: 500,
+                height: 280,
+                background: `radial-gradient(ellipse, rgba(247, 147, 26, ${0.5 * glowIntensity}) 0%, transparent 50%)`,
+                filter: "blur(35px)",
+                transform: `scale(${logoScale})`,
+              }}
+            />
+
+            {/* Main Logo - sized for mobile */}
             <div
               style={{
-                filter: `drop-shadow(0 0 ${35 * glowIntensity}px rgba(247, 147, 26, 0.5))`,
+                transform: `scale(${logoScale})`,
               }}
             >
-              <Img
-                src={staticFile("einundzwanzig-horizontal-inverted.svg")}
+              <div
                 style={{
-                  width: 450,
-                  height: "auto",
+                  filter: `
+                    drop-shadow(0 0 ${50 * glowIntensity}px rgba(247, 147, 26, 0.6))
+                    drop-shadow(0 0 ${100 * glowIntensity}px rgba(247, 147, 26, 0.3))
+                  `,
                 }}
-              />
+              >
+                <Img
+                  src={staticFile("einundzwanzig-horizontal-inverted.svg")}
+                  style={{
+                    width: 500,
+                    height: "auto",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* EINUNDZWANZIG text */}
+            <div
+              className="mt-10 text-center"
+              style={{
+                opacity: textOpacity,
+                transform: `translateY(${textY}px)`,
+              }}
+            >
+              <h1
+                className="text-5xl font-bold text-white tracking-[0.2em]"
+                style={{
+                  textShadow: `
+                    0 0 ${35 * glowIntensity}px rgba(247, 147, 26, 0.5),
+                    0 0 ${70 * glowIntensity}px rgba(247, 147, 26, 0.3),
+                    0 3px 25px rgba(0, 0, 0, 0.7)
+                  `,
+                }}
+              >
+                EINUNDZWANZIG
+              </h1>
+            </div>
+
+            {/* Subtitle */}
+            <div
+              className="mt-6 text-center"
+              style={{ opacity: subtitleOpacity }}
+            >
+              <p
+                className="text-2xl text-orange-400 font-medium tracking-widest"
+                style={{
+                  textShadow: "0 0 18px rgba(247, 147, 26, 0.5)",
+                }}
+              >
+                Die Bitcoin-Community
+              </p>
+            </div>
+
+            {/* Community count badge */}
+            <div
+              className="mt-5"
+              style={{
+                opacity: subtitleOpacity,
+                transform: `scale(${subtitleSpring})`,
+              }}
+            >
+              <div
+                className="px-5 py-2 rounded-full"
+                style={{
+                  background: "rgba(247, 147, 26, 0.15)",
+                  border: "1px solid rgba(247, 147, 26, 0.4)",
+                }}
+              >
+                <span className="text-lg text-orange-300 font-medium">
+                  230+ Meetups weltweit
+                </span>
+              </div>
             </div>
           </div>
+        )}
 
-          {/* EINUNDZWANZIG text - smaller for mobile */}
-          <div
-            className="mt-10 text-center"
-            style={{
-              opacity: textOpacity,
-              transform: `translateY(${textY}px)`,
-            }}
-          >
-            <h1
-              className="text-4xl font-bold text-white tracking-widest"
-              style={{
-                textShadow: `0 0 ${25 * glowIntensity}px rgba(247, 147, 26, 0.4), 0 2px 20px rgba(0, 0, 0, 0.5)`,
-              }}
-            >
-              EINUNDZWANZIG
-            </h1>
-          </div>
-
-          {/* Subtitle - smaller for mobile */}
-          <div
-            className="mt-5 text-center"
-            style={{
-              opacity: subtitleOpacity,
-            }}
-          >
-            <p className="text-xl text-orange-500 font-medium tracking-wide">
-              Die deutschsprachige Bitcoin-Community
-            </p>
-          </div>
-        </div>
-
-        {/* Ambient glow at bottom */}
+        {/* Ambient bottom glow */}
         <div
-          className="absolute inset-x-0 bottom-0 h-48 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-64 pointer-events-none"
           style={{
-            background:
-              "linear-gradient(to top, rgba(247, 147, 26, 0.08) 0%, transparent 100%)",
+            background: `linear-gradient(to top, rgba(247, 147, 26, ${0.08 * glowIntensity}) 0%, transparent 100%)`,
           }}
         />
 
-        {/* Vignette overlay */}
+        {/* Heavy vignette */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            boxShadow: "inset 0 0 250px 100px rgba(0, 0, 0, 0.8)",
+            boxShadow: "inset 0 0 280px 100px rgba(0, 0, 0, 0.85)",
           }}
         />
       </div>

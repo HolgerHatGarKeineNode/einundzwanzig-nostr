@@ -116,10 +116,6 @@ export const CallToActionSceneMobile: React.FC = () => {
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
-      {/* Audio: success-fanfare */}
-      <Sequence from={titleDelay} durationInFrames={Math.floor(4 * fps)}>
-        <Audio src={staticFile("sfx/success-fanfare.mp3")} volume={0.6} />
-      </Sequence>
 
       {/* Audio: typing for URL */}
       <Sequence from={urlDelay} durationInFrames={Math.floor(1.5 * fps)}>
@@ -281,7 +277,7 @@ export const CallToActionSceneMobile: React.FC = () => {
               transform: `translateY(${subtitleY}px)`,
             }}
           >
-            Die deutschsprachige Bitcoin-Community wartet auf dich
+            Die Bitcoin-Community wartet auf dich
           </p>
         </div>
       </div>

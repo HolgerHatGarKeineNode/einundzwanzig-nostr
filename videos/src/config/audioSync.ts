@@ -72,10 +72,10 @@ export interface SceneAudioConfig {
 export const STANDARD_FPS = 30;
 
 /** Total composition duration in frames */
-export const TOTAL_DURATION_FRAMES = 2700;
+export const TOTAL_DURATION_FRAMES = 3240;
 
 /** Total composition duration in seconds */
-export const TOTAL_DURATION_SECONDS = 90;
+export const TOTAL_DURATION_SECONDS = 108;
 
 // ============================================================================
 // BACKGROUND MUSIC CONFIGURATION

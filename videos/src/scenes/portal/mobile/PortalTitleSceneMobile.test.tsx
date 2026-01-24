@@ -87,7 +87,7 @@ describe("PortalTitleSceneMobile", () => {
     const { container } = render(<PortalTitleSceneMobile />);
     const subtitle = container.querySelector("p");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("Das Herzstück der deutschsprachigen Bitcoin-Community");
+    expect(subtitle).toHaveTextContent("Das Herzstück der Bitcoin-Community");
     expect(subtitle).toHaveClass("text-xl");
     expect(subtitle).toHaveClass("text-zinc-300");
   });

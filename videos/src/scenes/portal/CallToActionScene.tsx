@@ -29,7 +29,6 @@ const PORTAL_URL = "portal.einundzwanzig.space";
  * 4. URL types out: `portal.einundzwanzig.space`
  * 5. URL pulses with orange glow
  * 6. EINUNDZWANZIG Logo appears center with glow
- * 7. Audio: success-fanfare
  */
 export const CallToActionScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -132,10 +131,6 @@ export const CallToActionScene: React.FC = () => {
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
-      {/* Audio: success-fanfare */}
-      <Sequence from={titleDelay} durationInFrames={Math.floor(4 * fps)}>
-        <Audio src={staticFile("sfx/success-fanfare.mp3")} volume={0.6} />
-      </Sequence>
 
       {/* Audio: typing for URL */}
       <Sequence from={urlDelay} durationInFrames={Math.floor(1.5 * fps)}>
@@ -297,7 +292,7 @@ export const CallToActionScene: React.FC = () => {
               transform: `translateY(${subtitleY}px)`,
             }}
           >
-            Die deutschsprachige Bitcoin-Community wartet auf dich
+            Die Bitcoin-Community wartet auf dich
           </p>
         </div>
       </div>

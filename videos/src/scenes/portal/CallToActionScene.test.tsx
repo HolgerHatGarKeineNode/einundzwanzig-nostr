@@ -103,23 +103,7 @@ describe("CallToActionScene", () => {
 
   it("renders the subtitle text", () => {
     const { container } = render(<CallToActionScene />);
-    expect(container.textContent).toContain("Die deutschsprachige Bitcoin-Community wartet auf dich");
-  });
-
-  it("renders audio sequences for sound effects", () => {
-    const { container } = render(<CallToActionScene />);
-    const sequences = container.querySelectorAll('[data-testid="sequence"]');
-    // success-fanfare, typing, url-emphasis, logo-reveal = 4 sequences
-    expect(sequences.length).toBe(4);
-  });
-
-  it("includes success-fanfare audio", () => {
-    const { container } = render(<CallToActionScene />);
-    const audioElements = container.querySelectorAll('[data-testid="audio"]');
-    const fanfareAudio = Array.from(audioElements).find((audio) =>
-      audio.getAttribute("src")?.includes("success-fanfare.mp3")
-    );
-    expect(fanfareAudio).toBeInTheDocument();
+    expect(container.textContent).toContain("Die Bitcoin-Community wartet auf dich");
   });
 
   it("includes typing audio for URL animation", () => {

@@ -135,15 +135,6 @@ describe("PortalIntroScene", () => {
     expect(sequences.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("includes logo-whoosh audio", () => {
-    const { container } = render(<PortalIntroScene />);
-    const audioElements = container.querySelectorAll('[data-testid="audio"]');
-    const whooshAudio = Array.from(audioElements).find((audio) =>
-      audio.getAttribute("src")?.includes("logo-whoosh.mp3")
-    );
-    expect(whooshAudio).toBeInTheDocument();
-  });
-
   it("includes logo-reveal audio", () => {
     const { container } = render(<PortalIntroScene />);
     const audioElements = container.querySelectorAll('[data-testid="audio"]');

@@ -26,7 +26,6 @@ import {
  * 2. AnimatedLogo scales from 0 to 100% with spring animation
  * 3. Bitcoin particles fall in the background
  * 4. Glow effect pulses around the logo
- * 5. Audio: logo-whoosh at start, logo-reveal when logo appears
  */
 export const PortalIntroScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -99,10 +98,6 @@ export const PortalIntroScene: React.FC = () => {
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
-      {/* Audio: logo-whoosh at start */}
-      <Sequence durationInFrames={Math.floor(2 * fps)}>
-        <Audio src={staticFile("sfx/logo-whoosh.mp3")} volume={0.7} />
-      </Sequence>
 
       {/* Audio: logo-reveal when logo appears */}
       <Sequence from={logoEntranceDelay} durationInFrames={Math.floor(2 * fps)}>

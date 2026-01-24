@@ -106,15 +106,6 @@ describe("CallToActionSceneMobile", () => {
     expect(overlay).toBeInTheDocument();
   });
 
-  it("renders success-fanfare audio", () => {
-    const { container } = render(<CallToActionSceneMobile />);
-    const audioElements = container.querySelectorAll('[data-testid="audio"]');
-    const fanfareAudio = Array.from(audioElements).find((audio) =>
-      audio.getAttribute("src")?.includes("success-fanfare.mp3")
-    );
-    expect(fanfareAudio).toBeInTheDocument();
-  });
-
   it("renders typing audio for URL", () => {
     const { container } = render(<CallToActionSceneMobile />);
     const audioElements = container.querySelectorAll('[data-testid="audio"]');
@@ -128,7 +119,7 @@ describe("CallToActionSceneMobile", () => {
     const { container } = render(<CallToActionSceneMobile />);
     const subtitle = container.querySelector("p");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("Die deutschsprachige Bitcoin-Community wartet auf dich");
+    expect(subtitle).toHaveTextContent("Die Bitcoin-Community wartet auf dich");
     // Mobile uses text-base vs desktop text-xl
     expect(subtitle).toHaveClass("text-base");
   });

@@ -22,9 +22,9 @@ import {
 const TOP_MEETUPS_DATA = [
   {
     name: "EINUNDZWANZIG Saarland",
-    logoFile: "EinundzwanzigSaarbrucken.png",
+    logoFile: "EinundzwanzigSaarland.jpg",
     userCount: 26,
-    location: "Saarbrücken",
+    location: "Saarland",
     sparklineData: [5, 8, 10, 12, 14, 16, 18, 20, 22, 24, 25, 26],
     rank: 1,
   },

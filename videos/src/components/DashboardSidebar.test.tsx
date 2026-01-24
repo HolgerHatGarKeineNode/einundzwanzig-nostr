@@ -133,7 +133,6 @@ describe("DashboardSidebar", () => {
     const navItemsWithIndent: SidebarNavItem[] = [
       { label: "Settings", icon: "settings" },
       { label: "Language", icon: "language", indentLevel: 1 },
-      { label: "Interface", icon: "interface", indentLevel: 1 },
     ];
 
     const { container } = render(
@@ -145,7 +144,6 @@ describe("DashboardSidebar", () => {
 
     expect(container.textContent).toContain("Settings");
     expect(container.textContent).toContain("Language");
-    expect(container.textContent).toContain("Interface");
   });
 
   it("has flex column layout", () => {
@@ -271,8 +269,6 @@ describe("DashboardSidebar", () => {
       { label: "Events", icon: "events" },
       { label: "Settings", icon: "settings" },
       { label: "Language", icon: "language" },
-      { label: "Interface", icon: "interface" },
-      { label: "Provider", icon: "provider" },
     ];
 
     const { container } = render(

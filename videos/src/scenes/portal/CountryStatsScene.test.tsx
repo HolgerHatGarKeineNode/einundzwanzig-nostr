@@ -129,7 +129,7 @@ describe("CountryStatsScene", () => {
 
   it("renders the subtitle text", () => {
     const { container } = render(<CountryStatsScene />);
-    expect(container.textContent).toContain("Die deutschsprachige Bitcoin-Community wächst überall");
+    expect(container.textContent).toContain("Die Bitcoin-Community wächst überall");
   });
 
   it("renders all six countries", () => {

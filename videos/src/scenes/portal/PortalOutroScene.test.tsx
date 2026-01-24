@@ -5,7 +5,7 @@ import { PortalOutroScene } from "./PortalOutroScene";
 /* eslint-disable @remotion/warn-native-media-tag */
 // Mock Remotion hooks
 vi.mock("remotion", () => ({
-  useCurrentFrame: vi.fn(() => 90),
+  useCurrentFrame: vi.fn(() => 750), // Frame 25 seconds in (after logo appears at 24s)
   useVideoConfig: vi.fn(() => ({ fps: 30, width: 1920, height: 1080 })),
   interpolate: vi.fn((value, inputRange, outputRange, options) => {
     const [inMin, inMax] = inputRange;
@@ -37,6 +37,7 @@ vi.mock("remotion", () => ({
   Easing: {
     out: vi.fn((fn) => fn),
     cubic: vi.fn((t: number) => t),
+    inOut: vi.fn((fn) => fn),
   },
 }));
 
@@ -52,6 +53,13 @@ vi.mock("@remotion/media", () => ({
 vi.mock("../../components/BitcoinEffect", () => ({
   BitcoinEffect: vi.fn(() => (
     <div data-testid="bitcoin-effect">BitcoinEffect</div>
+  )),
+}));
+
+// Mock LogoMatrix3D component
+vi.mock("../../components/LogoMatrix3D", () => ({
+  LogoMatrix3D: vi.fn(() => (
+    <div data-testid="logo-matrix-3d">LogoMatrix3D</div>
   )),
 }));
 
@@ -102,30 +110,41 @@ describe("PortalOutroScene", () => {
     expect(bitcoinEffect).toBeInTheDocument();
   });
 
+  it("renders the LogoMatrix3D component", () => {
+    const { container } = render(<PortalOutroScene />);
+    const logoMatrix = container.querySelector('[data-testid="logo-matrix-3d"]');
+    expect(logoMatrix).toBeInTheDocument();
+  });
+
   it("renders the EINUNDZWANZIG title text", () => {
     const { container } = render(<PortalOutroScene />);
     const title = container.querySelector("h1");
     expect(title).toBeInTheDocument();
     expect(title).toHaveTextContent("EINUNDZWANZIG");
-    expect(title).toHaveClass("text-5xl");
+    expect(title).toHaveClass("text-6xl");
     expect(title).toHaveClass("font-bold");
     expect(title).toHaveClass("text-white");
-    expect(title).toHaveClass("tracking-widest");
   });
 
   it("renders the subtitle with orange color", () => {
     const { container } = render(<PortalOutroScene />);
-    const subtitle = container.querySelector("p");
+    const subtitle = container.querySelector("p.text-orange-400");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("Die deutschsprachige Bitcoin-Community");
-    expect(subtitle).toHaveClass("text-orange-500");
+    expect(subtitle).toHaveTextContent("Die Bitcoin-Community");
   });
 
-  it("renders audio sequence for final-chime sound effect", () => {
+  it("renders community count badge", () => {
+    const { container } = render(<PortalOutroScene />);
+    const badge = container.querySelector("span.text-orange-300");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent("230+ Meetups weltweit");
+  });
+
+  it("renders audio sequences for whoosh and final-chime sound effects", () => {
     const { container } = render(<PortalOutroScene />);
     const sequences = container.querySelectorAll('[data-testid="sequence"]');
-    // final-chime = 1 sequence
-    expect(sequences.length).toBe(1);
+    // logo-whoosh + final-chime = 2 sequences
+    expect(sequences.length).toBe(2);
   });
 
   it("includes final-chime audio", () => {
@@ -137,15 +156,24 @@ describe("PortalOutroScene", () => {
     expect(chimeAudio).toBeInTheDocument();
   });
 
+  it("includes logo-whoosh audio", () => {
+    const { container } = render(<PortalOutroScene />);
+    const audioElements = container.querySelectorAll('[data-testid="audio"]');
+    const whooshAudio = Array.from(audioElements).find((audio) =>
+      audio.getAttribute("src")?.includes("logo-whoosh.mp3")
+    );
+    expect(whooshAudio).toBeInTheDocument();
+  });
+
   it("renders vignette overlay with pointer-events-none", () => {
     const { container } = render(<PortalOutroScene />);
     const vignettes = container.querySelectorAll(".pointer-events-none");
     expect(vignettes.length).toBeGreaterThan(0);
   });
 
-  it("renders glow effect element with blur filter", () => {
+  it("renders glow effect elements with blur filter", () => {
     const { container } = render(<PortalOutroScene />);
-    const elements = container.querySelectorAll('[style*="blur(60px)"]');
+    const elements = container.querySelectorAll('[style*="blur"]');
     expect(elements.length).toBeGreaterThan(0);
   });
 
@@ -163,7 +191,7 @@ describe("PortalOutroScene", () => {
 
   it("renders ambient glow at bottom", () => {
     const { container } = render(<PortalOutroScene />);
-    const ambientGlow = container.querySelector(".h-64.pointer-events-none");
+    const ambientGlow = container.querySelector(".h-80.pointer-events-none");
     expect(ambientGlow).toBeInTheDocument();
   });
 });
@@ -185,7 +213,7 @@ describe("PortalOutroScene logo display", () => {
       img.getAttribute("src")?.includes("einundzwanzig-horizontal-inverted.svg")
     );
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveStyle({ width: "600px" });
+    expect(logo).toHaveStyle({ width: "700px" });
   });
 
   it("logo is centered in the container", () => {
@@ -213,16 +241,16 @@ describe("PortalOutroScene text styling", () => {
     expect(style).toContain("text-shadow");
   });
 
-  it("subtitle has tracking-wide class", () => {
+  it("subtitle has tracking-widest class", () => {
     const { container } = render(<PortalOutroScene />);
-    const subtitle = container.querySelector("p");
+    const subtitle = container.querySelector("p.text-orange-400");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveClass("tracking-wide");
+    expect(subtitle).toHaveClass("tracking-widest");
   });
 
   it("subtitle has font-medium class", () => {
     const { container } = render(<PortalOutroScene />);
-    const subtitle = container.querySelector("p");
+    const subtitle = container.querySelector("p.text-orange-400");
     expect(subtitle).toBeInTheDocument();
     expect(subtitle).toHaveClass("font-medium");
   });
@@ -238,7 +266,18 @@ describe("PortalOutroScene audio configuration", () => {
     vi.resetAllMocks();
   });
 
-  it("final-chime sequence starts at logo delay (1 second / 30 frames)", () => {
+  it("logo-whoosh sequence starts at 4 seconds (120 frames)", () => {
+    const { container } = render(<PortalOutroScene />);
+    const sequences = container.querySelectorAll('[data-testid="sequence"]');
+    const whooshSequence = Array.from(sequences).find((seq) => {
+      const audio = seq.querySelector('[data-testid="audio"]');
+      return audio?.getAttribute("src")?.includes("logo-whoosh.mp3");
+    });
+    expect(whooshSequence).toBeInTheDocument();
+    expect(whooshSequence).toHaveAttribute("data-from", "120");
+  });
+
+  it("final-chime sequence starts at logo entrance (24 seconds / 720 frames)", () => {
     const { container } = render(<PortalOutroScene />);
     const sequences = container.querySelectorAll('[data-testid="sequence"]');
     const chimeSequence = Array.from(sequences).find((seq) => {
@@ -246,7 +285,7 @@ describe("PortalOutroScene audio configuration", () => {
       return audio?.getAttribute("src")?.includes("final-chime.mp3");
     });
     expect(chimeSequence).toBeInTheDocument();
-    expect(chimeSequence).toHaveAttribute("data-from", "30");
+    expect(chimeSequence).toHaveAttribute("data-from", "720");
   });
 
   it("final-chime has correct duration (3 seconds / 90 frames)", () => {

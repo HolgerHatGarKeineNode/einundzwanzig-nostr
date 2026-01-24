@@ -5,7 +5,7 @@ import { PortalOutroSceneMobile } from "./PortalOutroSceneMobile";
 /* eslint-disable @remotion/warn-native-media-tag */
 // Mock Remotion hooks
 vi.mock("remotion", () => ({
-  useCurrentFrame: vi.fn(() => 60),
+  useCurrentFrame: vi.fn(() => 750), // Frame 25 seconds in (after logo appears at 24s)
   useVideoConfig: vi.fn(() => ({ fps: 30, width: 1080, height: 1920 })),
   interpolate: vi.fn((value, inputRange, outputRange, options) => {
     const [inMin, inMax] = inputRange;
@@ -34,6 +34,11 @@ vi.mock("remotion", () => ({
       {children}
     </div>
   )),
+  Easing: {
+    out: vi.fn((fn) => fn),
+    cubic: vi.fn((t: number) => t),
+    inOut: vi.fn((fn) => fn),
+  },
 }));
 
 // Mock @remotion/media
@@ -48,6 +53,13 @@ vi.mock("@remotion/media", () => ({
 vi.mock("../../../components/BitcoinEffect", () => ({
   BitcoinEffect: vi.fn(() => (
     <div data-testid="bitcoin-effect">BitcoinEffect</div>
+  )),
+}));
+
+// Mock LogoMatrix3DMobile component
+vi.mock("../../../components/LogoMatrix3DMobile", () => ({
+  LogoMatrix3DMobile: vi.fn(() => (
+    <div data-testid="logo-matrix-3d-mobile">LogoMatrix3DMobile</div>
   )),
 }));
 
@@ -80,8 +92,8 @@ describe("PortalOutroSceneMobile", () => {
       img.getAttribute("src")?.includes("einundzwanzig-horizontal-inverted.svg")
     );
     expect(logo).toBeInTheDocument();
-    // Mobile uses 450px width vs desktop 600px
-    expect(logo).toHaveStyle({ width: "450px" });
+    // Mobile uses 500px width vs desktop 700px
+    expect(logo).toHaveStyle({ width: "500px" });
   });
 
   it("renders EINUNDZWANZIG text with mobile-optimized size", () => {
@@ -89,23 +101,36 @@ describe("PortalOutroSceneMobile", () => {
     const title = container.querySelector("h1");
     expect(title).toBeInTheDocument();
     expect(title).toHaveTextContent("EINUNDZWANZIG");
-    // Mobile uses text-4xl vs desktop text-5xl
-    expect(title).toHaveClass("text-4xl");
+    // Mobile uses text-5xl vs desktop text-6xl
+    expect(title).toHaveClass("text-5xl");
   });
 
   it("renders subtitle with mobile-optimized size", () => {
     const { container } = render(<PortalOutroSceneMobile />);
-    const subtitle = container.querySelector("p");
+    const subtitle = container.querySelector("p.text-orange-400");
     expect(subtitle).toBeInTheDocument();
-    expect(subtitle).toHaveTextContent("Die deutschsprachige Bitcoin-Community");
-    // Mobile uses text-xl vs desktop text-2xl
-    expect(subtitle).toHaveClass("text-xl");
+    expect(subtitle).toHaveTextContent("Die Bitcoin-Community");
+    // Mobile uses text-2xl vs desktop text-3xl
+    expect(subtitle).toHaveClass("text-2xl");
+  });
+
+  it("renders community count badge", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const badge = container.querySelector("span.text-orange-300");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent("230+ Meetups weltweit");
   });
 
   it("renders BitcoinEffect component", () => {
     const { container } = render(<PortalOutroSceneMobile />);
     const bitcoinEffect = container.querySelector('[data-testid="bitcoin-effect"]');
     expect(bitcoinEffect).toBeInTheDocument();
+  });
+
+  it("renders LogoMatrix3DMobile component", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const logoMatrix = container.querySelector('[data-testid="logo-matrix-3d-mobile"]');
+    expect(logoMatrix).toBeInTheDocument();
   });
 
   it("renders final-chime audio", () => {
@@ -115,6 +140,15 @@ describe("PortalOutroSceneMobile", () => {
       audio.getAttribute("src")?.includes("final-chime.mp3")
     );
     expect(finalChimeAudio).toBeInTheDocument();
+  });
+
+  it("renders logo-whoosh audio", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const audioElements = container.querySelectorAll('[data-testid="audio"]');
+    const whooshAudio = Array.from(audioElements).find((audio) =>
+      audio.getAttribute("src")?.includes("logo-whoosh.mp3")
+    );
+    expect(whooshAudio).toBeInTheDocument();
   });
 
   it("renders wallpaper background", () => {
@@ -132,10 +166,49 @@ describe("PortalOutroSceneMobile", () => {
     expect(vignette).toBeInTheDocument();
   });
 
-  it("renders glow effect element with mobile-optimized dimensions", () => {
+  it("renders glow effect element with blur filter", () => {
     const { container } = render(<PortalOutroSceneMobile />);
-    // Look for the glow element with blur filter
-    const elements = container.querySelectorAll('[style*="blur(50px)"]');
+    // Look for the glow elements with blur filter
+    const elements = container.querySelectorAll('[style*="blur"]');
     expect(elements.length).toBeGreaterThan(0);
+  });
+});
+
+describe("PortalOutroSceneMobile audio configuration", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.resetAllMocks();
+  });
+
+  it("renders two audio sequences (whoosh + chime)", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const sequences = container.querySelectorAll('[data-testid="sequence"]');
+    expect(sequences.length).toBe(2);
+  });
+
+  it("logo-whoosh sequence starts at 4 seconds (120 frames)", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const sequences = container.querySelectorAll('[data-testid="sequence"]');
+    const whooshSequence = Array.from(sequences).find((seq) => {
+      const audio = seq.querySelector('[data-testid="audio"]');
+      return audio?.getAttribute("src")?.includes("logo-whoosh.mp3");
+    });
+    expect(whooshSequence).toBeInTheDocument();
+    expect(whooshSequence).toHaveAttribute("data-from", "120");
+  });
+
+  it("final-chime sequence starts at logo entrance (24 seconds / 720 frames)", () => {
+    const { container } = render(<PortalOutroSceneMobile />);
+    const sequences = container.querySelectorAll('[data-testid="sequence"]');
+    const chimeSequence = Array.from(sequences).find((seq) => {
+      const audio = seq.querySelector('[data-testid="audio"]');
+      return audio?.getAttribute("src")?.includes("final-chime.mp3");
+    });
+    expect(chimeSequence).toBeInTheDocument();
+    expect(chimeSequence).toHaveAttribute("data-from", "720");
   });
 });

@@ -39,7 +39,7 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="PortalPresentation"
           component={PortalPresentation}
-          durationInFrames={90 * 30}
+          durationInFrames={108 * 30}
           fps={30}
           width={1920}
           height={1080}
@@ -47,7 +47,7 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="PortalPresentationMobile"
           component={PortalPresentationMobile}
-          durationInFrames={90 * 30}
+          durationInFrames={108 * 30}
           fps={30}
           width={1080}
           height={1920}
