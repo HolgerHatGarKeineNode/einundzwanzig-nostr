@@ -4,6 +4,7 @@ import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
 import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
 import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
 import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
+import { TopMeetupsScene } from "./scenes/portal/TopMeetupsScene";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -173,7 +174,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.topMeetups.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Top Meetups" sceneNumber={6} />
+        <TopMeetupsScene />
       </Sequence>
 
       {/* Scene 7: Activity Feed (10s) */}
