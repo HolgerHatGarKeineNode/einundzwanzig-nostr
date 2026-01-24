@@ -6,6 +6,7 @@ import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
 import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
 import { TopMeetupsScene } from "./scenes/portal/TopMeetupsScene";
 import { ActivityFeedScene } from "./scenes/portal/ActivityFeedScene";
+import { CallToActionScene } from "./scenes/portal/CallToActionScene";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -193,7 +194,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.callToAction.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Call to Action" sceneNumber={8} />
+        <CallToActionScene />
       </Sequence>
 
       {/* Scene 9: Outro (12s) */}
