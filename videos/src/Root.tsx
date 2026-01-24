@@ -3,6 +3,7 @@ import { Composition } from "remotion";
 import { MyComposition } from "./Composition";
 import { Nip05Tutorial } from "./Nip05Tutorial";
 import { Nip05TutorialMobile } from "./Nip05TutorialMobile";
+import { PortalPresentation } from "./PortalPresentation";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -30,6 +31,14 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="PortalPresentation"
+        component={PortalPresentation}
+        durationInFrames={90 * 30}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );
