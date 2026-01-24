@@ -1,6 +1,7 @@
 import { AbsoluteFill, Sequence, useVideoConfig, Img, staticFile } from "remotion";
 import { inconsolataFont } from "./fonts/inconsolata";
 import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
+import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -134,7 +135,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.portalTitle.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Portal Title" sceneNumber={2} />
+        <PortalTitleScene />
       </Sequence>
 
       {/* Scene 3: Dashboard Overview (12s) */}
