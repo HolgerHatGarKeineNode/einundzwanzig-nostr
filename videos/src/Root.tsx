@@ -4,6 +4,7 @@ import { MyComposition } from "./Composition";
 import { Nip05Tutorial } from "./Nip05Tutorial";
 import { Nip05TutorialMobile } from "./Nip05TutorialMobile";
 import { PortalPresentation } from "./PortalPresentation";
+import { PortalPresentationMobile } from "./PortalPresentationMobile";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -42,6 +43,14 @@ export const RemotionRoot: React.FC = () => {
           fps={30}
           width={1920}
           height={1080}
+        />
+        <Composition
+          id="PortalPresentationMobile"
+          component={PortalPresentationMobile}
+          durationInFrames={90 * 30}
+          fps={30}
+          width={1080}
+          height={1920}
         />
       </Folder>
     </>
