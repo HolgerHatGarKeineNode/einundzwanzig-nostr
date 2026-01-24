@@ -4,6 +4,7 @@ import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
 import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
 import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
 import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
+import { CountryStatsScene } from "./scenes/portal/CountryStatsScene";
 import { TopMeetupsScene } from "./scenes/portal/TopMeetupsScene";
 import { ActivityFeedScene } from "./scenes/portal/ActivityFeedScene";
 import { CallToActionScene } from "./scenes/portal/CallToActionScene";
@@ -172,7 +173,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.topLaender.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Top Länder" sceneNumber={5} />
+        <CountryStatsScene />
       </Sequence>
 
       {/* Scene 6: Top Meetups (10s) */}
@@ -210,27 +211,6 @@ export const PortalPresentation: React.FC = () => {
       >
         <PortalOutroScene />
       </Sequence>
-    </AbsoluteFill>
-  );
-};
-
-/**
- * Placeholder component for scenes that haven't been implemented yet.
- * Displays a centered scene name with visual indicators.
- */
-const PlaceholderScene: React.FC<{ name: string; sceneNumber: number }> = ({
-  name,
-  sceneNumber,
-}) => {
-  return (
-    <AbsoluteFill className="flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-orange-500/20 border-2 border-orange-500/50 flex items-center justify-center">
-          <span className="text-4xl font-bold text-orange-500">{sceneNumber}</span>
-        </div>
-        <h2 className="text-4xl font-bold text-white mb-2">{name}</h2>
-        <p className="text-lg text-neutral-400">Scene placeholder</p>
-      </div>
     </AbsoluteFill>
   );
 };

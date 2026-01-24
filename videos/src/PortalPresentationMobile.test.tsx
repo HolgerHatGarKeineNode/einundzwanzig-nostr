@@ -63,52 +63,58 @@ vi.mock("@remotion/media", () => ({
 }));
 /* eslint-enable @remotion/warn-native-media-tag */
 
-// Mock all scene components
-vi.mock("./scenes/portal/PortalIntroScene", () => ({
-  PortalIntroScene: vi.fn(() => (
-    <div data-testid="portal-intro-scene">PortalIntroScene</div>
+// Mock all mobile scene components
+vi.mock("./scenes/portal/mobile/PortalIntroSceneMobile", () => ({
+  PortalIntroSceneMobile: vi.fn(() => (
+    <div data-testid="portal-intro-scene">PortalIntroSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/PortalTitleScene", () => ({
-  PortalTitleScene: vi.fn(() => (
-    <div data-testid="portal-title-scene">PortalTitleScene</div>
+vi.mock("./scenes/portal/mobile/PortalTitleSceneMobile", () => ({
+  PortalTitleSceneMobile: vi.fn(() => (
+    <div data-testid="portal-title-scene">PortalTitleSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/DashboardOverviewScene", () => ({
-  DashboardOverviewScene: vi.fn(() => (
-    <div data-testid="dashboard-overview-scene">DashboardOverviewScene</div>
+vi.mock("./scenes/portal/mobile/DashboardOverviewSceneMobile", () => ({
+  DashboardOverviewSceneMobile: vi.fn(() => (
+    <div data-testid="dashboard-overview-scene">DashboardOverviewSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/MeetupShowcaseScene", () => ({
-  MeetupShowcaseScene: vi.fn(() => (
-    <div data-testid="meetup-showcase-scene">MeetupShowcaseScene</div>
+vi.mock("./scenes/portal/mobile/MeetupShowcaseSceneMobile", () => ({
+  MeetupShowcaseSceneMobile: vi.fn(() => (
+    <div data-testid="meetup-showcase-scene">MeetupShowcaseSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/TopMeetupsScene", () => ({
-  TopMeetupsScene: vi.fn(() => (
-    <div data-testid="top-meetups-scene">TopMeetupsScene</div>
+vi.mock("./scenes/portal/mobile/CountryStatsSceneMobile", () => ({
+  CountryStatsSceneMobile: vi.fn(() => (
+    <div data-testid="country-stats-scene">CountryStatsSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/ActivityFeedScene", () => ({
-  ActivityFeedScene: vi.fn(() => (
-    <div data-testid="activity-feed-scene">ActivityFeedScene</div>
+vi.mock("./scenes/portal/mobile/TopMeetupsSceneMobile", () => ({
+  TopMeetupsSceneMobile: vi.fn(() => (
+    <div data-testid="top-meetups-scene">TopMeetupsSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/CallToActionScene", () => ({
-  CallToActionScene: vi.fn(() => (
-    <div data-testid="call-to-action-scene">CallToActionScene</div>
+vi.mock("./scenes/portal/mobile/ActivityFeedSceneMobile", () => ({
+  ActivityFeedSceneMobile: vi.fn(() => (
+    <div data-testid="activity-feed-scene">ActivityFeedSceneMobile</div>
   )),
 }));
 
-vi.mock("./scenes/portal/PortalOutroScene", () => ({
-  PortalOutroScene: vi.fn(() => (
-    <div data-testid="portal-outro-scene">PortalOutroScene</div>
+vi.mock("./scenes/portal/mobile/CallToActionSceneMobile", () => ({
+  CallToActionSceneMobile: vi.fn(() => (
+    <div data-testid="call-to-action-scene">CallToActionSceneMobile</div>
+  )),
+}));
+
+vi.mock("./scenes/portal/mobile/PortalOutroSceneMobile", () => ({
+  PortalOutroSceneMobile: vi.fn(() => (
+    <div data-testid="portal-outro-scene">PortalOutroSceneMobile</div>
   )),
 }));
 
@@ -207,6 +213,12 @@ describe("PortalPresentationMobile", () => {
   it("renders Scene 4: MeetupShowcaseScene", () => {
     const { container } = render(<PortalPresentationMobile />);
     const scene = container.querySelector('[data-testid="meetup-showcase-scene"]');
+    expect(scene).toBeInTheDocument();
+  });
+
+  it("renders Scene 5: CountryStatsScene", () => {
+    const { container } = render(<PortalPresentationMobile />);
+    const scene = container.querySelector('[data-testid="country-stats-scene"]');
     expect(scene).toBeInTheDocument();
   });
 
@@ -390,6 +402,7 @@ describe("PortalPresentationMobile mobile-specific", () => {
     expect(container.querySelector('[data-testid="portal-title-scene"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="dashboard-overview-scene"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="meetup-showcase-scene"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-testid="country-stats-scene"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="top-meetups-scene"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="activity-feed-scene"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="call-to-action-scene"]')).toBeInTheDocument();

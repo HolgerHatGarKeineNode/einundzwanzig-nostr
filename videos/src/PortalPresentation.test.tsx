@@ -88,6 +88,12 @@ vi.mock("./scenes/portal/MeetupShowcaseScene", () => ({
   )),
 }));
 
+vi.mock("./scenes/portal/CountryStatsScene", () => ({
+  CountryStatsScene: vi.fn(() => (
+    <div data-testid="country-stats-scene">CountryStatsScene</div>
+  )),
+}));
+
 vi.mock("./scenes/portal/TopMeetupsScene", () => ({
   TopMeetupsScene: vi.fn(() => (
     <div data-testid="top-meetups-scene">TopMeetupsScene</div>
@@ -207,6 +213,12 @@ describe("PortalPresentation", () => {
   it("renders Scene 4: MeetupShowcaseScene", () => {
     const { container } = render(<PortalPresentation />);
     const scene = container.querySelector('[data-testid="meetup-showcase-scene"]');
+    expect(scene).toBeInTheDocument();
+  });
+
+  it("renders Scene 5: CountryStatsScene", () => {
+    const { container } = render(<PortalPresentation />);
+    const scene = container.querySelector('[data-testid="country-stats-scene"]');
     expect(scene).toBeInTheDocument();
   });
 
