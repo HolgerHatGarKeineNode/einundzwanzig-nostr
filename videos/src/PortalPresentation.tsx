@@ -7,6 +7,8 @@ import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
 import { TopMeetupsScene } from "./scenes/portal/TopMeetupsScene";
 import { ActivityFeedScene } from "./scenes/portal/ActivityFeedScene";
 import { CallToActionScene } from "./scenes/portal/CallToActionScene";
+import { PortalOutroScene } from "./scenes/portal/PortalOutroScene";
+import { PortalAudioManager } from "./components/PortalAudioManager";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -119,6 +121,9 @@ export const PortalPresentation: React.FC = () => {
       className="bg-gradient-to-br from-zinc-900 to-zinc-800"
       style={{ fontFamily: inconsolataFont }}
     >
+      {/* Background Music with fade in/out */}
+      <PortalAudioManager />
+
       {/* Wallpaper Background */}
       <Img
         src={staticFile("einundzwanzig-wallpaper.png")}
@@ -203,7 +208,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.outro.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Outro" sceneNumber={9} />
+        <PortalOutroScene />
       </Sequence>
     </AbsoluteFill>
   );
