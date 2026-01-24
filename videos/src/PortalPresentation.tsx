@@ -3,6 +3,7 @@ import { inconsolataFont } from "./fonts/inconsolata";
 import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
 import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
 import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
+import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
 
 /**
  * PortalPresentation - Main composition for the Einundzwanzig Portal presentation video
@@ -154,7 +155,7 @@ export const PortalPresentation: React.FC = () => {
         durationInFrames={sceneFrames.meineMeetups.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Meine Meetups" sceneNumber={4} />
+        <MeetupShowcaseScene />
       </Sequence>
 
       {/* Scene 5: Top Länder (12s) */}
