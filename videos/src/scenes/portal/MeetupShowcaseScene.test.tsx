@@ -118,7 +118,7 @@ describe("MeetupShowcaseScene", () => {
     expect(meetupCard).toBeInTheDocument();
     expect(meetupCard).toHaveAttribute("data-name", "EINUNDZWANZIG Kempten");
     expect(meetupCard).toHaveAttribute("data-location", "Kempten im Allgäu");
-    expect(meetupCard?.getAttribute("data-logo-src")).toContain("EinundzwanzigKempten.png");
+    expect(meetupCard?.getAttribute("data-logo-src")).toContain("EinundzwanzigKempten.jpg");
   });
 
   it("renders the MeetupCard with correct width for featured display", () => {
@@ -167,7 +167,7 @@ describe("MeetupShowcaseScene", () => {
     const { container } = render(<MeetupShowcaseScene />);
     const images = container.querySelectorAll('[data-testid="remotion-img"]');
     const memmingenLogo = Array.from(images).find((img) =>
-      img.getAttribute("src")?.includes("EinundzwanzigMemmingen.png")
+      img.getAttribute("src")?.includes("EinundzwanzigMemmingen.jpg")
     );
     const friedrichshafenLogo = Array.from(images).find((img) =>
       img.getAttribute("src")?.includes("EinundzwanzigFriedrichshafen.png")

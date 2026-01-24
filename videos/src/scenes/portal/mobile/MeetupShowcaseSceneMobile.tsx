@@ -24,7 +24,7 @@ const UPCOMING_MEETUPS = [
     location: "Kempten im Allgäu",
     date: "Di, 28. Jan 2025",
     time: "19:00 Uhr",
-    logoPath: "logos/EinundzwanzigKempten.png",
+    logoPath: "logos/EinundzwanzigKempten.jpg",
     isFeatured: true,
   },
   {
@@ -32,7 +32,7 @@ const UPCOMING_MEETUPS = [
     location: "Memmingen",
     date: "Mi, 29. Jan 2025",
     time: "19:30 Uhr",
-    logoPath: "logos/EinundzwanzigMemmingen.png",
+    logoPath: "logos/EinundzwanzigMemmingen.jpg",
     isFeatured: false,
   },
   {

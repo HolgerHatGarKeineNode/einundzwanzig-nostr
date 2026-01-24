@@ -138,7 +138,7 @@ export const DashboardOverviewScene: React.FC = () => {
         <div className="absolute inset-0 flex">
           {/* Sidebar */}
           <DashboardSidebar
-            logoSrc={staticFile("einundzwanzig-logo.png")}
+            logoSrc={staticFile("einundzwanzig-square-inverted.svg")}
             navItems={NAV_ITEMS}
             width={sidebarWidth}
             height={1080}

@@ -38,7 +38,7 @@ const TOP_MEETUPS_DATA = [
   },
   {
     name: "EINUNDZWANZIG Kempten",
-    logoFile: "EinundzwanzigKempten.png",
+    logoFile: "EinundzwanzigKempten.jpg",
     userCount: 20,
     location: "Kempten",
     sparklineData: [3, 5, 7, 9, 11, 13, 15, 16, 17, 18, 19, 20],
@@ -54,7 +54,7 @@ const TOP_MEETUPS_DATA = [
   },
   {
     name: "EINUNDZWANZIG Trier",
-    logoFile: "EinundzwanzigTrier.png",
+    logoFile: "EinundzwanzigTrier.jpg",
     userCount: 15,
     location: "Trier",
     sparklineData: [2, 3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15],
