@@ -1,13 +1,14 @@
 import { AbsoluteFill, Sequence, useVideoConfig, Img, staticFile } from "remotion";
 import { inconsolataFont } from "./fonts/inconsolata";
-import { PortalIntroScene } from "./scenes/portal/PortalIntroScene";
-import { PortalTitleScene } from "./scenes/portal/PortalTitleScene";
-import { DashboardOverviewScene } from "./scenes/portal/DashboardOverviewScene";
-import { MeetupShowcaseScene } from "./scenes/portal/MeetupShowcaseScene";
-import { TopMeetupsScene } from "./scenes/portal/TopMeetupsScene";
-import { ActivityFeedScene } from "./scenes/portal/ActivityFeedScene";
-import { CallToActionScene } from "./scenes/portal/CallToActionScene";
-import { PortalOutroScene } from "./scenes/portal/PortalOutroScene";
+import { PortalIntroSceneMobile } from "./scenes/portal/mobile/PortalIntroSceneMobile";
+import { PortalTitleSceneMobile } from "./scenes/portal/mobile/PortalTitleSceneMobile";
+import { DashboardOverviewSceneMobile } from "./scenes/portal/mobile/DashboardOverviewSceneMobile";
+import { MeetupShowcaseSceneMobile } from "./scenes/portal/mobile/MeetupShowcaseSceneMobile";
+import { CountryStatsSceneMobile } from "./scenes/portal/mobile/CountryStatsSceneMobile";
+import { TopMeetupsSceneMobile } from "./scenes/portal/mobile/TopMeetupsSceneMobile";
+import { ActivityFeedSceneMobile } from "./scenes/portal/mobile/ActivityFeedSceneMobile";
+import { CallToActionSceneMobile } from "./scenes/portal/mobile/CallToActionSceneMobile";
+import { PortalOutroSceneMobile } from "./scenes/portal/mobile/PortalOutroSceneMobile";
 import { PortalAudioManager } from "./components/PortalAudioManager";
 
 /**
@@ -138,7 +139,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.logoReveal.duration}
         premountFor={fps}
       >
-        <PortalIntroScene />
+        <PortalIntroSceneMobile />
       </Sequence>
 
       {/* Scene 2: Portal Title (4s) */}
@@ -147,7 +148,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.portalTitle.duration}
         premountFor={fps}
       >
-        <PortalTitleScene />
+        <PortalTitleSceneMobile />
       </Sequence>
 
       {/* Scene 3: Dashboard Overview (12s) */}
@@ -156,7 +157,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.dashboardOverview.duration}
         premountFor={fps}
       >
-        <DashboardOverviewScene />
+        <DashboardOverviewSceneMobile />
       </Sequence>
 
       {/* Scene 4: Meine Meetups (12s) */}
@@ -165,7 +166,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.meineMeetups.duration}
         premountFor={fps}
       >
-        <MeetupShowcaseScene />
+        <MeetupShowcaseSceneMobile />
       </Sequence>
 
       {/* Scene 5: Top Länder (12s) */}
@@ -174,7 +175,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.topLaender.duration}
         premountFor={fps}
       >
-        <PlaceholderScene name="Top Länder" sceneNumber={5} />
+        <CountryStatsSceneMobile />
       </Sequence>
 
       {/* Scene 6: Top Meetups (10s) */}
@@ -183,7 +184,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.topMeetups.duration}
         premountFor={fps}
       >
-        <TopMeetupsScene />
+        <TopMeetupsSceneMobile />
       </Sequence>
 
       {/* Scene 7: Activity Feed (10s) */}
@@ -192,7 +193,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.activityFeed.duration}
         premountFor={fps}
       >
-        <ActivityFeedScene />
+        <ActivityFeedSceneMobile />
       </Sequence>
 
       {/* Scene 8: Call to Action (12s) */}
@@ -201,7 +202,7 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.callToAction.duration}
         premountFor={fps}
       >
-        <CallToActionScene />
+        <CallToActionSceneMobile />
       </Sequence>
 
       {/* Scene 9: Outro (12s) */}
@@ -210,29 +211,8 @@ export const PortalPresentationMobile: React.FC = () => {
         durationInFrames={sceneFrames.outro.duration}
         premountFor={fps}
       >
-        <PortalOutroScene />
+        <PortalOutroSceneMobile />
       </Sequence>
-    </AbsoluteFill>
-  );
-};
-
-/**
- * Placeholder component for scenes that haven't been implemented yet.
- * Displays a centered scene name with visual indicators.
- */
-const PlaceholderScene: React.FC<{ name: string; sceneNumber: number }> = ({
-  name,
-  sceneNumber,
-}) => {
-  return (
-    <AbsoluteFill className="flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-orange-500/20 border-2 border-orange-500/50 flex items-center justify-center">
-          <span className="text-4xl font-bold text-orange-500">{sceneNumber}</span>
-        </div>
-        <h2 className="text-4xl font-bold text-white mb-2">{name}</h2>
-        <p className="text-lg text-neutral-400">Scene placeholder</p>
-      </div>
     </AbsoluteFill>
   );
 };
