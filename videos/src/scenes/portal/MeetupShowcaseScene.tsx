@@ -10,13 +10,13 @@ import {
 } from "remotion";
 import { Audio } from "@remotion/media";
 import { MeetupCard } from "../../components/MeetupCard";
-
-// Spring configurations
-const SNAPPY = { damping: 15, stiffness: 80 };
-const BOUNCY = { damping: 12 };
-
-// Stagger delay between meetup list items
-const LIST_ITEM_STAGGER = 8;
+import {
+  SPRING_CONFIGS,
+  STAGGER_DELAYS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 // Upcoming meetup data
 const UPCOMING_MEETUPS = [
@@ -61,77 +61,83 @@ export const MeetupShowcaseScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 3D Perspective entrance animation (0-60 frames)
+  // 3D Perspective entrance animation using centralized config
   const perspectiveSpring = spring({
     frame,
     fps,
-    config: { damping: 20, stiffness: 60 },
+    config: SPRING_CONFIGS.PERSPECTIVE,
   });
 
-  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [20, 0]);
-  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.9, 1]);
+  // Fine-tuned: Reduced initial rotation for smoother entrance
+  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [18, 0]);
+  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.92, 1]);
   const perspectiveOpacity = interpolate(perspectiveSpring, [0, 1], [0, 1]);
 
-  // Header entrance animation (delayed)
-  const headerDelay = Math.floor(0.3 * fps);
+  // Header entrance animation (delayed) - Fine-tuned timing
+  const headerDelay = secondsToFrames(0.35, fps);
   const headerSpring = spring({
     frame: frame - headerDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const headerOpacity = interpolate(headerSpring, [0, 1], [0, 1]);
-  const headerY = interpolate(headerSpring, [0, 1], [-40, 0]);
+  // Fine-tuned: Reduced Y translation
+  const headerY = interpolate(headerSpring, [0, 1], [-35, 0]);
 
-  // Featured card entrance delay
-  const featuredCardDelay = Math.floor(0.8 * fps);
+  // Featured card entrance delay using centralized timing
+  const featuredCardDelay = secondsToFrames(TIMING.FEATURED_DELAY, fps);
 
-  // Featured card 3D shadow animation
+  // Featured card 3D shadow animation using centralized config
   const featuredSpring = spring({
     frame: frame - featuredCardDelay,
     fps,
-    config: { damping: 18, stiffness: 70 },
+    config: SPRING_CONFIGS.FEATURED,
   });
-  const featuredScale = interpolate(featuredSpring, [0, 1], [0.85, 1]);
+  // Fine-tuned: Smoother scale transition
+  const featuredScale = interpolate(featuredSpring, [0, 1], [0.88, 1]);
   const featuredOpacity = interpolate(featuredSpring, [0, 1], [0, 1]);
-  const featuredRotateX = interpolate(featuredSpring, [0, 1], [15, 0]);
+  // Fine-tuned: Reduced initial rotation for less dramatic entrance
+  const featuredRotateX = interpolate(featuredSpring, [0, 1], [12, 0]);
   const featuredShadowY = interpolate(featuredSpring, [0, 1], [20, 40]);
   const featuredShadowBlur = interpolate(featuredSpring, [0, 1], [10, 60]);
 
-  // Date/time info animation (after featured card)
-  const dateDelay = featuredCardDelay + Math.floor(0.4 * fps);
+  // Date/time info animation (after featured card) - Fine-tuned timing
+  const dateDelay = featuredCardDelay + secondsToFrames(0.45, fps);
   const dateSpring = spring({
     frame: frame - dateDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const dateOpacity = interpolate(dateSpring, [0, 1], [0, 1]);
-  const dateY = interpolate(dateSpring, [0, 1], [20, 0]);
+  const dateY = interpolate(dateSpring, [0, 1], [18, 0]);
 
-  // Upcoming list header delay
-  const listHeaderDelay = featuredCardDelay + Math.floor(1 * fps);
+  // Upcoming list header delay - Fine-tuned timing
+  const listHeaderDelay = featuredCardDelay + secondsToFrames(1.1, fps);
   const listHeaderSpring = spring({
     frame: frame - listHeaderDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const listHeaderOpacity = interpolate(listHeaderSpring, [0, 1], [0, 1]);
-  const listHeaderX = interpolate(listHeaderSpring, [0, 1], [-30, 0]);
+  // Fine-tuned: Reduced X translation
+  const listHeaderX = interpolate(listHeaderSpring, [0, 1], [-25, 0]);
 
-  // Action buttons animation
-  const buttonsDelay = Math.floor(3.5 * fps);
+  // Action buttons animation - Fine-tuned timing
+  const buttonsDelay = secondsToFrames(3.2, fps);
   const buttonsSpring = spring({
     frame: frame - buttonsDelay,
     fps,
-    config: BOUNCY,
+    config: SPRING_CONFIGS.BOUNCY,
   });
   const buttonsOpacity = interpolate(buttonsSpring, [0, 1], [0, 1]);
-  const buttonsY = interpolate(buttonsSpring, [0, 1], [30, 0]);
+  // Fine-tuned: Reduced Y translation
+  const buttonsY = interpolate(buttonsSpring, [0, 1], [25, 0]);
 
-  // Subtle glow pulse
+  // Subtle glow pulse using centralized config
   const glowIntensity = interpolate(
-    Math.sin(frame * 0.05),
+    Math.sin(frame * GLOW_CONFIG.FREQUENCY.SLOW),
     [-1, 1],
-    [0.3, 0.6]
+    [0.35, 0.6]
   );
 
   // Featured meetup data
@@ -151,7 +157,7 @@ export const MeetupShowcaseScene: React.FC = () => {
       </Sequence>
 
       {/* Audio: badge-appear for list items */}
-      <Sequence from={listHeaderDelay + LIST_ITEM_STAGGER} durationInFrames={Math.floor(0.5 * fps)}>
+      <Sequence from={listHeaderDelay + STAGGER_DELAYS.LIST_ITEM} durationInFrames={Math.floor(0.5 * fps)}>
         <Audio src={staticFile("sfx/badge-appear.mp3")} volume={0.4} />
       </Sequence>
 
@@ -300,7 +306,7 @@ export const MeetupShowcaseScene: React.FC = () => {
                 <UpcomingMeetupItem
                   key={meetup.name}
                   meetup={meetup}
-                  delay={listHeaderDelay + (index + 1) * LIST_ITEM_STAGGER}
+                  delay={listHeaderDelay + (index + 1) * STAGGER_DELAYS.LIST_ITEM}
                   glowIntensity={glowIntensity}
                 />
               ))}
@@ -369,15 +375,18 @@ const UpcomingMeetupItem: React.FC<UpcomingMeetupItemProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized SNAPPY config
   const itemSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
   const itemOpacity = interpolate(itemSpring, [0, 1], [0, 1]);
-  const itemY = interpolate(itemSpring, [0, 1], [30, 0]);
-  const itemScale = interpolate(itemSpring, [0, 1], [0.9, 1]);
+  // Fine-tuned: Reduced Y translation for subtler entrance
+  const itemY = interpolate(itemSpring, [0, 1], [25, 0]);
+  // Fine-tuned: Increased initial scale for smoother transition
+  const itemScale = interpolate(itemSpring, [0, 1], [0.92, 1]);
 
   return (
     <div
@@ -445,13 +454,15 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized BUTTON config
   const buttonSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: { damping: 12, stiffness: 100 },
+    config: SPRING_CONFIGS.BUTTON,
   });
 
-  const buttonScale = interpolate(buttonSpring, [0, 1], [0.8, 1]);
+  // Fine-tuned: Increased initial scale for smoother transition
+  const buttonScale = interpolate(buttonSpring, [0, 1], [0.85, 1]);
   const buttonOpacity = interpolate(buttonSpring, [0, 1], [0, 1]);
 
   const baseClasses = "flex items-center gap-3 px-6 py-3 rounded-xl font-semibold text-base transition-all";

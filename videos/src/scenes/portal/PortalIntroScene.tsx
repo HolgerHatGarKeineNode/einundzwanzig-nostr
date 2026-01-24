@@ -11,9 +11,12 @@ import {
 import { Audio } from "@remotion/media";
 import { AnimatedLogo } from "../../components/AnimatedLogo";
 import { BitcoinEffect } from "../../components/BitcoinEffect";
-
-// Spring configurations from PRD
-const SMOOTH = { damping: 200 };
+import {
+  SPRING_CONFIGS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 /**
  * PortalIntroScene - Scene 1: Logo Reveal (6 seconds / 180 frames @ 30fps)
@@ -29,59 +32,70 @@ export const PortalIntroScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Background zoom animation - starts zoomed in, zooms out
-  const backgroundZoom = interpolate(frame, [0, 3 * fps], [1.2, 1.0], {
+  // Calculate delays using centralized timing
+  const logoEntranceDelay = secondsToFrames(TIMING.LOGO_ENTRANCE_DELAY, fps);
+  const titleDelay = secondsToFrames(TIMING.TITLE_DELAY, fps);
+  const subtitleDelay = secondsToFrames(TIMING.SUBTITLE_DELAY, fps);
+
+  // Background zoom animation - starts zoomed in, zooms out over 3 seconds
+  // Fine-tuned: Extended zoom duration for more cinematic feel
+  const backgroundZoomDuration = secondsToFrames(3.5, fps);
+  const backgroundZoom = interpolate(frame, [0, backgroundZoomDuration], [1.15, 1.0], {
     extrapolateRight: "clamp",
   });
 
   // Logo entrance spring animation - delayed slightly for dramatic effect
-  const logoEntranceDelay = Math.floor(0.5 * fps);
   const logoSpring = spring({
     frame: frame - logoEntranceDelay,
     fps,
-    config: { damping: 15, stiffness: 80 },
+    config: SPRING_CONFIGS.LOGO,
   });
   const logoScale = interpolate(logoSpring, [0, 1], [0, 1]);
   const logoOpacity = interpolate(logoSpring, [0, 0.5], [0, 1], {
     extrapolateRight: "clamp",
   });
 
-  // Outer glow pulse effect
+  // Outer glow pulse effect using centralized config
   const glowIntensity = interpolate(
-    Math.sin((frame - logoEntranceDelay) * 0.08),
+    Math.sin((frame - logoEntranceDelay) * GLOW_CONFIG.FREQUENCY.FAST),
     [-1, 1],
-    [0.4, 0.8]
+    GLOW_CONFIG.INTENSITY.NORMAL
   );
   const glowScale = interpolate(
-    Math.sin((frame - logoEntranceDelay) * 0.06),
+    Math.sin((frame - logoEntranceDelay) * GLOW_CONFIG.FREQUENCY.NORMAL),
     [-1, 1],
-    [1.0, 1.15]
+    GLOW_CONFIG.SCALE.NORMAL
   );
 
-  // Title text entrance - appears after logo
-  const titleDelay = Math.floor(2 * fps);
+  // Title text entrance - appears after logo with smooth spring
   const titleSpring = spring({
     frame: frame - titleDelay,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
   const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1]);
   const titleY = interpolate(titleSpring, [0, 1], [30, 0]);
 
-  // Subtitle entrance
-  const subtitleDelay = Math.floor(2.8 * fps);
+  // Subtitle entrance - follows title with smooth spring
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
 
   // Center position for logo (adjusts as text appears)
-  const contentY = interpolate(frame, [titleDelay, titleDelay + fps], [0, -60], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Fine-tuned: smoother transition over longer duration
+  const contentTransitionDuration = secondsToFrames(1.2, fps);
+  const contentY = interpolate(
+    frame,
+    [titleDelay, titleDelay + contentTransitionDuration],
+    [0, -60],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }
+  );
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">

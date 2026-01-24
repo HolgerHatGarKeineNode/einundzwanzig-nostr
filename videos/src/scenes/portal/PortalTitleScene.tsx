@@ -9,13 +9,12 @@ import {
   Sequence,
 } from "remotion";
 import { Audio } from "@remotion/media";
-
-// Spring configurations from PRD
-const SMOOTH = { damping: 200 };
-
-// Typing animation configuration
-const CHAR_FRAMES = 2; // Frames per character
-const CURSOR_BLINK_FRAMES = 16;
+import {
+  SPRING_CONFIGS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 /**
  * PortalTitleScene - Scene 2: Title Card (4 seconds / 120 frames @ 30fps)
@@ -34,48 +33,57 @@ export const PortalTitleScene: React.FC = () => {
   const titleText = "EINUNDZWANZIG PORTAL";
   const subtitleText = "Das Herzstück der deutschsprachigen Bitcoin-Community";
 
-  // Calculate typed characters for title
+  // Calculate typed characters for title using centralized timing
   const typedTitleChars = Math.min(
     titleText.length,
-    Math.floor(frame / CHAR_FRAMES)
+    Math.floor(frame / TIMING.CHAR_FRAMES)
   );
   const typedTitle = titleText.slice(0, typedTitleChars);
 
   // Title typing complete frame
-  const titleCompleteFrame = titleText.length * CHAR_FRAMES;
+  const titleCompleteFrame = titleText.length * TIMING.CHAR_FRAMES;
 
   // Cursor blink effect - only show while typing or shortly after
-  const showCursor = frame < titleCompleteFrame + fps; // Show cursor for 1 second after typing completes
+  // Fine-tuned: cursor stays visible longer for better visual continuity
+  const cursorVisibleDuration = secondsToFrames(1.2, fps);
+  const showCursor = frame < titleCompleteFrame + cursorVisibleDuration;
   const cursorOpacity = showCursor
     ? interpolate(
-        frame % CURSOR_BLINK_FRAMES,
-        [0, CURSOR_BLINK_FRAMES / 2, CURSOR_BLINK_FRAMES],
+        frame % TIMING.CURSOR_BLINK_FRAMES,
+        [0, TIMING.CURSOR_BLINK_FRAMES / 2, TIMING.CURSOR_BLINK_FRAMES],
         [1, 0, 1],
         { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
       )
     : 0;
 
-  // Subtitle entrance - after title typing completes
-  const subtitleDelay = titleCompleteFrame + Math.floor(0.3 * fps);
+  // Subtitle entrance - after title typing completes with a pause
+  // Fine-tuned: slightly longer pause (0.4s instead of 0.3s) for better pacing
+  const subtitleDelay = titleCompleteFrame + secondsToFrames(0.4, fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
   const subtitleY = interpolate(subtitleSpring, [0, 1], [20, 0]);
 
-  // Background glow that pulses subtly
+  // Background glow that pulses subtly using centralized config
   const glowIntensity = interpolate(
-    Math.sin(frame * 0.05),
+    Math.sin(frame * GLOW_CONFIG.FREQUENCY.SLOW),
     [-1, 1],
-    [0.3, 0.5]
+    GLOW_CONFIG.INTENSITY.SUBTLE
   );
 
   // Scene entrance fade from intro scene
-  const entranceFade = interpolate(frame, [0, Math.floor(0.3 * fps)], [0, 1], {
-    extrapolateRight: "clamp",
-  });
+  // Fine-tuned: faster entrance (0.25s) for snappier transition
+  const entranceFade = interpolate(
+    frame,
+    [0, secondsToFrames(0.25, fps)],
+    [0, 1],
+    {
+      extrapolateRight: "clamp",
+    }
+  );
 
   return (
     <AbsoluteFill

@@ -10,12 +10,13 @@ import {
 } from "remotion";
 import { Audio } from "@remotion/media";
 import { ActivityItem } from "../../components/ActivityItem";
-
-// Spring configurations
-const SNAPPY = { damping: 15, stiffness: 80 };
-
-// Stagger delay between activity items (in frames)
-const ACTIVITY_STAGGER_DELAY = 20;
+import {
+  SPRING_CONFIGS,
+  STAGGER_DELAYS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 // Activity feed data from the screenshot
 const ACTIVITY_FEED_DATA = [
@@ -58,43 +59,46 @@ export const ActivityFeedScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 3D Perspective entrance animation (0-60 frames)
+  // 3D Perspective entrance animation using centralized config
   const perspectiveSpring = spring({
     frame,
     fps,
-    config: { damping: 20, stiffness: 60 },
+    config: SPRING_CONFIGS.PERSPECTIVE,
   });
 
-  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [20, 0]);
-  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.9, 1]);
+  // Fine-tuned: Reduced initial rotation for smoother entrance
+  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [18, 0]);
+  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.92, 1]);
   const perspectiveOpacity = interpolate(perspectiveSpring, [0, 1], [0, 1]);
 
-  // Header entrance animation (delayed)
-  const headerDelay = Math.floor(0.3 * fps);
+  // Header entrance animation (delayed) - Fine-tuned timing
+  const headerDelay = secondsToFrames(0.35, fps);
   const headerSpring = spring({
     frame: frame - headerDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const headerOpacity = interpolate(headerSpring, [0, 1], [0, 1]);
-  const headerY = interpolate(headerSpring, [0, 1], [-40, 0]);
+  // Fine-tuned: Reduced Y translation
+  const headerY = interpolate(headerSpring, [0, 1], [-35, 0]);
 
-  // Subtitle animation (slightly more delayed)
-  const subtitleDelay = Math.floor(0.5 * fps);
+  // Subtitle animation (slightly more delayed) - Fine-tuned timing
+  const subtitleDelay = secondsToFrames(0.55, fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
-  const subtitleY = interpolate(subtitleSpring, [0, 1], [20, 0]);
+  // Fine-tuned: Reduced Y translation
+  const subtitleY = interpolate(subtitleSpring, [0, 1], [18, 0]);
 
-  // Base delay for activity items
-  const activityBaseDelay = Math.floor(1 * fps);
+  // Base delay for activity items using centralized timing
+  const activityBaseDelay = secondsToFrames(TIMING.CONTENT_BASE_DELAY, fps);
 
-  // Subtle pulse for live indicator
+  // Subtle pulse for live indicator using centralized config
   const pulseIntensity = interpolate(
-    Math.sin(frame * 0.1),
+    Math.sin(frame * GLOW_CONFIG.FREQUENCY.PULSE),
     [-1, 1],
     [0.5, 1]
   );
@@ -105,7 +109,7 @@ export const ActivityFeedScene: React.FC = () => {
       {ACTIVITY_FEED_DATA.map((_, index) => (
         <Sequence
           key={`audio-${index}`}
-          from={activityBaseDelay + index * ACTIVITY_STAGGER_DELAY}
+          from={activityBaseDelay + index * STAGGER_DELAYS.ACTIVITY}
           durationInFrames={Math.floor(0.5 * fps)}
         >
           <Audio src={staticFile("sfx/button-click.mp3")} volume={0.4} />
@@ -190,7 +194,7 @@ export const ActivityFeedScene: React.FC = () => {
                 <ActivityItemWrapper
                   key={activity.eventName}
                   activity={activity}
-                  delay={activityBaseDelay + index * ACTIVITY_STAGGER_DELAY}
+                  delay={activityBaseDelay + index * STAGGER_DELAYS.ACTIVITY}
                   index={index}
                 />
               ))}
@@ -235,7 +239,7 @@ const ActivityItemWrapper: React.FC<ActivityItemWrapperProps> = ({
   // Each item that appears before this one causes a slight downward push
   let pushDownOffset = 0;
   for (let i = 0; i < index; i++) {
-    const prevItemDelay = Math.floor(1 * fps) + i * ACTIVITY_STAGGER_DELAY;
+    const prevItemDelay = secondsToFrames(TIMING.CONTENT_BASE_DELAY, fps) + i * STAGGER_DELAYS.ACTIVITY;
     const prevItemSpring = spring({
       frame: frame - prevItemDelay,
       fps,
@@ -245,11 +249,11 @@ const ActivityItemWrapper: React.FC<ActivityItemWrapperProps> = ({
     pushDownOffset += interpolate(prevItemSpring, [0, 1], [0, 0]);
   }
 
-  // Container spring for the wrapper itself
+  // Container spring for the wrapper itself using centralized config
   const containerSpring = spring({
     frame: frame - delay,
     fps,
-    config: { damping: 15, stiffness: 80 },
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
   const containerOpacity = interpolate(containerSpring, [0, 1], [0, 1]);

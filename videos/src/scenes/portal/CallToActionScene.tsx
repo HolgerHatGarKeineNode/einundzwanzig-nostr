@@ -9,11 +9,12 @@ import {
   Sequence,
 } from "remotion";
 import { Audio } from "@remotion/media";
-
-// Spring configurations
-const SMOOTH = { damping: 200 };
-const SNAPPY = { damping: 15, stiffness: 80 };
-const BOUNCY = { damping: 12 };
+import {
+  SPRING_CONFIGS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 // URL to display
 const PORTAL_URL = "portal.einundzwanzig.space";
@@ -34,88 +35,100 @@ export const CallToActionScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Background blur and zoom out animation (0-60 frames)
+  // Background blur and zoom out animation using centralized config
   const blurSpring = spring({
     frame,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
 
-  const backgroundBlur = interpolate(blurSpring, [0, 1], [0, 8]);
-  const backgroundScale = interpolate(blurSpring, [0, 1], [1, 0.95]);
-  const backgroundOpacity = interpolate(blurSpring, [0, 1], [0.3, 0.15]);
+  // Fine-tuned: Adjusted blur and scale for smoother background transition
+  const backgroundBlur = interpolate(blurSpring, [0, 1], [0, 10]);
+  const backgroundScale = interpolate(blurSpring, [0, 1], [1, 0.96]);
+  const backgroundOpacity = interpolate(blurSpring, [0, 1], [0.3, 0.12]);
 
-  // Glassmorphism overlay entrance (delayed 15 frames)
-  const overlayDelay = 15;
+  // Glassmorphism overlay entrance using centralized timing
+  const overlayDelay = secondsToFrames(TIMING.CTA_OVERLAY_DELAY, fps);
   const overlaySpring = spring({
     frame: frame - overlayDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const overlayOpacity = interpolate(overlaySpring, [0, 1], [0, 1]);
 
-  // Title entrance (delayed 30 frames)
-  const titleDelay = Math.floor(1 * fps);
+  // Title entrance using centralized timing
+  const titleDelay = secondsToFrames(TIMING.CTA_TITLE_DELAY, fps);
   const titleSpring = spring({
     frame: frame - titleDelay,
     fps,
-    config: BOUNCY,
+    config: SPRING_CONFIGS.BOUNCY,
   });
   const titleOpacity = interpolate(titleSpring, [0, 1], [0, 1]);
-  const titleY = interpolate(titleSpring, [0, 1], [50, 0]);
-  const titleScale = interpolate(titleSpring, [0, 1], [0.8, 1]);
+  // Fine-tuned: Reduced Y translation for subtler entrance
+  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
+  // Fine-tuned: Increased initial scale for smoother transition
+  const titleScale = interpolate(titleSpring, [0, 1], [0.85, 1]);
 
-  // Logo entrance (delayed 45 frames)
-  const logoDelay = Math.floor(1.5 * fps);
+  // Logo entrance using centralized timing
+  const logoDelay = secondsToFrames(TIMING.CTA_LOGO_DELAY, fps);
   const logoSpring = spring({
     frame: frame - logoDelay,
     fps,
-    config: BOUNCY,
+    config: SPRING_CONFIGS.BOUNCY,
   });
   const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1]);
-  const logoScale = interpolate(logoSpring, [0, 1], [0.5, 1]);
+  // Fine-tuned: Increased initial scale for smoother transition
+  const logoScale = interpolate(logoSpring, [0, 1], [0.6, 1]);
 
-  // Logo glow pulse
+  // Logo glow pulse using centralized config
   const glowIntensity = interpolate(
-    Math.sin((frame - logoDelay) * 0.08),
+    Math.sin((frame - logoDelay) * GLOW_CONFIG.FREQUENCY.FAST),
     [-1, 1],
-    [0.4, 1]
+    GLOW_CONFIG.INTENSITY.STRONG
   );
 
-  // URL typing animation (delayed 2.5 seconds)
-  const urlDelay = Math.floor(2.5 * fps);
+  // URL typing animation using centralized timing
+  const urlDelay = secondsToFrames(TIMING.CTA_URL_DELAY, fps);
+  const urlDuration = secondsToFrames(TIMING.CTA_URL_DURATION, fps);
   const urlTypingProgress = Math.max(
     0,
-    Math.min(1, (frame - urlDelay) / (1.5 * fps))
+    Math.min(1, (frame - urlDelay) / urlDuration)
   );
   const displayedUrlLength = Math.floor(urlTypingProgress * PORTAL_URL.length);
   const displayedUrl = PORTAL_URL.slice(0, displayedUrlLength);
   const showCursor = frame >= urlDelay && urlTypingProgress < 1;
 
-  // URL container entrance
+  // URL container entrance - Fine-tuned timing
+  const urlContainerDelay = secondsToFrames(2.3, fps);
   const urlContainerSpring = spring({
-    frame: frame - Math.floor(2.3 * fps),
+    frame: frame - urlContainerDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const urlContainerOpacity = interpolate(urlContainerSpring, [0, 1], [0, 1]);
-  const urlContainerY = interpolate(urlContainerSpring, [0, 1], [30, 0]);
+  // Fine-tuned: Reduced Y translation
+  const urlContainerY = interpolate(urlContainerSpring, [0, 1], [25, 0]);
 
-  // URL pulse after typing complete
-  const urlPulseActive = frame > urlDelay + 1.5 * fps;
+  // URL pulse after typing complete using centralized config
+  const urlPulseActive = frame > urlDelay + urlDuration;
   const urlPulseIntensity = urlPulseActive
-    ? interpolate(Math.sin((frame - urlDelay - 1.5 * fps) * 0.1), [-1, 1], [0.6, 1])
+    ? interpolate(
+        Math.sin((frame - urlDelay - urlDuration) * GLOW_CONFIG.FREQUENCY.PULSE),
+        [-1, 1],
+        [0.6, 1]
+      )
     : 0;
 
-  // Subtitle entrance
-  const subtitleDelay = Math.floor(3.5 * fps);
+  // Subtitle entrance using centralized timing
+  const subtitleDelay = secondsToFrames(TIMING.CTA_SUBTITLE_DELAY, fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
-  const subtitleY = interpolate(subtitleSpring, [0, 1], [20, 0]);
+  // Fine-tuned: Reduced Y translation
+  const subtitleY = interpolate(subtitleSpring, [0, 1], [18, 0]);
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">

@@ -10,13 +10,13 @@ import {
 } from "remotion";
 import { Audio } from "@remotion/media";
 import { SparklineChart } from "../../components/SparklineChart";
-
-// Spring configurations
-const SNAPPY = { damping: 15, stiffness: 80 };
-const BOUNCY = { damping: 12 };
-
-// Stagger delay between meetup items (in frames)
-const MEETUP_STAGGER_DELAY = 15;
+import {
+  SPRING_CONFIGS,
+  STAGGER_DELAYS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 // Top meetups data with sparkline growth data
 const TOP_MEETUPS_DATA = [
@@ -83,45 +83,48 @@ export const TopMeetupsScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 3D Perspective entrance animation (0-60 frames)
+  // 3D Perspective entrance animation using centralized config
   const perspectiveSpring = spring({
     frame,
     fps,
-    config: { damping: 20, stiffness: 60 },
+    config: SPRING_CONFIGS.PERSPECTIVE,
   });
 
-  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [20, 0]);
-  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.9, 1]);
+  // Fine-tuned: Reduced initial rotation for smoother entrance
+  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [18, 0]);
+  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.92, 1]);
   const perspectiveOpacity = interpolate(perspectiveSpring, [0, 1], [0, 1]);
 
-  // Header entrance animation (delayed)
-  const headerDelay = Math.floor(0.3 * fps);
+  // Header entrance animation (delayed) - Fine-tuned timing
+  const headerDelay = secondsToFrames(0.35, fps);
   const headerSpring = spring({
     frame: frame - headerDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const headerOpacity = interpolate(headerSpring, [0, 1], [0, 1]);
-  const headerY = interpolate(headerSpring, [0, 1], [-40, 0]);
+  // Fine-tuned: Reduced Y translation
+  const headerY = interpolate(headerSpring, [0, 1], [-35, 0]);
 
-  // Subtitle animation (slightly more delayed)
-  const subtitleDelay = Math.floor(0.5 * fps);
+  // Subtitle animation (slightly more delayed) - Fine-tuned timing
+  const subtitleDelay = secondsToFrames(0.55, fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
-  const subtitleY = interpolate(subtitleSpring, [0, 1], [20, 0]);
+  // Fine-tuned: Reduced Y translation
+  const subtitleY = interpolate(subtitleSpring, [0, 1], [18, 0]);
 
-  // Base delay for meetup items
-  const meetupBaseDelay = Math.floor(1 * fps);
+  // Base delay for meetup items using centralized timing
+  const meetupBaseDelay = secondsToFrames(TIMING.CONTENT_BASE_DELAY, fps);
 
-  // Subtle glow pulse for leading meetup
+  // Subtle glow pulse for leading meetup using centralized config
   const glowIntensity = interpolate(
-    Math.sin(frame * 0.05),
+    Math.sin(frame * GLOW_CONFIG.FREQUENCY.SLOW),
     [-1, 1],
-    [0.4, 0.8]
+    GLOW_CONFIG.INTENSITY.NORMAL
   );
 
   return (
@@ -130,7 +133,7 @@ export const TopMeetupsScene: React.FC = () => {
       {TOP_MEETUPS_DATA.map((_, index) => (
         <Sequence
           key={`audio-${index}`}
-          from={meetupBaseDelay + index * MEETUP_STAGGER_DELAY}
+          from={meetupBaseDelay + index * STAGGER_DELAYS.MEETUP_RANK}
           durationInFrames={Math.floor(0.5 * fps)}
         >
           <Audio src={staticFile("sfx/checkmark-pop.mp3")} volume={0.4} />
@@ -199,7 +202,7 @@ export const TopMeetupsScene: React.FC = () => {
                   key={meetup.name}
                   meetup={meetup}
                   maxCount={MAX_USER_COUNT}
-                  delay={meetupBaseDelay + index * MEETUP_STAGGER_DELAY}
+                  delay={meetupBaseDelay + index * STAGGER_DELAYS.MEETUP_RANK}
                   glowIntensity={glowIntensity}
                   isLeading={index === 0}
                 />
@@ -250,29 +253,31 @@ const MeetupRow: React.FC<MeetupRowProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
-  // Row entrance spring
+  // Row entrance spring using centralized config
   const rowSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
   const rowOpacity = interpolate(rowSpring, [0, 1], [0, 1]);
-  const rowX = interpolate(rowSpring, [0, 1], [-80, 0]);
+  // Fine-tuned: Reduced X translation for subtler entrance
+  const rowX = interpolate(rowSpring, [0, 1], [-60, 0]);
 
-  // Rank badge bounce
+  // Rank badge bounce using centralized config
+  // Fine-tuned: Slightly increased delay for better stagger effect
   const rankSpring = spring({
-    frame: adjustedFrame - 5,
+    frame: adjustedFrame - 6,
     fps,
-    config: BOUNCY,
+    config: SPRING_CONFIGS.BOUNCY,
   });
   const rankScale = interpolate(rankSpring, [0, 1], [0, 1]);
 
-  // User count animation
+  // User count animation using centralized config
   const countSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: { damping: 18, stiffness: 70 },
+    config: SPRING_CONFIGS.FEATURED,
     durationInFrames: 45,
   });
   const displayCount = Math.round(countSpring * meetup.userCount);
@@ -280,8 +285,8 @@ const MeetupRow: React.FC<MeetupRowProps> = ({
   // Progress bar animation
   const barProgress = interpolate(rowSpring, [0, 1], [0, meetup.userCount / maxCount]);
 
-  // Sparkline delay (appears slightly after the bar)
-  const sparklineDelay = delay + 25;
+  // Sparkline delay (appears slightly after the bar) - Fine-tuned timing
+  const sparklineDelay = delay + 22;
 
   // Dynamic glow for leading meetup
   const leadingGlow = isLeading

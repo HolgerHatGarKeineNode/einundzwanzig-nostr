@@ -10,10 +10,12 @@ import {
 } from "remotion";
 import { Audio } from "@remotion/media";
 import { BitcoinEffect } from "../../components/BitcoinEffect";
-
-// Spring configurations
-const SMOOTH = { damping: 200 };
-const SNAPPY = { damping: 15, stiffness: 80 };
+import {
+  SPRING_CONFIGS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 /**
  * PortalOutroScene - Scene 9: Outro (12 seconds / 360 frames @ 30fps)
@@ -32,58 +34,63 @@ export const PortalOutroScene: React.FC = () => {
   const { fps } = useVideoConfig();
   const durationInFrames = 12 * fps; // 360 frames
 
-  // Background fade-in from black (0-30 frames)
+  // Background fade-in from black using centralized config
   const backgroundSpring = spring({
     frame,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
-  const backgroundOpacity = interpolate(backgroundSpring, [0, 1], [0, 0.3]);
+  // Fine-tuned: Slightly increased max opacity for better visibility
+  const backgroundOpacity = interpolate(backgroundSpring, [0, 1], [0, 0.35]);
 
-  // Logo entrance animation (delayed 1 second)
-  const logoDelay = Math.floor(1 * fps);
+  // Logo entrance animation using centralized timing
+  const logoDelay = secondsToFrames(TIMING.OUTRO_LOGO_DELAY, fps);
   const logoSpring = spring({
     frame: frame - logoDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1]);
-  const logoScale = interpolate(logoSpring, [0, 1], [0.8, 1]);
-  const logoY = interpolate(logoSpring, [0, 1], [30, 0]);
+  // Fine-tuned: Increased initial scale for smoother entrance
+  const logoScale = interpolate(logoSpring, [0, 1], [0.85, 1]);
+  // Fine-tuned: Reduced Y translation
+  const logoY = interpolate(logoSpring, [0, 1], [25, 0]);
 
-  // Logo glow pulse effect
+  // Logo glow pulse effect using centralized config
   const glowIntensity = interpolate(
-    Math.sin((frame - logoDelay) * 0.06),
+    Math.sin((frame - logoDelay) * GLOW_CONFIG.FREQUENCY.NORMAL),
     [-1, 1],
-    [0.4, 0.9]
+    GLOW_CONFIG.INTENSITY.NORMAL
   );
   const glowScale = interpolate(
-    Math.sin((frame - logoDelay) * 0.04),
+    Math.sin((frame - logoDelay) * GLOW_CONFIG.FREQUENCY.SLOW),
     [-1, 1],
-    [1.0, 1.2]
+    GLOW_CONFIG.SCALE.STRONG
   );
 
-  // Text entrance (delayed 2 seconds)
-  const textDelay = Math.floor(2 * fps);
+  // Text entrance using centralized timing
+  const textDelay = secondsToFrames(TIMING.OUTRO_TEXT_DELAY, fps);
   const textSpring = spring({
     frame: frame - textDelay,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
   const textOpacity = interpolate(textSpring, [0, 1], [0, 1]);
-  const textY = interpolate(textSpring, [0, 1], [20, 0]);
+  // Fine-tuned: Reduced Y translation
+  const textY = interpolate(textSpring, [0, 1], [18, 0]);
 
-  // Subtitle entrance (delayed 2.5 seconds)
-  const subtitleDelay = Math.floor(2.5 * fps);
+  // Subtitle entrance using centralized timing
+  const subtitleDelay = secondsToFrames(TIMING.OUTRO_SUBTITLE_DELAY, fps);
   const subtitleSpring = spring({
     frame: frame - subtitleDelay,
     fps,
-    config: SMOOTH,
+    config: SPRING_CONFIGS.SMOOTH,
   });
   const subtitleOpacity = interpolate(subtitleSpring, [0, 1], [0, 1]);
 
-  // Final fade out in last 2 seconds (frames 300-360)
-  const fadeOutStart = durationInFrames - 2 * fps;
+  // Final fade out using centralized timing
+  const fadeOutDuration = secondsToFrames(TIMING.OUTRO_FADE_DURATION, fps);
+  const fadeOutStart = durationInFrames - fadeOutDuration;
   const finalFadeOpacity = interpolate(
     frame,
     [fadeOutStart, durationInFrames],

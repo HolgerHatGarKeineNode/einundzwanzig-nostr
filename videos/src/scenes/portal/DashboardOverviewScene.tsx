@@ -13,12 +13,13 @@ import { DashboardSidebar, SidebarNavItem } from "../../components/DashboardSide
 import { StatsCounter } from "../../components/StatsCounter";
 import { SparklineChart } from "../../components/SparklineChart";
 import { ActivityItem } from "../../components/ActivityItem";
-
-// Spring configurations
-const SNAPPY = { damping: 15, stiffness: 80 };
-
-// Stagger delay between content cards
-const CARD_STAGGER_DELAY = 5;
+import {
+  SPRING_CONFIGS,
+  STAGGER_DELAYS,
+  TIMING,
+  GLOW_CONFIG,
+  secondsToFrames,
+} from "../../config/timing";
 
 // Navigation items for the sidebar
 const NAV_ITEMS: SidebarNavItem[] = [
@@ -54,32 +55,33 @@ export const DashboardOverviewScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 3D Perspective entrance animation (0-60 frames)
+  // 3D Perspective entrance animation using centralized config
+  // Fine-tuned: slightly reduced initial rotation for less dramatic entrance
   const perspectiveSpring = spring({
     frame,
     fps,
-    config: { damping: 20, stiffness: 60 },
+    config: SPRING_CONFIGS.PERSPECTIVE,
   });
 
-  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [30, 0]);
-  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.85, 1]);
+  const perspectiveX = interpolate(perspectiveSpring, [0, 1], [25, 0]); // Reduced from 30
+  const perspectiveScale = interpolate(perspectiveSpring, [0, 1], [0.88, 1]); // Increased from 0.85
   const perspectiveOpacity = interpolate(perspectiveSpring, [0, 1], [0, 1]);
 
-  // Header entrance animation (delayed)
-  const headerDelay = Math.floor(0.5 * fps);
+  // Header entrance animation (delayed) using centralized timing
+  const headerDelay = secondsToFrames(TIMING.HEADER_DELAY, fps);
   const headerSpring = spring({
     frame: frame - headerDelay,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
   const headerOpacity = interpolate(headerSpring, [0, 1], [0, 1]);
   const headerY = interpolate(headerSpring, [0, 1], [-30, 0]);
 
-  // Subtle background glow pulse
+  // Subtle background glow pulse using centralized config
   const glowIntensity = interpolate(
-    Math.sin(frame * 0.04),
+    Math.sin(frame * GLOW_CONFIG.FREQUENCY.SLOW),
     [-1, 1],
-    [0.3, 0.5]
+    GLOW_CONFIG.INTENSITY.SUBTLE
   );
 
   // Sidebar dimensions
@@ -90,8 +92,8 @@ export const DashboardOverviewScene: React.FC = () => {
   const cardWidth = 380;
   const cardGap = 24;
 
-  // Card entrance delays (staggered)
-  const cardBaseDelay = Math.floor(1 * fps); // Start after 1 second
+  // Card entrance delays (staggered) using centralized timing
+  const cardBaseDelay = secondsToFrames(TIMING.CONTENT_BASE_DELAY, fps);
 
   return (
     <AbsoluteFill className="bg-zinc-900 overflow-hidden">
@@ -172,7 +174,7 @@ export const DashboardOverviewScene: React.FC = () => {
               className="flex gap-6 mb-8"
               style={{ gap: cardGap }}
             >
-              {/* Meetups Card */}
+              {/* Meetups Card - Fine-tuned: increased stagger delay between cards for better visual flow */}
               <StatsCard
                 title="Meetups"
                 delay={cardBaseDelay}
@@ -181,8 +183,8 @@ export const DashboardOverviewScene: React.FC = () => {
               >
                 <StatsCounter
                   targetNumber={204}
-                  delay={cardBaseDelay + 15}
-                  duration={60}
+                  delay={cardBaseDelay + TIMING.COUNTER_PRE_DELAY}
+                  duration={TIMING.COUNTER_DURATION}
                   label="Aktive Gruppen"
                   fontSize={72}
                   color="#f7931a"
@@ -192,7 +194,7 @@ export const DashboardOverviewScene: React.FC = () => {
                     data={MEETUP_TREND_DATA}
                     width={cardWidth - 48}
                     height={60}
-                    delay={cardBaseDelay + 30}
+                    delay={cardBaseDelay + TIMING.SPARKLINE_PRE_DELAY}
                     showFill={true}
                     fillOpacity={0.15}
                   />
@@ -202,14 +204,14 @@ export const DashboardOverviewScene: React.FC = () => {
               {/* Users Card */}
               <StatsCard
                 title="Benutzer"
-                delay={cardBaseDelay + CARD_STAGGER_DELAY}
+                delay={cardBaseDelay + STAGGER_DELAYS.CARD}
                 width={cardWidth}
                 glowIntensity={glowIntensity}
               >
                 <StatsCounter
                   targetNumber={1247}
-                  delay={cardBaseDelay + CARD_STAGGER_DELAY + 15}
-                  duration={60}
+                  delay={cardBaseDelay + STAGGER_DELAYS.CARD + TIMING.COUNTER_PRE_DELAY}
+                  duration={TIMING.COUNTER_DURATION}
                   label="Registrierte Nutzer"
                   fontSize={72}
                   color="#f7931a"
@@ -219,7 +221,7 @@ export const DashboardOverviewScene: React.FC = () => {
                     data={USER_TREND_DATA}
                     width={cardWidth - 48}
                     height={60}
-                    delay={cardBaseDelay + CARD_STAGGER_DELAY + 30}
+                    delay={cardBaseDelay + STAGGER_DELAYS.CARD + TIMING.SPARKLINE_PRE_DELAY}
                     showFill={true}
                     fillOpacity={0.15}
                   />
@@ -229,14 +231,14 @@ export const DashboardOverviewScene: React.FC = () => {
               {/* Events Card */}
               <StatsCard
                 title="Events"
-                delay={cardBaseDelay + CARD_STAGGER_DELAY * 2}
+                delay={cardBaseDelay + STAGGER_DELAYS.CARD * 2}
                 width={cardWidth}
                 glowIntensity={glowIntensity}
               >
                 <StatsCounter
                   targetNumber={89}
-                  delay={cardBaseDelay + CARD_STAGGER_DELAY * 2 + 15}
-                  duration={60}
+                  delay={cardBaseDelay + STAGGER_DELAYS.CARD * 2 + TIMING.COUNTER_PRE_DELAY}
+                  duration={TIMING.COUNTER_DURATION}
                   label="Diese Woche"
                   fontSize={72}
                   color="#f7931a"
@@ -246,7 +248,7 @@ export const DashboardOverviewScene: React.FC = () => {
                     data={EVENT_TREND_DATA}
                     width={cardWidth - 48}
                     height={60}
-                    delay={cardBaseDelay + CARD_STAGGER_DELAY * 2 + 30}
+                    delay={cardBaseDelay + STAGGER_DELAYS.CARD * 2 + TIMING.SPARKLINE_PRE_DELAY}
                     showFill={true}
                     fillOpacity={0.15}
                   />
@@ -258,13 +260,13 @@ export const DashboardOverviewScene: React.FC = () => {
             <div className="flex gap-6" style={{ gap: cardGap }}>
               {/* Activity Feed */}
               <ActivitySection
-                delay={cardBaseDelay + CARD_STAGGER_DELAY * 3}
+                delay={cardBaseDelay + STAGGER_DELAYS.CARD * 3}
                 glowIntensity={glowIntensity}
               />
 
               {/* Quick Stats */}
               <QuickStatsSection
-                delay={cardBaseDelay + CARD_STAGGER_DELAY * 4}
+                delay={cardBaseDelay + STAGGER_DELAYS.CARD * 4}
                 glowIntensity={glowIntensity}
               />
             </div>
@@ -306,15 +308,18 @@ const StatsCard: React.FC<StatsCardProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized SNAPPY config for consistent card animations
   const cardSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
-  const cardScale = interpolate(cardSpring, [0, 1], [0.8, 1]);
+  // Fine-tuned: Slightly increased initial scale for smoother entrance
+  const cardScale = interpolate(cardSpring, [0, 1], [0.85, 1]);
   const cardOpacity = interpolate(cardSpring, [0, 1], [0, 1]);
-  const cardY = interpolate(cardSpring, [0, 1], [30, 0]);
+  // Fine-tuned: Reduced Y translation for subtler entrance
+  const cardY = interpolate(cardSpring, [0, 1], [25, 0]);
 
   return (
     <div
@@ -349,14 +354,15 @@ const ActivitySection: React.FC<ActivitySectionProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized SNAPPY config
   const sectionSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
   const sectionOpacity = interpolate(sectionSpring, [0, 1], [0, 1]);
-  const sectionY = interpolate(sectionSpring, [0, 1], [30, 0]);
+  const sectionY = interpolate(sectionSpring, [0, 1], [25, 0]); // Fine-tuned: reduced Y
 
   const activities = [
     { eventName: "EINUNDZWANZIG Kempten", timestamp: "vor 13 Stunden", badgeText: "Neuer Termin" },
@@ -381,7 +387,7 @@ const ActivitySection: React.FC<ActivitySectionProps> = ({
             eventName={activity.eventName}
             timestamp={activity.timestamp}
             badgeText={activity.badgeText}
-            delay={delay + 10 + index * 8}
+            delay={delay + 10 + index * STAGGER_DELAYS.LIST_ITEM}
             width={480}
           />
         ))}
@@ -407,14 +413,15 @@ const QuickStatsSection: React.FC<QuickStatsSectionProps> = ({
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized SNAPPY config
   const sectionSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: SNAPPY,
+    config: SPRING_CONFIGS.SNAPPY,
   });
 
   const sectionOpacity = interpolate(sectionSpring, [0, 1], [0, 1]);
-  const sectionY = interpolate(sectionSpring, [0, 1], [30, 0]);
+  const sectionY = interpolate(sectionSpring, [0, 1], [25, 0]); // Fine-tuned: reduced Y
 
   return (
     <div
@@ -436,12 +443,12 @@ const QuickStatsSection: React.FC<QuickStatsSectionProps> = ({
         <QuickStatRow
           label="Neue diese Woche"
           value={12}
-          delay={delay + 18}
+          delay={delay + 10 + STAGGER_DELAYS.QUICK_STAT}
         />
         <QuickStatRow
           label="Aktive Nutzer"
           value={847}
-          delay={delay + 26}
+          delay={delay + 10 + STAGGER_DELAYS.QUICK_STAT * 2}
         />
       </div>
     </div>
@@ -463,14 +470,16 @@ const QuickStatRow: React.FC<QuickStatRowProps> = ({ label, value, delay }) => {
 
   const adjustedFrame = Math.max(0, frame - delay);
 
+  // Fine-tuned: Using centralized ROW config
   const rowSpring = spring({
     frame: adjustedFrame,
     fps,
-    config: { damping: 15, stiffness: 90 },
+    config: SPRING_CONFIGS.ROW,
   });
 
   const rowOpacity = interpolate(rowSpring, [0, 1], [0, 1]);
-  const rowX = interpolate(rowSpring, [0, 1], [-20, 0]);
+  // Fine-tuned: Reduced X translation for subtler entrance
+  const rowX = interpolate(rowSpring, [0, 1], [-15, 0]);
 
   // Animated counter
   const counterValue = interpolate(rowSpring, [0, 1], [0, value]);
