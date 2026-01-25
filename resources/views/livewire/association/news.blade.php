@@ -4,8 +4,10 @@ use App\Enums\NewsCategory;
 use App\Models\Notification;
 use App\Support\NostrAuth;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -16,6 +18,9 @@ class extends Component {
     use WithFileUploads;
 
     public Collection|array $news = [];
+
+    #[Url(as: 'kategorie')]
+    public ?int $selectedCategory = null;
 
     public array $form = [
         'category' => '',
@@ -49,11 +54,38 @@ class extends Component {
                 $this->canEdit = true;
             }
 
-            $this->news = \App\Models\Notification::query()
-                ->with(['einundzwanzigPleb.profile'])
-                ->latest()
-                ->get();
+            $this->loadNews();
         }
+    }
+
+    #[Computed]
+    public function filteredNews(): Collection|array
+    {
+        if ($this->selectedCategory === null) {
+            return $this->news;
+        }
+
+        return collect($this->news)->filter(
+            fn ($item) => $item->category->value === $this->selectedCategory
+        );
+    }
+
+    public function filterByCategory(?int $category): void
+    {
+        $this->selectedCategory = $this->selectedCategory === $category ? null : $category;
+    }
+
+    public function clearFilter(): void
+    {
+        $this->selectedCategory = null;
+    }
+
+    private function loadNews(): void
+    {
+        $this->news = Notification::query()
+            ->with(['einundzwanzigPleb.profile'])
+            ->latest()
+            ->get();
     }
 
     public function save(): void
@@ -81,11 +113,7 @@ class extends Component {
         }
 
         $this->reset(['form', 'file']);
-
-        $this->news = \App\Models\Notification::query()
-            ->with(['einundzwanzigPleb.profile'])
-            ->latest()
-            ->get();
+        $this->loadNews();
     }
 
     public function confirmDelete(int $id): void
@@ -97,11 +125,7 @@ class extends Component {
     {
         $news = Notification::query()->findOrFail($this->confirmDeleteId);
         $news->delete();
-
-        $this->news = \App\Models\Notification::query()
-            ->with(['einundzwanzigPleb.profile'])
-            ->latest()
-            ->get();
+        $this->loadNews();
     }
 
     public function removeFile(): void
@@ -143,17 +167,38 @@ class extends Component {
                                     <div>
                                         <div
                                             class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase mb-3 md:sr-only">
-                                            Menu
+                                            Kategorien
                                         </div>
                                         <ul class="flex flex-nowrap md:block mr-3 md:mr-0">
+                                            <li class="mr-0.5 md:mr-0 md:mb-0.5" wire:key="category_all">
+                                                <button
+                                                    type="button"
+                                                    wire:click="clearFilter"
+                                                    @class([
+                                                        'inline-flex items-center px-2.5 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer',
+                                                        'bg-amber-500 text-white' => $selectedCategory === null,
+                                                        'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600' => $selectedCategory !== null,
+                                                    ])
+                                                >
+                                                    <i class="fa-sharp-duotone fa-solid fa-layer-group shrink-0 fill-current mr-2"></i>
+                                                    <span>Alle</span>
+                                                </button>
+                                            </li>
                                             @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
                                                 <li class="mr-0.5 md:mr-0 md:mb-0.5"
                                                     wire:key="category_{{ $category['value'] }}">
-                                                    <flux:badge>
-                                                        <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current text-amber-500 mr-2"></i>
-                                                        <span
-                                                            class="text-sm font-medium text-amber-500">{{ $category['label'] }}</span>
-                                                    </flux:badge>
+                                                    <button
+                                                        type="button"
+                                                        wire:click="filterByCategory({{ $category['value'] }})"
+                                                        @class([
+                                                            'inline-flex items-center px-2.5 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer',
+                                                            'bg-amber-500 text-white' => $selectedCategory === $category['value'],
+                                                            'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600' => $selectedCategory !== $category['value'],
+                                                        ])
+                                                    >
+                                                        <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} shrink-0 fill-current mr-2"></i>
+                                                        <span>{{ $category['label'] }}</span>
+                                                    </button>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -168,7 +213,7 @@ class extends Component {
                         <div class="md:py-8">
 
                             <div class="space-y-2">
-                                @forelse($news as $post)
+                                @forelse($this->filteredNews as $post)
                                     <flux:card wire:key="post_{{ $post->id }}">
                                         <!-- Avatar -->
                                         <div class="shrink-0 mt-1.5">
@@ -179,6 +224,17 @@ class extends Component {
                                         </div>
                                         <!-- Content -->
                                         <div class="grow">
+                                            <!-- Category Badge -->
+                                            <div class="mb-2">
+                                                <button
+                                                    type="button"
+                                                    wire:click="filterByCategory({{ $post->category->value }})"
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
+                                                >
+                                                    <i class="fa-sharp-duotone fa-solid fa-{{ $post->category->icon() }} mr-1"></i>
+                                                    {{ $post->category->label() }}
+                                                </button>
+                                            </div>
                                             <!-- Title -->
                                             <h2 class="font-semibold text-zinc-800 dark:text-zinc-100 mb-2">
                                                 {{ $post->name }}
@@ -252,7 +308,14 @@ class extends Component {
                                     </flux:card>
                                 @empty
                                     <flux:card>
-                                        <p>Keine News vorhanden.</p>
+                                        @if($selectedCategory !== null)
+                                            <p>Keine News in dieser Kategorie vorhanden.</p>
+                                            <flux:button wire:click="clearFilter" size="sm" class="mt-2">
+                                                Alle anzeigen
+                                            </flux:button>
+                                        @else
+                                            <p>Keine News vorhanden.</p>
+                                        @endif
                                     </flux:card>
                                 @endforelse
                             </div>
