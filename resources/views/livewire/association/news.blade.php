@@ -270,7 +270,7 @@ class extends Component {
                                             <flux:button
                                                 xs
                                                 target="_blank"
-                                                :href="url()->temporarySignedRoute('dl', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
+                                                :href="url()->temporarySignedRoute('media.signed', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
                                                 icon="cloud-arrow-down">
                                                 Öffnen
                                             </flux:button>
