@@ -179,7 +179,7 @@ class extends Component
                                         <div class="mt-4">
                                             <flux:file-item
                                                 :heading="$project->getFirstMedia('main')->file_name"
-                                                :image="$project->getFirstMediaUrl('main')"
+                                                :image="$project->getSignedMediaUrl('main')"
                                                 :size="$project->getFirstMedia('main')->size"
                                             >
                                                 <x-slot name="actions">

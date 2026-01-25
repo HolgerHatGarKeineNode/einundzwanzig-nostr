@@ -13,6 +13,15 @@ Route::get('dl/{media}', function (Media $media, Request $request) {
     ->name('dl')
     ->middleware('signed');
 
+Route::get('media/{media}', function (Media $media, Request $request) {
+    return response()->file($media->getPath(), [
+        'Content-Type' => $media->mime_type,
+        'Cache-Control' => 'private, max-age=3600',
+    ]);
+})
+    ->name('media.signed')
+    ->middleware('signed');
+
 Route::post('logout', function () {
     \App\Support\NostrAuth::logout();
     Session::flush();

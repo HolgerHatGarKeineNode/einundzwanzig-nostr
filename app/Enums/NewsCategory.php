@@ -20,8 +20,32 @@ enum NewsCategory: int
     use Options;
     use Values;
 
+    #[Label('Einundzwanzig')] #[Color('amber')] #[Icon('bitcoin-sign')]
+    case Einundzwanzig = 1;
+
+    #[Label('Allgemeines')] #[Color('zinc')] #[Icon('newspaper')]
+    case Allgemeines = 2;
+
     #[Label('Organisation')] #[Color('cyan')] #[Icon('file-lines')]
-    case ORGANISATION = 1;
+    case Organisation = 3;
+
+    #[Label('Bitcoin')] #[Color('orange')] #[Icon('coins')]
+    case Bitcoin = 4;
+
+    #[Label('Meetups')] #[Color('green')] #[Icon('users')]
+    case Meetups = 5;
+
+    #[Label('Bildung')] #[Color('blue')] #[Icon('graduation-cap')]
+    case Bildung = 6;
+
+    #[Label('Protokolle')] #[Color('purple')] #[Icon('clipboard-list')]
+    case Protokolle = 7;
+
+    #[Label('Finanzen')] #[Color('emerald')] #[Icon('chart-pie')]
+    case Finanzen = 8;
+
+    #[Label('Veranstaltungen')] #[Color('rose')] #[Icon('calendar-star')]
+    case Veranstaltungen = 9;
 
     public static function selectOptions()
     {

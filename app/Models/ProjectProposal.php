@@ -73,7 +73,18 @@ class ProjectProposal extends Model implements HasMedia
                 'image/gif',
                 'image/webp',
             ])
+            ->useDisk('private')
             ->useFallbackUrl(asset('einundzwanzig-alpha.jpg'));
+    }
+
+    public function getSignedMediaUrl(string $collection = 'main', int $expireMinutes = 60): string
+    {
+        $media = $this->getFirstMedia($collection);
+        if (! $media) {
+            return asset('einundzwanzig-alpha.jpg');
+        }
+
+        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), ['media' => $media]);
     }
 
     public function einundzwanzigPleb(): BelongsTo

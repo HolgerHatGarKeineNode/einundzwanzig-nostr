@@ -67,6 +67,7 @@ class Course extends Model implements HasMedia
                 'image/gif',
                 'image/webp',
             ])
+            ->useDisk('private')
             ->useFallbackUrl(asset('img/einundzwanzig.png'));
         $this->addMediaCollection('images')
             ->acceptsMimeTypes([
@@ -75,7 +76,18 @@ class Course extends Model implements HasMedia
                 'image/gif',
                 'image/webp',
             ])
+            ->useDisk('private')
             ->useFallbackUrl(asset('img/einundzwanzig.png'));
+    }
+
+    public function getSignedMediaUrl(string $collection = 'logo', int $expireMinutes = 60): string
+    {
+        $media = $this->getFirstMedia($collection);
+        if (! $media) {
+            return asset('img/einundzwanzig.png');
+        }
+
+        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), ['media' => $media]);
     }
 
     public function createdBy(): BelongsTo
