@@ -63,6 +63,12 @@ class Venue extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
+            ->acceptsMimeTypes([
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp',
+            ])
             ->useFallbackUrl(asset('img/einundzwanzig.png'));
     }
 

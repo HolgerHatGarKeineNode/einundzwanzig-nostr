@@ -67,6 +67,12 @@ class ProjectProposal extends Model implements HasMedia
         $this
             ->addMediaCollection('main')
             ->singleFile()
+            ->acceptsMimeTypes([
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp',
+            ])
             ->useFallbackUrl(asset('einundzwanzig-alpha.jpg'));
     }
 

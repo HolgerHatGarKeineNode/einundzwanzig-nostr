@@ -73,6 +73,12 @@ class Meetup extends Model implements HasMedia
     {
         $this->addMediaCollection('logo')
             ->singleFile()
+            ->acceptsMimeTypes([
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp',
+            ])
             ->useFallbackUrl(asset('img/einundzwanzig.png'));
     }
 

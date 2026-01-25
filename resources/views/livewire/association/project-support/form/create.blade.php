@@ -60,7 +60,7 @@ class extends Component
             'form.description' => 'required|string',
             'form.support_in_sats' => 'required|integer|min:0',
             'form.website' => 'required|url|max:255',
-            'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
         $projectProposal = ProjectProposal::query()->create([
