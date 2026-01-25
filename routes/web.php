@@ -3,21 +3,29 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 Route::redirect('/', '/association/profile');
 
 Route::get('dl/{media}', function (Media $media, Request $request) {
-    return response()->download($media->getPath(), $media->name);
+    return Storage::disk($media->disk)->download(
+        $media->getPathRelativeToRoot(),
+        $media->file_name
+    );
 })
     ->name('dl')
     ->middleware('signed');
 
 Route::get('media/{media}', function (Media $media, Request $request) {
-    return response()->file($media->getPath(), [
-        'Content-Type' => $media->mime_type,
-        'Cache-Control' => 'private, max-age=3600',
-    ]);
+    return Storage::disk($media->disk)->response(
+        $media->getPathRelativeToRoot(),
+        $media->file_name,
+        [
+            'Content-Type' => $media->mime_type,
+            'Cache-Control' => 'private, max-age=3600',
+        ]
+    );
 })
     ->name('media.signed')
     ->middleware('signed');
