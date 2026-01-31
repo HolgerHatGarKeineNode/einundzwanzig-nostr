@@ -168,3 +168,125 @@ it('can initiate payment', function () {
 
     $response->assertRedirect();
 });
+
+it('removes expired invoices so a fresh payment event is available', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    $pleb->paymentEvents()->create([
+        'year' => date('Y'),
+        'amount' => 21000,
+        'event_id' => 'event-old',
+        'btc_pay_invoice' => 'invoice-old',
+    ]);
+
+    Http::fake([
+        'https://pay.einundzwanzig.space/*' => Http::response([
+            'id' => 'invoice-old',
+            'status' => 'Expired',
+            'expirationTime' => now()->subMinutes(5)->toIso8601String(),
+            'monitoringExpiration' => now()->toIso8601String(),
+        ], 200),
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->assertSet('invoiceStatus', 'Expired')
+        ->assertSet('invoiceStatusVariant', 'warning');
+
+    $pleb->refresh();
+
+    expect($pleb->paymentEvents()->count())->toBe(1);
+    expect($pleb->paymentEvents()->first()->btc_pay_invoice)->toBeNull();
+});
+
+it('shows invoice status details including remaining validity', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    $pleb->paymentEvents()->create([
+        'year' => date('Y'),
+        'amount' => 21000,
+        'event_id' => 'event-status',
+        'btc_pay_invoice' => 'invoice-new',
+    ]);
+
+    Http::fake([
+        'https://pay.einundzwanzig.space/*' => Http::response([
+            'id' => 'invoice-new',
+            'status' => 'New',
+            'expirationTime' => now()->addMinutes(30)->toIso8601String(),
+            'monitoringExpiration' => now()->addHours(2)->toIso8601String(),
+        ], 200),
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    $component = Livewire::test('association.profile')
+        ->call('listenForPayment')
+        ->assertSet('invoiceStatus', 'New')
+        ->assertSet('invoiceStatusVariant', 'info');
+
+    expect($component->get('invoiceExpiresAt'))->not->toBeNull();
+    expect($component->get('invoiceExpiresIn'))->not->toBeNull();
+});
+
+it('handles settled invoice with numeric expiration timestamps', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    $pleb->paymentEvents()->create([
+        'year' => date('Y'),
+        'amount' => 21000,
+        'event_id' => 'event-real',
+        'btc_pay_invoice' => 'invoice-real',
+    ]);
+
+    Http::fake([
+        'https://pay.einundzwanzig.space/*' => Http::response([
+            'id' => 'invoice-real',
+            'status' => 'Settled',
+            'additionalStatus' => 'None',
+            'monitoringExpiration' => now()->addDay()->timestamp,
+            'expirationTime' => now()->addHour()->timestamp,
+            'createdTime' => now()->subDay()->timestamp,
+            'amount' => '21000',
+            'paidAmount' => '21000',
+        ], 200),
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->call('listenForPayment')
+        ->assertSet('invoiceStatus', 'Settled')
+        ->assertSet('invoiceStatusVariant', 'success')
+        ->assertSet('currentYearIsPaid', true)
+        ->assertSet('invoiceStatusMessage', 'Zahlung bestätigt. Danke!');
+});
+
+it('does not show stale settled status when invoice check fails', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    $pleb->paymentEvents()->create([
+        'year' => date('Y'),
+        'amount' => 21000,
+        'event_id' => 'event-fail',
+        'btc_pay_invoice' => 'invoice-fail',
+        'paid' => true,
+    ]);
+
+    Http::fake([
+        'https://pay.einundzwanzig.space/*' => Http::response([], 500),
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.profile')
+        ->set('invoiceStatus', 'Settled')
+        ->set('invoiceStatusLabel', 'Bezahlt')
+        ->call('listenForPayment')
+        ->assertSet('invoiceStatus', null)
+        ->assertSet('invoiceStatusLabel', 'Status unbekannt')
+        ->assertSet('invoiceStatusVariant', 'danger')
+        ->assertSet('invoiceStatusMessage', 'Die Rechnung konnte nicht überprüft werden. Bitte versuche es später erneut.')
+        ->assertSet('currentYearIsPaid', true);
+});

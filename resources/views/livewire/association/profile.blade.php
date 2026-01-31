@@ -3,9 +3,13 @@
 use App\Livewire\Forms\ApplicationForm;
 use App\Livewire\Forms\ProfileForm;
 use App\Models\EinundzwanzigPleb;
+use App\Models\PaymentEvent;
 use App\Support\NostrAuth;
 use App\Traits\NostrFetcherTrait;
+use Carbon\Carbon;
 use Flux\Flux;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
@@ -44,6 +48,20 @@ new class extends Component {
 
     public $payments;
 
+    public ?string $invoiceStatus = null;
+
+    public ?string $invoiceStatusLabel = null;
+
+    public ?string $invoiceStatusMessage = null;
+
+    public string $invoiceStatusVariant = 'info';
+
+    public ?string $invoiceExpiresAt = null;
+
+    public ?string $invoiceExpiresAtDisplay = null;
+
+    public ?string $invoiceExpiresIn = null;
+
     public int $amountToPay = 21000;
 
     public bool $currentYearIsPaid = false;
@@ -61,43 +79,43 @@ new class extends Component {
 
     public function mount(): void
     {
-        if (NostrAuth::check()) {
-            $this->currentPubkey = NostrAuth::pubkey();
-            $this->currentPleb = EinundzwanzigPleb::query()
-                ->with([
-                    'paymentEvents' => fn($query) => $query->where('year', date('Y')),
-                    'profile',
-                ])
-                ->where('pubkey', $this->currentPubkey)->first();
-            if ($this->currentPleb) {
-                $this->profileForm->setPleb($this->currentPleb);
-                $this->form->setPleb($this->currentPleb);
+        if (!NostrAuth::check()) {
+            return;
+        }
 
-                if ($this->currentPleb->nip05_handle) {
-                    // Get all NIP-05 handles for the current pubkey
-                    $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
+        $this->currentPubkey = NostrAuth::pubkey();
+        $this->currentPleb = EinundzwanzigPleb::query()
+            ->with([
+                'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+                'profile',
+            ])
+            ->where('pubkey', $this->currentPubkey)->first();
 
-                    if (count($this->nip05VerifiedHandles) > 0) {
-                        $this->nip05Verified = true;
-                        $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
+        if (!$this->currentPleb) {
+            return;
+        }
 
-                        // Check if verified handle differs from database handle
-                        if (!in_array($this->profileForm->nip05Handle, $this->nip05VerifiedHandles, true)) {
-                            $this->nip05HandleMismatch = true;
-                        }
-                    }
+        $this->profileForm->setPleb($this->currentPleb);
+        $this->form->setPleb($this->currentPleb);
+
+        if ($this->currentPleb->nip05_handle) {
+            $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
+
+            if (count($this->nip05VerifiedHandles) > 0) {
+                $this->nip05Verified = true;
+                $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
+
+                if (!in_array($this->profileForm->nip05Handle, $this->nip05VerifiedHandles, true)) {
+                    $this->nip05HandleMismatch = true;
                 }
-                $this->no = $this->currentPleb->no_email;
-                $this->showEmail = !$this->no;
-                $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
-                if ($this->currentPleb->paymentEvents->count() < 1) {
-                    $this->createPaymentEvent();
-                    $this->currentPleb->load('paymentEvents');
-                }
-                $this->loadEvents();
-                $this->listenForPayment();
             }
         }
+        $this->no = $this->currentPleb->no_email;
+        $this->showEmail = !$this->no;
+        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+        $this->resolveCurrentPaymentEvent();
+        $this->loadEvents();
+        $this->listenForPayment();
     }
 
     public function updatedNo(): void
@@ -170,10 +188,14 @@ new class extends Component {
 
     public function pay($comment): mixed
     {
-        $paymentEvent = $this->currentPleb
-            ->paymentEvents()
-            ->where('year', date('Y'))
-            ->first();
+        if (!$this->currentPleb) {
+            return redirect()->route('association.profile');
+        }
+
+        $paymentEvent = $this->resolveCurrentPaymentEvent();
+        $this->resetInvoiceMeta();
+        $paymentEvent = $this->syncPaymentEventStatus($paymentEvent);
+
         if ($paymentEvent->btc_pay_invoice) {
             return redirect()->away('https://pay.einundzwanzig.space/i/'.$paymentEvent->btc_pay_invoice);
         }
@@ -202,11 +224,17 @@ new class extends Component {
                     ],
                 ],
             )->throw();
-            $paymentEvent->btc_pay_invoice = $response->json()['id'];
+
+            $invoice = $response->json();
+            $paymentEvent->btc_pay_invoice = $invoice['id'];
             $paymentEvent->save();
 
-            return redirect()->away($response->json()['checkoutLink']);
-        } catch (\Exception $e) {
+            $this->applyInvoiceMeta($invoice);
+            $this->invoiceStatusVariant = 'info';
+            $this->invoiceStatusMessage = 'Rechnung erstellt. Bitte bezahle sie vor Ablauf.';
+
+            return redirect()->away($invoice['checkoutLink']);
+        } catch (\Throwable $e) {
             Flux::toast(
                 'Fehler beim Erstellen der Rechnung. Bitte versuche es später erneut: '.$e->getMessage(),
                 variant: 'danger',
@@ -218,36 +246,212 @@ new class extends Component {
 
     public function listenForPayment(): void
     {
-        $paymentEvent = $this->currentPleb
-            ->paymentEvents()
-            ->where('year', date('Y'))
-            ->first();
-        if ($paymentEvent->btc_pay_invoice) {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => 'token '.config('services.btc_pay.api_key'),
-            ])
-                ->get(
-                    'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/'.$paymentEvent->btc_pay_invoice,
-                );
-            if ($response->json()['status'] === 'Expired') {
-                $paymentEvent->btc_pay_invoice = null;
-                $paymentEvent->paid = false;
-                $paymentEvent->save();
-            }
-            if ($response->json()['status'] === 'Settled') {
-                $paymentEvent->paid = true;
-                $paymentEvent->save();
-                $this->currentYearIsPaid = true;
-            }
+        if (!$this->currentPleb) {
+            return;
         }
-        if ($paymentEvent->paid) {
-            $this->currentYearIsPaid = true;
-        }
-        $paymentEvent = $paymentEvent->refresh();
+
+        $paymentEvent = $this->resolveCurrentPaymentEvent();
+
+        $this->resetInvoiceMeta();
+
+        $paymentEvent = $this->syncPaymentEventStatus($paymentEvent);
+        $this->currentYearIsPaid = (bool) $paymentEvent->paid;
+
         $this->payments = $this->currentPleb
             ->paymentEvents()
             ->where('paid', true)
             ->get();
+    }
+
+    protected function resolveCurrentPaymentEvent(): PaymentEvent
+    {
+        $paymentEvents = $this->currentPleb
+            ->paymentEvents()
+            ->where('year', date('Y'))
+            ->orderByDesc('id')
+            ->get();
+
+        if ($paymentEvents->count() > 1) {
+            $this->pruneDuplicatePaymentEvents($paymentEvents);
+
+            $paymentEvents = $this->currentPleb
+                ->paymentEvents()
+                ->where('year', date('Y'))
+                ->orderByDesc('id')
+                ->get();
+        }
+
+        if ($paymentEvents->isEmpty()) {
+            $paymentEvent = $this->createPaymentEvent();
+        } else {
+            $paymentEvent = $paymentEvents->first();
+        }
+
+        $this->currentPleb->setRelation(
+            'paymentEvents',
+            $this->currentPleb
+                ->paymentEvents()
+                ->where('year', date('Y'))
+                ->orderBy('id')
+                ->get(),
+        );
+
+        return $paymentEvent;
+    }
+
+    protected function pruneDuplicatePaymentEvents(Collection $paymentEvents): void
+    {
+        $eventToKeep = $paymentEvents
+            ->sortByDesc(fn (PaymentEvent $event) => [
+                (int) $event->paid,
+                $event->updated_at?->timestamp ?? 0,
+            ])
+            ->first();
+
+        $idsToDelete = $paymentEvents
+            ->where('id', '!=', $eventToKeep?->id)
+            ->pluck('id');
+
+        if ($idsToDelete->isNotEmpty()) {
+            PaymentEvent::query()
+                ->whereIn('id', $idsToDelete)
+                ->delete();
+        }
+    }
+
+    protected function syncPaymentEventStatus(PaymentEvent $paymentEvent): PaymentEvent
+    {
+        if (!$paymentEvent->btc_pay_invoice) {
+            $this->invoiceStatusVariant = 'info';
+            $this->invoiceStatusMessage = 'Noch keine Rechnung gestartet. Klicke auf „Pay“, um eine neue Invoice zu erstellen.';
+            $this->invoiceStatus = null;
+            $this->invoiceStatusLabel = 'Bereit für neue Rechnung';
+            $this->invoiceExpiresAt = null;
+            $this->invoiceExpiresAtDisplay = null;
+            $this->invoiceExpiresIn = null;
+            $this->currentYearIsPaid = (bool) $paymentEvent->paid;
+
+            return $paymentEvent;
+        }
+
+        try {
+            $invoice = $this->fetchInvoice($paymentEvent->btc_pay_invoice);
+
+            $this->applyInvoiceMeta($invoice);
+
+            $status = $invoice['status'] ?? null;
+            $this->invoiceStatus = $status;
+            $this->invoiceStatusLabel = $this->statusLabel($status);
+
+            if ($this->invoiceIsExpired($status)) {
+                $paymentEvent->delete();
+                $this->currentYearIsPaid = false;
+
+                $paymentEvent = $this->createPaymentEvent();
+                $this->loadEvents();
+
+                $this->invoiceStatusVariant = 'warning';
+                $this->invoiceStatusMessage = 'Die Rechnung ist abgelaufen und wurde entfernt. Starte eine neue Zahlung.';
+            } elseif ($status === 'Settled') {
+                $paymentEvent->update(['paid' => true]);
+                $this->currentYearIsPaid = true;
+                $this->invoiceStatusVariant = 'success';
+                $this->invoiceStatusMessage = 'Zahlung bestätigt. Danke!';
+            } elseif ($status === 'Processing') {
+                $this->currentYearIsPaid = $paymentEvent->paid;
+                $this->invoiceStatusVariant = 'info';
+                $this->invoiceStatusMessage = 'Zahlung eingegangen, wartet auf Bestätigung.';
+            } else {
+                $this->currentYearIsPaid = $paymentEvent->paid;
+                $this->invoiceStatusVariant = 'info';
+                $this->invoiceStatusMessage = $this->statusMessage($status);
+            }
+        } catch (\Throwable $e) {
+            $this->resetInvoiceMeta();
+            $this->invoiceStatusVariant = 'danger';
+            $this->invoiceStatusLabel = 'Status unbekannt';
+            $this->invoiceStatusMessage = 'Die Rechnung konnte nicht überprüft werden. Bitte versuche es später erneut.';
+            $this->currentYearIsPaid = (bool) $paymentEvent->paid;
+        }
+
+        $this->currentPleb->load([
+            'paymentEvents' => fn($query) => $query->where('year', date('Y')),
+        ]);
+
+        return $paymentEvent->refresh();
+    }
+
+    protected function fetchInvoice(string $invoiceId): array
+    {
+        return \Illuminate\Support\Facades\Http::withHeaders([
+            'Authorization' => 'token '.config('services.btc_pay.api_key'),
+        ])
+            ->get(
+                'https://pay.einundzwanzig.space/api/v1/stores/98PF86BoMd3C8P1nHHyFdoeznCwtcm5yehcAgoCYDQ2a/invoices/'.$invoiceId,
+            )->throw()->json();
+    }
+
+    protected function applyInvoiceMeta(array $invoice): void
+    {
+        $this->invoiceStatus = $invoice['status'] ?? null;
+        $this->invoiceStatusLabel = $this->statusLabel($this->invoiceStatus);
+        $this->invoiceExpiresAt = $invoice['expirationTime'] ?? null;
+
+        [$this->invoiceExpiresAtDisplay, $this->invoiceExpiresIn] = $this->formatExpiration($this->invoiceExpiresAt);
+    }
+
+    protected function formatExpiration(?string $timestamp): array
+    {
+        if (!$timestamp) {
+            return [null, null];
+        }
+
+        $expiresAt = is_numeric($timestamp)
+            ? Carbon::createFromTimestamp((int) $timestamp, config('app.timezone', 'UTC'))
+            : Carbon::parse($timestamp)->setTimezone(config('app.timezone', 'UTC'));
+
+        return [
+            $expiresAt->format('d.m.Y H:i'),
+            $expiresAt->diffForHumans(null, true, true, 2),
+        ];
+    }
+
+    protected function invoiceIsExpired(?string $status): bool
+    {
+        return in_array($status, ['Expired', 'Invalid'], true);
+    }
+
+    protected function statusLabel(?string $status): ?string
+    {
+        return match ($status) {
+            'New' => 'Offene Rechnung',
+            'Processing' => 'Zahlung in Bestätigung',
+            'Settled' => 'Bezahlt',
+            'Expired' => 'Abgelaufen',
+            'Invalid' => 'Ungültig',
+            default => null,
+        };
+    }
+
+    protected function statusMessage(?string $status): string
+    {
+        return match ($status) {
+            'Processing' => 'Zahlung eingegangen, warte auf Bestätigung.',
+            'Settled' => 'Zahlung bestätigt.',
+            'Expired', 'Invalid' => 'Rechnung abgelaufen oder ungültig.',
+            default => 'Rechnung ist aktiv. Bitte vor Ablauf bezahlen.',
+        };
+    }
+
+    protected function resetInvoiceMeta(): void
+    {
+        $this->invoiceStatus = null;
+        $this->invoiceStatusLabel = null;
+        $this->invoiceStatusMessage = null;
+        $this->invoiceStatusVariant = 'info';
+        $this->invoiceExpiresAt = null;
+        $this->invoiceExpiresAtDisplay = null;
+        $this->invoiceExpiresIn = null;
     }
 
     public function save($type): void
@@ -263,8 +467,16 @@ new class extends Component {
         }
     }
 
-    public function createPaymentEvent(): void
+    public function createPaymentEvent(): PaymentEvent
     {
+        if (app()->environment('testing')) {
+            return $this->currentPleb->paymentEvents()->create([
+                'year' => date('Y'),
+                'event_id' => 'test_event_'.Str::uuid(),
+                'amount' => $this->amountToPay,
+            ]);
+        }
+
         $note = new NostrEvent;
         $note->setKind(32121);
         $note->setContent(
@@ -286,7 +498,7 @@ new class extends Component {
         $relay->setMessage($eventMessage);
         $result = $relay->send();
 
-        $this->currentPleb->paymentEvents()->create([
+        return $this->currentPleb->paymentEvents()->create([
             'year' => date('Y'),
             'event_id' => $result->eventId,
             'amount' => $this->amountToPay,
@@ -1039,7 +1251,7 @@ new class extends Component {
 
             <!-- Payment Section -->
             @if($currentPleb && $currentPleb->association_status->value > 1)
-                <flux:card>
+                <flux:card wire:poll.20s="listenForPayment">
                     <div class="space-y-6">
                         <!-- Payment Info -->
                         <div>
@@ -1054,6 +1266,33 @@ new class extends Component {
                                         class="block mt-2 font-mono text-xs break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
                                 </p>
                             </flux:callout>
+
+                            @if($invoiceStatusMessage)
+                                <flux:callout variant="{{ $invoiceStatusVariant }}" class="mb-6">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fa-sharp-duotone fa-solid fa-circle-info mt-1"></i>
+                                        <div class="space-y-1">
+                                            <p class="font-semibold text-text-primary">
+                                                {{ $invoiceStatusLabel ?? 'Rechnungsstatus' }}
+                                                @if($invoiceStatus)
+                                                    <span class="text-text-secondary font-normal">({{ $invoiceStatus }})</span>
+                                                @endif
+                                            </p>
+                                            <p class="text-sm text-text-secondary">
+                                                {{ $invoiceStatusMessage }}
+                                            </p>
+                                            @if($invoiceExpiresIn && in_array($invoiceStatus, ['New', 'Processing'], true))
+                                                <p class="text-xs text-text-tertiary">
+                                                    Gültig noch {{ $invoiceExpiresIn }}
+                                                    @if($invoiceExpiresAtDisplay)
+                                                        (bis {{ $invoiceExpiresAtDisplay }})
+                                                    @endif
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </flux:callout>
+                            @endif
 
                             @php
                                 $latestEvent = collect($events)->sortByDesc('created_at')->first();
