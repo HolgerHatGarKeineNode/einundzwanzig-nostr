@@ -8,6 +8,7 @@ use App\Support\NostrAuth;
 use App\Traits\NostrFetcherTrait;
 use Carbon\Carbon;
 use Flux\Flux;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -469,12 +470,25 @@ new class extends Component {
 
     public function createPaymentEvent(): PaymentEvent
     {
+        $existing = $this->currentPleb
+            ->paymentEvents()
+            ->where('year', date('Y'))
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
         if (app()->environment('testing')) {
-            return $this->currentPleb->paymentEvents()->create([
-                'year' => date('Y'),
-                'event_id' => 'test_event_'.Str::uuid(),
-                'amount' => $this->amountToPay,
-            ]);
+            try {
+                return $this->currentPleb->paymentEvents()->create([
+                    'year' => date('Y'),
+                    'event_id' => 'test_event_'.Str::uuid(),
+                    'amount' => $this->amountToPay,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                return $this->currentPleb->paymentEvents()->where('year', date('Y'))->firstOrFail();
+            }
         }
 
         $note = new NostrEvent;
@@ -498,11 +512,15 @@ new class extends Component {
         $relay->setMessage($eventMessage);
         $result = $relay->send();
 
-        return $this->currentPleb->paymentEvents()->create([
-            'year' => date('Y'),
-            'event_id' => $result->eventId,
-            'amount' => $this->amountToPay,
-        ]);
+        try {
+            return $this->currentPleb->paymentEvents()->create([
+                'year' => date('Y'),
+                'event_id' => $result->eventId,
+                'amount' => $this->amountToPay,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            return $this->currentPleb->paymentEvents()->where('year', date('Y'))->firstOrFail();
+        }
     }
 
     public function loadEvents(): void
