@@ -5,6 +5,7 @@ use App\Models\EinundzwanzigPleb;
 use App\Models\Profile;
 use App\Support\NostrAuth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
@@ -16,12 +17,16 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
 
 new class extends Component {
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public bool $showLog = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?EinundzwanzigPleb $currentPleb = null;
 
     public array $events = [];
@@ -195,6 +200,21 @@ new class extends Component {
         if ($this->election->end_time?->isPast() || ! config('services.voting')) {
             $this->isNotClosed = false;
         }
+    }
+
+    public function handleNostrLoggedIn(string $pubkey): void
+    {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = EinundzwanzigPleb::query()
+            ->where('pubkey', $pubkey)->first();
+        $this->isAllowed = (bool) $this->currentPleb;
+    }
+
+    public function handleNostrLoggedOut(): void
+    {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+        $this->isAllowed = false;
     }
 
     public function updatedSearch($value): void

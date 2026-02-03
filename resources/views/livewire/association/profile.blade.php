@@ -11,6 +11,7 @@ use Flux\Flux;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use swentel\nostr\Event\Event as NostrEvent;
 use swentel\nostr\Filter\Filter;
@@ -35,42 +36,61 @@ new class extends Component {
 
     public string $fax = '';
 
+    #[Locked]
     public bool $nip05Verified = false;
 
+    #[Locked]
     public ?string $nip05VerifiedHandle = null;
 
+    #[Locked]
     public bool $nip05HandleMismatch = false;
 
+    #[Locked]
     public array $nip05VerifiedHandles = [];
 
+    #[Locked]
     public array $yearsPaid = [];
 
+    #[Locked]
     public array $events = [];
 
+    #[Locked]
     public $payments;
 
+    #[Locked]
     public ?string $invoiceStatus = null;
 
+    #[Locked]
     public ?string $invoiceStatusLabel = null;
 
+    #[Locked]
     public ?string $invoiceStatusMessage = null;
 
+    #[Locked]
     public string $invoiceStatusVariant = 'info';
 
+    #[Locked]
     public ?string $invoiceExpiresAt = null;
 
+    #[Locked]
     public ?string $invoiceExpiresAtDisplay = null;
 
+    #[Locked]
     public ?string $invoiceExpiresIn = null;
 
+    #[Locked]
     public int $amountToPay = 21000;
 
+    #[Locked]
     public bool $currentYearIsPaid = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?EinundzwanzigPleb $currentPleb = null;
 
+    #[Locked]
     public ?string $qrCode = null;
 
     protected $listeners = [

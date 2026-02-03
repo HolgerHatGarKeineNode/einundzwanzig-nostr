@@ -4,19 +4,25 @@ use App\Livewire\Traits\WithNostrAuth;
 use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 new class extends Component {
     use WithNostrAuth;
 
+    #[Locked]
     public $projectProposal;
 
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?object $currentPleb = null;
 
+    #[Locked]
     public bool $ownVoteExists = false;
 
     public function mount($projectProposal): void

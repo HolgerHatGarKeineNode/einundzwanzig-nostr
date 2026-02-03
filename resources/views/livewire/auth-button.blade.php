@@ -1,13 +1,16 @@
 <?php
 
 use App\Support\NostrAuth;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 new class extends Component
 {
+    #[Locked]
     public bool $isLoggedIn = false;
 
+    #[Locked]
     public string $location = 'sidebar'; // 'sidebar' or 'navbar'
 
     public function mount(): void

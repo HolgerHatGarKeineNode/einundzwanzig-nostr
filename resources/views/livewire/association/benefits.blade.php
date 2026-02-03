@@ -4,26 +4,35 @@ use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
 use App\Traits\NostrFetcherTrait;
 use Flux\Flux;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 new class extends Component
 {
     use NostrFetcherTrait;
 
+    #[Locked]
     public ?EinundzwanzigPleb $currentPleb = null;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public bool $currentYearIsPaid = false;
 
+    #[Locked]
     public ?string $nip05Handle = '';
 
+    #[Locked]
     public bool $nip05Verified = false;
 
+    #[Locked]
     public ?string $nip05VerifiedHandle = null;
 
+    #[Locked]
     public bool $nip05HandleMismatch = false;
 
+    #[Locked]
     public array $nip05VerifiedHandles = [];
 
     protected $listeners = [

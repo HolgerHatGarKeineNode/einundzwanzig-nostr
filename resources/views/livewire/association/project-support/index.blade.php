@@ -6,6 +6,7 @@ use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 new class extends Component {
@@ -17,12 +18,16 @@ new class extends Component {
 
     public string $search = '';
 
+    #[Locked]
     public Collection $projects;
 
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?ProjectProposal $projectToDelete = null;
 
     protected $listeners = [

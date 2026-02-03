@@ -3,6 +3,7 @@
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -25,8 +26,10 @@ class extends Component
 
     public $file = null;
 
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public bool $isAdmin = false;
 
     public function mount(): void

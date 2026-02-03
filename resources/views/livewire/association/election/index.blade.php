@@ -3,14 +3,18 @@
 use App\Models\EinundzwanzigPleb;
 use App\Models\Election;
 use App\Support\NostrAuth;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 new class extends Component {
 
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?EinundzwanzigPleb $currentPleb = null;
 
     public array $elections = [];
@@ -35,6 +39,27 @@ new class extends Component {
                 $this->isAllowed = true;
             }
         }
+    }
+
+    public function handleNostrLoggedIn(string $pubkey): void
+    {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = EinundzwanzigPleb::query()
+            ->where('pubkey', $pubkey)->first();
+
+        $logPubkeys = [
+            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
+            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
+        ];
+
+        $this->isAllowed = in_array($pubkey, $logPubkeys, true);
+    }
+
+    public function handleNostrLoggedOut(): void
+    {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+        $this->isAllowed = false;
     }
 
     public function saveElection($index): void

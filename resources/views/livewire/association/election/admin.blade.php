@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Election;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Message\RequestMessage;
@@ -10,10 +11,13 @@ use swentel\nostr\Request\Request;
 use swentel\nostr\Subscription\Subscription;
 
 new class extends Component {
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public ?string $currentPubkey = null;
 
+    #[Locked]
     public ?\App\Models\EinundzwanzigPleb $currentPleb = null;
 
     public ?array $votes = null;
@@ -45,6 +49,21 @@ new class extends Component {
         $this->loadBoardEvents();
         $this->loadVotes();
         $this->loadBoardVotes();
+    }
+
+    public function handleNostrLoggedIn(string $pubkey): void
+    {
+        $this->currentPubkey = $pubkey;
+        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
+            ->where('pubkey', $pubkey)->first();
+        $this->isAllowed = (bool) $this->currentPleb;
+    }
+
+    public function handleNostrLoggedOut(): void
+    {
+        $this->currentPubkey = null;
+        $this->currentPleb = null;
+        $this->isAllowed = false;
     }
 
     public function handleNewVote(): void

@@ -6,6 +6,7 @@ use App\Support\NostrAuth;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -17,6 +18,7 @@ new
 class extends Component {
     use WithFileUploads;
 
+    #[Locked]
     public Collection|array $news = [];
 
     #[Url(as: 'kategorie')]
@@ -30,8 +32,10 @@ class extends Component {
 
     public $file;
 
+    #[Locked]
     public bool $isAllowed = false;
 
+    #[Locked]
     public bool $canEdit = false;
 
     public ?int $confirmDeleteId = null;
