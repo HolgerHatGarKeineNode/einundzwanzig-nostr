@@ -15,6 +15,20 @@ it('handles nostr login correctly', function () {
         ->assertSet('currentPleb.pubkey', $pleb->pubkey);
 });
 
+it('handles nostr login for active member and initializes payment state', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
+
+    expect($pleb->paymentEvents()->count())->toBe(0);
+
+    Livewire::test('association.profile')
+        ->call('handleNostrLoggedIn', $pleb->pubkey)
+        ->assertSet('currentPubkey', $pleb->pubkey)
+        ->assertSet('currentPleb.pubkey', $pleb->pubkey)
+        ->assertSet('amountToPay', config('app.env') === 'production' ? 21000 : 1);
+
+    expect($pleb->paymentEvents()->count())->toBeGreaterThan(0);
+});
+
 it('handles nostr logout correctly', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 

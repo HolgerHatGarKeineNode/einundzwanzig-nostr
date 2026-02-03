@@ -147,12 +147,32 @@ new class extends Component {
             ])
             ->where('pubkey', $pubkey)->first();
 
-        if ($this->currentPleb) {
-            $this->profileForm->setPleb($this->currentPleb);
-            $this->form->setPleb($this->currentPleb);
-            $this->no = $this->currentPleb->no_email;
-            $this->showEmail = !$this->no;
+        if (!$this->currentPleb) {
+            return;
         }
+
+        $this->profileForm->setPleb($this->currentPleb);
+        $this->form->setPleb($this->currentPleb);
+        $this->no = $this->currentPleb->no_email;
+        $this->showEmail = !$this->no;
+
+        if ($this->currentPleb->nip05_handle) {
+            $this->nip05VerifiedHandles = $this->getNip05HandlesForPubkey($this->currentPubkey);
+
+            if (count($this->nip05VerifiedHandles) > 0) {
+                $this->nip05Verified = true;
+                $this->nip05VerifiedHandle = $this->nip05VerifiedHandles[0];
+
+                if (!in_array($this->profileForm->nip05Handle, $this->nip05VerifiedHandles, true)) {
+                    $this->nip05HandleMismatch = true;
+                }
+            }
+        }
+
+        $this->amountToPay = config('app.env') === 'production' ? 21000 : 1;
+        $this->resolveCurrentPaymentEvent();
+        $this->loadEvents();
+        $this->listenForPayment();
     }
 
     public function handleNostrLoggedOut(): void
@@ -1277,13 +1297,15 @@ new class extends Component {
                                 Mitgliedsbeitrag
                             </h3>
 
-                            <flux:callout variant="info" class="mb-6">
-                                <p class="text-sm">
-                                    Nostr Event für die Zahlung des Mitgliedsbeitrags:
-                                    <span
-                                        class="block mt-2 font-mono text-xs break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
-                                </p>
-                            </flux:callout>
+                            @if($currentPleb->paymentEvents->last())
+                                <flux:callout variant="info" class="mb-6">
+                                    <p class="text-sm">
+                                        Nostr Event für die Zahlung des Mitgliedsbeitrags:
+                                        <span
+                                            class="block mt-2 font-mono text-xs break-all">{{ $currentPleb->paymentEvents->last()->event_id }}</span>
+                                    </p>
+                                </flux:callout>
+                            @endif
 
                             @if($invoiceStatusMessage)
                                 <flux:callout variant="{{ $invoiceStatusVariant }}" class="mb-6">
