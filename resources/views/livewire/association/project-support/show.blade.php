@@ -60,30 +60,32 @@ new class extends Component {
 
     public function handleApprove(): void
     {
+        if (! $this->currentPleb) {
+            return;
+        }
+
         Vote::query()->updateOrCreate([
             'project_proposal_id' => $this->projectProposal->id,
             'einundzwanzig_pleb_id' => $this->currentPleb->id,
         ], [
             'value' => true,
         ]);
-        $this->ownVoteExists = Vote::query()
-            ->where('project_proposal_id', $this->projectProposal->id)
-            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
-            ->exists();
+        $this->ownVoteExists = true;
     }
 
     public function handleNotApprove(): void
     {
+        if (! $this->currentPleb) {
+            return;
+        }
+
         Vote::query()->updateOrCreate([
             'project_proposal_id' => $this->projectProposal->id,
             'einundzwanzig_pleb_id' => $this->currentPleb->id,
         ], [
             'value' => false,
         ]);
-        $this->ownVoteExists = Vote::query()
-            ->where('project_proposal_id', $this->projectProposal->id)
-            ->where('einundzwanzig_pleb_id', $this->currentPleb->id)
-            ->exists();
+        $this->ownVoteExists = true;
     }
 }
 ?>
@@ -144,22 +146,24 @@ new class extends Component {
             </div>
 
             <div class="lg:w-80 xl:w-96 shrink-0 space-y-4">
-                <div class="bg-white dark:bg-zinc-800 p-5 shadow-sm rounded-xl">
-                    @if(!$ownVoteExists)
-                        <div class="space-y-2">
-                            <flux:button wire:click="handleApprove" class="w-full">
-                                <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up mr-2"></i>
-                                Zustimmen
-                            </flux:button>
-                            <flux:button wire:click="handleNotApprove" variant="danger" class="w-full">
-                                <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down mr-2"></i>
-                                Ablehnen
-                            </flux:button>
-                        </div>
-                    @else
-                        <p class="text-sm text-zinc-700 dark:text-zinc-300">Du hast bereits abgestimmt.</p>
-                    @endif
-                </div>
+                @if($isAllowed)
+                    <div class="bg-white dark:bg-zinc-800 p-5 shadow-sm rounded-xl">
+                        @if(!$ownVoteExists)
+                            <div class="space-y-2">
+                                <flux:button wire:click="handleApprove" class="w-full">
+                                    <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-up mr-2"></i>
+                                    Zustimmen
+                                </flux:button>
+                                <flux:button wire:click="handleNotApprove" variant="danger" class="w-full">
+                                    <i class="fill-current shrink-0 fa-sharp-duotone fa-solid fa-thumbs-down mr-2"></i>
+                                    Ablehnen
+                                </flux:button>
+                            </div>
+                        @else
+                            <p class="text-sm text-zinc-700 dark:text-zinc-300">Du hast bereits abgestimmt.</p>
+                        @endif
+                    </div>
+                @endif
 
                 <div class="bg-white dark:bg-zinc-800 p-5 shadow-sm rounded-xl">
                     <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-100 mb-2">

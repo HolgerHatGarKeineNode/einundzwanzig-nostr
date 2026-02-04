@@ -304,3 +304,31 @@ it('can handle not approve vote', function () {
     expect($vote)->not->toBeNull()
         ->and($vote->value)->toBeFalse();
 });
+
+it('does not throw error when unauthenticated user calls handleApprove', function () {
+    $project = ProjectProposal::factory()->create();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+        ->call('handleApprove')
+        ->assertHasNoErrors();
+
+    expect(\App\Models\Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
+});
+
+it('does not throw error when unauthenticated user calls handleNotApprove', function () {
+    $project = ProjectProposal::factory()->create();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+        ->call('handleNotApprove')
+        ->assertHasNoErrors();
+
+    expect(\App\Models\Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
+});
+
+it('hides voting buttons from unauthenticated users', function () {
+    $project = ProjectProposal::factory()->create();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+        ->assertDontSee('Zustimmen')
+        ->assertDontSee('Ablehnen');
+});
