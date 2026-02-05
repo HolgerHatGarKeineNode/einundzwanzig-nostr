@@ -20,7 +20,6 @@ new class extends Component
     #[Locked]
     public bool $currentYearIsPaid = false;
 
-    #[Locked]
     public ?string $nip05Handle = '';
 
     #[Locked]
