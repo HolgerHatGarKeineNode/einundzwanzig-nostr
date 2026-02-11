@@ -14,6 +14,7 @@ Route::get('dl/{media}', function (Media $media, Request $request) {
         $media->file_name
     );
 })
+    ->whereNumber('media')
     ->name('dl')
     ->middleware('signed');
 
@@ -27,6 +28,7 @@ Route::get('media/{media}', function (Media $media, Request $request) {
         ]
     );
 })
+    ->whereNumber('media')
     ->name('media.signed')
     ->middleware('signed');
 
