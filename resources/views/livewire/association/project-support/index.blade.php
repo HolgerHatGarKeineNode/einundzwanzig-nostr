@@ -31,8 +31,6 @@ new class extends Component {
     public ?ProjectProposal $projectToDelete = null;
 
     protected $listeners = [
-        'nostrLoggedIn' => 'handleNostrLoggedIn',
-        'nostrLoggedOut' => 'handleNostrLoggedOut',
         'confirmDeleteProject' => 'confirmDeleteProject',
     ];
 

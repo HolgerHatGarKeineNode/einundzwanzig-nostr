@@ -574,6 +574,12 @@ new class extends Component {
 
     public function loadEvents(): void
     {
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            $this->events = [];
+            return;
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
 
@@ -585,7 +591,7 @@ new class extends Component {
         $requestMessage = new RequestMessage($subscriptionId, $filters);
 
         $relays = [
-            new Relay(config('services.relay')),
+            new Relay($relayUrl),
         ];
         $relaySet = new RelaySet;
         $relaySet->setRelays($relays);
@@ -593,7 +599,7 @@ new class extends Component {
         $request = new Request($relaySet, $requestMessage);
         $response = $request->send();
 
-        $this->events = collect($response[config('services.relay')])
+        $this->events = collect($response[$relayUrl] ?? [])
             ->map(function ($event) {
                 if (!isset($event->event)) {
                     return false;

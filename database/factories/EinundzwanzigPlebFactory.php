@@ -34,6 +34,7 @@ class EinundzwanzigPlebFactory extends Factory
     public function boardMember(): static
     {
         return $this->state(fn (array $attributes) => [
+            'npub' => config('einundzwanzig.config.current_board')[0],
             'association_status' => \App\Enums\AssociationStatus::HONORARY,
         ]);
     }

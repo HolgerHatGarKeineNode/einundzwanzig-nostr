@@ -11,6 +11,7 @@ use Livewire\Livewire;
 
 beforeEach(function () {
     Storage::fake('public');
+    Storage::fake('private');
 });
 
 it('denies access when pleb has insufficient association status', function () {
@@ -58,11 +59,13 @@ it('can create news entry with pdf', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    $file = UploadedFile::fake()->create('document.pdf', 100);
+    $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+    // Write PDF magic bytes to the temp file so Spatie media library detects correct MIME
+    file_put_contents($file->getPathname(), '%PDF-1.4 fake pdf content for testing');
 
     Livewire::test('association.news')
         ->set('file', $file)
-        ->set('form.category', NewsCategory::ORGANISATION->value)
+        ->set('form.category', (string) NewsCategory::Organisation->value)
         ->set('form.name', 'Test News')
         ->set('form.description', 'Test Description')
         ->call('save')
@@ -90,7 +93,8 @@ it('can delete news entry', function () {
     NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.news')
-        ->call('delete', $news->id)
+        ->call('confirmDelete', $news->id)
+        ->call('delete')
         ->assertHasNoErrors();
 
     expect(Notification::find($news->id))->toBeNull();

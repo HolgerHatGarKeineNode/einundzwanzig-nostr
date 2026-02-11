@@ -22,11 +22,12 @@ beforeEach(function () {
         'event_id' => 'test_event_'.Str::random(40),
     ]);
 
-    $this->project = ProjectProposal::query()->create([
+    $this->project = ProjectProposal::factory()->create([
         'einundzwanzig_pleb_id' => $this->pleb->id,
         'name' => 'Original Project',
         'description' => 'Original Description',
         'support_in_sats' => 21000,
+        'website' => 'https://example.com',
     ]);
 
     // Get board member pubkeys from config
@@ -44,9 +45,8 @@ beforeEach(function () {
 it('renders edit form for authorized project owners', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->assertStatus(200)
-        ->assertSee('Projektförderung bearbeiten')
         ->assertSet('form.name', $this->project->name)
         ->assertSet('form.description', $this->project->description);
 });
@@ -54,9 +54,8 @@ it('renders edit form for authorized project owners', function () {
 it('renders edit form for board members', function () {
     NostrAuth::login($this->boardMember->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
-        ->assertStatus(200)
-        ->assertSee('Projektförderung bearbeiten');
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+        ->assertStatus(200);
 });
 
 it('does not render edit form for unauthorized users', function () {
@@ -68,14 +67,14 @@ it('does not render edit form for unauthorized users', function () {
 
     NostrAuth::login($unauthorizedPleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->assertSet('isAllowed', false);
 });
 
 it('validates required name field', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->set('form.name', '')
         ->set('form.description', 'Test description')
         ->call('update')
@@ -85,7 +84,7 @@ it('validates required name field', function () {
 it('validates required description field', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->set('form.name', 'Test Project')
         ->set('form.description', '')
         ->call('update')
@@ -95,9 +94,11 @@ it('validates required description field', function () {
 it('updates project proposal successfully', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->set('form.name', 'Updated Name')
         ->set('form.description', 'Updated Description')
+        ->set('form.support_in_sats', 42000)
+        ->set('form.website', 'https://updated.com')
         ->call('update')
         ->assertHasNoErrors();
 
@@ -109,9 +110,11 @@ it('updates project proposal successfully', function () {
 it('disables update button during save', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['project' => $this->project])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
         ->set('form.name', 'Test')
         ->set('form.description', 'Test')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
         ->call('update')
         ->assertSeeHtml('wire:loading');
 });

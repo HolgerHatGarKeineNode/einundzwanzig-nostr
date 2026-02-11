@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Election;
+use App\Support\NostrAuth;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use swentel\nostr\Filter\Filter;
@@ -139,17 +140,22 @@ new class extends Component {
 
     public function loadNostrEvents($kinds): array
     {
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return [];
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
         $filter = new Filter;
         $filter->setKinds($kinds);
         $requestMessage = new RequestMessage($subscriptionId, [$filter]);
         $relaySet = new RelaySet;
-        $relaySet->setRelays([new Relay(config('services.relay'))]);
+        $relaySet->setRelays([new Relay($relayUrl)]);
         $request = new Request($relaySet, $requestMessage);
         $response = $request->send();
 
-        return collect($response[config('services.relay')])
+        return collect($response[$relayUrl] ?? [])
             ->map(function ($event) {
                 if (! isset($event->event)) {
                     return false;

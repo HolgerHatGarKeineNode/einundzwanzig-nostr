@@ -219,7 +219,7 @@ new class extends Component
             </flux:button>
         </div>
 
-        <flux:table>
+        <flux:table id="einundzwanzig-pleb-table">
             <flux:table.columns>
                 <flux:table.column>Avatar</flux:table.column>
                 <flux:table.column

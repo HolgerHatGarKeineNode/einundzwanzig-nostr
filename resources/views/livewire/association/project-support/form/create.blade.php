@@ -77,12 +77,11 @@ class extends Component
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
-        $projectProposal = ProjectProposal::query()->create([
-            'name' => $this->form['name'],
-            'description' => $this->form['description'],
-            'support_in_sats' => (int) $this->form['support_in_sats'],
-            'website' => $this->form['website'],
-        ]);
+        $projectProposal = new ProjectProposal;
+        $projectProposal->name = $this->form['name'];
+        $projectProposal->description = $this->form['description'];
+        $projectProposal->support_in_sats = (int) $this->form['support_in_sats'];
+        $projectProposal->website = $this->form['website'];
         $projectProposal->accepted = $this->form['accepted'];
         $projectProposal->sats_paid = $this->form['sats_paid'];
         $projectProposal->einundzwanzig_pleb_id = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id;

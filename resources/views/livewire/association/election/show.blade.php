@@ -56,7 +56,7 @@ new class extends Component {
     ];
 
     #[Computed]
-    public function loadedEvents(): array
+    public function loadedEvents(): \Illuminate\Support\Collection
     {
         return collect($this->events)
             ->map(function ($event) {
@@ -83,12 +83,11 @@ new class extends Component {
             })
             ->sortByDesc('created_at')
             ->unique(fn ($event) => $event['pubkey'].$event['type'])
-            ->values()
-            ->toArray();
+            ->values();
     }
 
     #[Computed]
-    public function loadedBoardEvents(): array
+    public function loadedBoardEvents(): \Illuminate\Support\Collection
     {
         return collect($this->boardEvents)
             ->map(function ($event) {
@@ -114,16 +113,15 @@ new class extends Component {
                 ];
             })
             ->sortByDesc('created_at')
-            ->values()
-            ->toArray();
+            ->values();
     }
 
     #[Computed]
-    public function electionConfig(): array
+    public function electionConfig(): \Illuminate\Support\Collection
     {
         $loadedEvents = $this->loadedEvents();
 
-        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+        return collect($this->election->candidates)
             ->map(function ($c) use ($loadedEvents) {
                 $candidates = Profile::query()
                     ->whereIn('pubkey', $c['c'])
@@ -148,16 +146,15 @@ new class extends Component {
                     'c' => $c['c'],
                     'candidates' => $candidates,
                 ];
-            })
-            ->toArray();
+            });
     }
 
     #[Computed]
-    public function electionConfigBoard(): array
+    public function electionConfigBoard(): \Illuminate\Support\Collection
     {
         $loadedBoardEvents = $this->loadedBoardEvents();
 
-        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+        return collect($this->election->candidates)
             ->map(function ($c) use ($loadedBoardEvents) {
                 $candidates = Profile::query()
                     ->whereIn('pubkey', $c['c'])
@@ -183,8 +180,7 @@ new class extends Component {
                     'c' => $c['c'],
                     'candidates' => $candidates,
                 ];
-            })
-            ->toArray();
+            });
     }
 
     public function mount(Election $election): void
@@ -259,17 +255,22 @@ new class extends Component {
 
     public function loadNostrEvents($kinds): array
     {
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return [];
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
         $filter = new Filter;
         $filter->setKinds($kinds);
         $requestMessage = new RequestMessage($subscriptionId, [$filter]);
         $relaySet = new RelaySet;
-        $relaySet->setRelays([new Relay(config('services.relay'))]);
+        $relaySet->setRelays([new Relay($relayUrl)]);
         $request = new Request($relaySet, $requestMessage);
         $response = $request->send();
 
-        return collect($response[config('services.relay')])
+        return collect($response[$relayUrl] ?? [])
             ->map(function ($event) {
                 if (! isset($event->event)) {
                     return false;
@@ -342,8 +343,12 @@ new class extends Component {
         $note->setPublicKey($event['pubkey']);
         $note->setTags($event['tags']);
         $note->setCreatedAt($event['created_at']);
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return;
+        }
         $eventMessage = new EventMessage($note);
-        $relay = new Relay(config('services.relay'));
+        $relay = new Relay($relayUrl);
         $relay->setMessage($eventMessage);
         $relay->send();
         \App\Support\Broadcast::on('votes')->as('newVote')->sendNow();

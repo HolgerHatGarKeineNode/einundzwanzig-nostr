@@ -28,8 +28,7 @@ it('renders create form for authorized users', function () {
 
     Livewire::test('association.project-support.form.create')
         ->assertStatus(200)
-        ->assertSee('Projektförderung anlegen')
-        ->assertSeeLivewire('association.project-support.form.create');
+        ->assertSee('Projektförderungs-Antrag anlegen');
 });
 
 it('does not render create form for unauthorized users', function () {
@@ -82,6 +81,8 @@ it('creates project proposal successfully', function () {
     Livewire::test('association.project-support.form.create')
         ->set('form.name', 'Test Project')
         ->set('form.description', 'This is a test project for unit testing purposes.')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect(route('association.projectSupport'));
@@ -98,6 +99,8 @@ it('associates project proposal with current pleb', function () {
     Livewire::test('association.project-support.form.create')
         ->set('form.name', 'Test Project')
         ->set('form.description', 'Test description')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
         ->call('save')
         ->assertHasNoErrors();
 

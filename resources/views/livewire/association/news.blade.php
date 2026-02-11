@@ -103,10 +103,9 @@ class extends Component {
 
         $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first();
 
-        $news = Notification::query()->create([
-            'name' => $this->form['name'],
-            'description' => $this->form['description'] ?? null,
-        ]);
+        $news = new Notification;
+        $news->name = $this->form['name'];
+        $news->description = $this->form['description'] ?? null;
         $news->category = $this->form['category'];
         $news->einundzwanzig_pleb_id = $currentPleb->id;
         $news->save();
@@ -260,7 +259,7 @@ class extends Component {
                                                                 <path
                                                                     d="M15.686 5.708 10.291.313c-.4-.4-.999-.4-1.399 0s-.4 1 0 1.399l.6.6-6.794 3.696-1-1C1.299 4.61.7 4.61.3 5.009c-.4.4-.4 1 0 1.4l1.498 1.498 2.398 2.398L.6 14.001 2 15.4l3.696-3.697L9.692 15.7c.5.5 1.199.2 1.398 0 .4-.4.4-1 0-1.4l-.999-.998 3.697-6.695.6.6c.599.6 1.199.2 1.398 0 .3-.4.3-1.1-.1-1.499Zm-7.193 6.095L4.196 7.507l6.695-3.697 1.298 1.299-3.696 6.694Z"></path>
                                                             </svg>
-                                                            {{ $post->einundzwanzigPleb->profile->name }}
+                                                            {{ $post->einundzwanzigPleb?->profile?->name ?? str($post->einundzwanzigPleb?->npub)->limit(32) }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,13 +271,15 @@ class extends Component {
                                             </footer>
                                         </div>
                                         <div class="mt-2 flex justify-end w-full space-x-2">
-                                            <flux:button
-                                                xs
-                                                target="_blank"
-                                                :href="url()->temporarySignedRoute('media.signed', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
-                                                icon="cloud-arrow-down">
-                                                Öffnen
-                                            </flux:button>
+                                            @if($post->getFirstMedia('pdf'))
+                                                <flux:button
+                                                    xs
+                                                    target="_blank"
+                                                    :href="url()->temporarySignedRoute('media.signed', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
+                                                    icon="cloud-arrow-down">
+                                                    Öffnen
+                                                </flux:button>
+                                            @endif
                                             @if($canEdit)
                                                 <flux:modal.trigger name="delete-news-{{ $post->id }}">
                                                     <flux:button

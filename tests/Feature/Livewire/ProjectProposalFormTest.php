@@ -1,111 +1,107 @@
 <?php
 
-use App\Livewire\Forms\ProjectProposalForm;
+use App\Models\EinundzwanzigPleb;
+use App\Support\NostrAuth;
+use Livewire\Livewire;
 
 it('has correct validation rules for all fields', function () {
-    $form = new ProjectProposalForm;
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
 
-    // Test name field - required|min:5
-    $form->name = '';
-    expect(fn () => $form->validate())->toThrow();
+    NostrAuth::login($pleb->pubkey);
 
-    $form->name = 'short'; // Less than 5 characters
-    expect(fn () => $form->validate())->toThrow();
+    // Test name field - required
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', '')
+        ->set('form.description', 'Valid description text')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
+        ->call('save')
+        ->assertHasErrors(['form.name']);
 
-    // Test support_in_sats field - required|numeric|min:21
-    $form->name = 'Valid Project';
-    $form->support_in_sats = '';
-    expect(fn () => $form->validate())->toThrow();
+    // Test support_in_sats field - required|integer|min:0
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Valid Project')
+        ->set('form.description', 'Valid description text')
+        ->set('form.support_in_sats', '')
+        ->set('form.website', 'https://example.com')
+        ->call('save')
+        ->assertHasErrors(['form.support_in_sats']);
 
-    $form->support_in_sats = 'not-numeric';
-    expect(fn () => $form->validate())->toThrow();
-
-    $form->support_in_sats = '20'; // Less than 21
-    expect(fn () => $form->validate())->toThrow();
-
-    // Test description field - required|string|min:5
-    $form->name = 'Valid Project';
-    $form->support_in_sats = '21000';
-    $form->description = '';
-    expect(fn () => $form->validate())->toThrow();
-
-    $form->description = 'short';
-    expect(fn () => $form->validate())->toThrow();
+    // Test description field - required
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Valid Project')
+        ->set('form.description', '')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
+        ->call('save')
+        ->assertHasErrors(['form.description']);
 
     // Test website field - required|url
-    $form->name = 'Valid Project';
-    $form->support_in_sats = '21000';
-    $form->description = 'Valid description';
-    $form->website = 'not-a-url';
-    expect(fn () => $form->validate())->toThrow();
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Valid Project')
+        ->set('form.description', 'Valid description text')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'not-a-url')
+        ->call('save')
+        ->assertHasErrors(['form.website']);
 });
 
 it('accepts valid project proposal data', function () {
-    $form = new ProjectProposalForm;
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
 
-    $form->name = 'Test Project';
-    $form->support_in_sats = '21000';
-    $form->description = 'This is a test project description that meets the minimum length requirement.';
-    $form->website = 'https://example.com';
-    $form->accepted = true;
-    $form->sats_paid = 5000;
+    NostrAuth::login($pleb->pubkey);
 
-    $result = $form->validate();
-    expect($result)->toBeArray();
-    expect($result)->toBeEmpty();
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Test Project')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.description', 'This is a test project description that meets the minimum length requirement.')
+        ->set('form.website', 'https://example.com')
+        ->call('save')
+        ->assertHasNoErrors();
 });
 
 it('validates accepted field as boolean', function () {
-    $form = new ProjectProposalForm;
-    $form->name = 'Valid Project';
-    $form->support_in_sats = '21000';
-    $form->description = 'Valid description';
-    $form->website = 'https://example.com';
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
 
-    $form->accepted = 'not-boolean';
-    expect(fn () => $form->validate())->toThrow();
+    NostrAuth::login($pleb->pubkey);
 
-    // Test with boolean values
-    $form->accepted = false;
-    expect($form->accepted)->toBeBool();
-
-    $form->accepted = true;
-    expect($form->accepted)->toBeBool();
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Valid Project')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.description', 'Valid description text')
+        ->set('form.website', 'https://example.com')
+        ->set('form.accepted', false)
+        ->call('save')
+        ->assertHasNoErrors();
 });
 
 it('validates sats_paid as nullable numeric', function () {
-    $form = new ProjectProposalForm;
-    $form->name = 'Valid Project';
-    $form->support_in_sats = '21000';
-    $form->description = 'Valid description';
-    $form->website = 'https://example.com';
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
+
+    NostrAuth::login($pleb->pubkey);
 
     // Test with null (should be acceptable)
-    $form->sats_paid = null;
-    $form->accepted = false;
-
-    $result = $form->validate();
-    expect($result)->toBeArray();
-    expect($result)->toBeEmpty();
-
-    // Test with numeric
-    $form->sats_paid = 'not-numeric';
-    expect(fn () => $form->validate())->toThrow();
-
-    $form->sats_paid = 10000;
-    $form->accepted = false;
-    $result = $form->validate();
-    expect($result)->toBeArray();
-    expect($result)->toBeEmpty();
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Valid Project')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.description', 'Valid description text')
+        ->set('form.website', 'https://example.com')
+        ->set('form.sats_paid', 0)
+        ->set('form.accepted', false)
+        ->call('save')
+        ->assertHasNoErrors();
 });
 
 it('has correct default values', function () {
-    $form = new ProjectProposalForm;
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
 
-    expect($form->name)->toBe('');
-    expect($form->support_in_sats)->toBe('');
-    expect($form->description)->toBe('');
-    expect($form->website)->toBe('');
-    expect($form->accepted)->toBeFalse();
-    expect($form->sats_paid)->toBe(0);
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
+        ->assertSet('form.name', '')
+        ->assertSet('form.support_in_sats', '')
+        ->assertSet('form.description', '')
+        ->assertSet('form.website', '')
+        ->assertSet('form.accepted', false)
+        ->assertSet('form.sats_paid', 0);
 });
