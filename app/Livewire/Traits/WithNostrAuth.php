@@ -3,6 +3,7 @@
 namespace App\Livewire\Traits;
 
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\On;
 
 trait WithNostrAuth
@@ -18,6 +19,16 @@ trait WithNostrAuth
     #[On('nostrLoggedIn')]
     public function handleNostrLogin(string $pubkey): void
     {
+        $executed = RateLimiter::attempt(
+            'nostr-login:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many login attempts.');
+        }
+
         NostrAuth::login($pubkey);
 
         $this->currentPubkey = $pubkey;

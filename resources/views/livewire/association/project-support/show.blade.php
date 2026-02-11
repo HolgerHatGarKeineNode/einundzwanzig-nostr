@@ -4,6 +4,7 @@ use App\Livewire\Traits\WithNostrAuth;
 use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -64,6 +65,16 @@ new class extends Component {
             return;
         }
 
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
+        }
+
         Vote::query()->updateOrCreate([
             'project_proposal_id' => $this->projectProposal->id,
             'einundzwanzig_pleb_id' => $this->currentPleb->id,
@@ -77,6 +88,16 @@ new class extends Component {
     {
         if (! $this->currentPleb) {
             return;
+        }
+
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
         }
 
         Vote::query()->updateOrCreate([

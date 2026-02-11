@@ -4,6 +4,7 @@ use App\Models\Election;
 use App\Models\EinundzwanzigPleb;
 use App\Models\Profile;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -204,6 +205,16 @@ new class extends Component {
 
     public function handleNostrLoggedIn(string $pubkey): void
     {
+        $executed = RateLimiter::attempt(
+            'nostr-login:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many login attempts.');
+        }
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
@@ -279,6 +290,16 @@ new class extends Component {
 
     public function vote($pubkey, $type, $board = false): void
     {
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
+        }
+
         if ($this->election->end_time?->isPast()) {
             $this->isNotClosed = false;
 
@@ -303,6 +324,16 @@ new class extends Component {
 
     public function signEvent($event): void
     {
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
+        }
+
         $note = new NostrEvent;
         $note->setId($event['id']);
         $note->setSignature($event['sig']);

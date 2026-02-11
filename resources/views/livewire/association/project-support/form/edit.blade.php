@@ -2,6 +2,7 @@
 
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -84,6 +85,16 @@ class extends Component
 
     public function update(): void
     {
+        $executed = RateLimiter::attempt(
+            'project-proposal-update:'.request()->ip(),
+            5,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many requests.');
+        }
+
         $this->validate([
             'form.name' => 'required|string|max:255',
             'form.description' => 'required|string',
