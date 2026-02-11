@@ -17,6 +17,20 @@ class ProfileForm extends Form
 
     public ?EinundzwanzigPleb $currentPleb;
 
+    public function updatingEmail(mixed $value): void
+    {
+        if (! is_string($value) && ! is_null($value)) {
+            abort(422);
+        }
+    }
+
+    public function updatingNip05Handle(mixed $value): void
+    {
+        if (! is_string($value) && ! is_null($value)) {
+            abort(422);
+        }
+    }
+
     public function setEmail(EinundzwanzigPleb $currentPleb): void
     {
         $this->currentPleb = $currentPleb;

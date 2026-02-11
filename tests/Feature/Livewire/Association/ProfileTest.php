@@ -6,6 +6,24 @@ use App\Support\NostrAuth;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
 
+it('rejects non-string values for the fax field', function () {
+    Livewire::test('association.profile')
+        ->set('fax', [])
+        ->assertStatus(422);
+});
+
+it('rejects non-string values for the email field', function () {
+    Livewire::test('association.profile')
+        ->set('profileForm.email', [])
+        ->assertStatus(422);
+});
+
+it('rejects non-string values for the nip05Handle field', function () {
+    Livewire::test('association.profile')
+        ->set('profileForm.nip05Handle', [])
+        ->assertStatus(422);
+});
+
 it('handles nostr login correctly', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 

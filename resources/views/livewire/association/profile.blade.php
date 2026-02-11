@@ -147,6 +147,15 @@ new class extends Component {
         ]);
     }
 
+    public function updatingFax(mixed $value): void
+    {
+        if (! is_string($value)) {
+            $this->skipRender();
+
+            abort(422);
+        }
+    }
+
     public function updatedFax(): void
     {
         $this->js('alert("Markus Turm wird sich per Fax melden!")');
