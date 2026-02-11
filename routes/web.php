@@ -55,5 +55,4 @@ Route::livewire('/association/project-support/{projectProposal:slug}', 'associat
 Route::livewire('/association/project-support/edit/{projectProposal:slug}', 'association.project-support.form.edit')->name('association.projectSupport.edit');
 
 // Other pages
-Route::livewire('/changelog', 'changelog')->name('changelog');
 Route::livewire('/welcome', 'welcome')->name('welcome');
