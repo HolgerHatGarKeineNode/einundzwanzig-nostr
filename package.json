@@ -6,16 +6,16 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@nostr-dev-kit/ndk": "^2.10.0",
+        "@nostr-dev-kit/ndk": "^3.0.0",
         "@tailwindcss/forms": "^0.5.8",
-        "autoprefixer": "^10.4.20",
+        "autoprefixer": "^10.4.24",
         "chart.js": "^4.4.4",
         "chartjs-adapter-date-fns": "^3.0.0",
         "date-fns": "^4.1.0",
         "flatpickr": "^4.6.13",
         "laravel-echo": "^2.3.0",
         "laravel-vite-plugin": "^2",
-        "nostr-tools": "^2.7.2",
+        "nostr-tools": "^2.23.0",
         "postcss": "^8.4.41",
         "pusher-js": "^8.4.0",
         "tailwindcss": "^4.1.18",
@@ -25,6 +25,6 @@
     "dependencies": {
         "@tailwindcss/vite": "^4.1.18",
         "concurrently": "^9.2.1",
-        "shiki": "^1.22.0"
+        "shiki": "^3.0.0"
     }
 }
