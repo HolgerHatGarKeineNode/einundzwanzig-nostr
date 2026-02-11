@@ -71,10 +71,11 @@ class extends Component
             'description' => $this->form['description'],
             'support_in_sats' => (int) $this->form['support_in_sats'],
             'website' => $this->form['website'],
-            'accepted' => $this->form['accepted'],
-            'sats_paid' => $this->form['sats_paid'],
-            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id,
         ]);
+        $projectProposal->accepted = $this->form['accepted'];
+        $projectProposal->sats_paid = $this->form['sats_paid'];
+        $projectProposal->einundzwanzig_pleb_id = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id;
+        $projectProposal->save();
 
         if ($this->file) {
             $projectProposal->addMedia($this->file)->toMediaCollection('main');

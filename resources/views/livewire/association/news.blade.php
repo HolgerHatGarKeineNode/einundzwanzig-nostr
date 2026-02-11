@@ -106,9 +106,10 @@ class extends Component {
         $news = Notification::query()->create([
             'name' => $this->form['name'],
             'description' => $this->form['description'] ?? null,
-            'category' => $this->form['category'],
-            'einundzwanzig_pleb_id' => $currentPleb->id,
         ]);
+        $news->category = $this->form['category'];
+        $news->einundzwanzig_pleb_id = $currentPleb->id;
+        $news->save();
 
         if ($this->file) {
             $news

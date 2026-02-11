@@ -12,7 +12,11 @@ class Notification extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'name',
+        'description',
+    ];
 
     protected function casts(): array
     {

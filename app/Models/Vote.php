@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Vote extends Model
 {
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'einundzwanzig_pleb_id',
+        'project_proposal_id',
+        'value',
+        'reason',
+    ];
 
     /**
      * The attributes that should be cast to native types.

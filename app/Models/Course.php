@@ -19,12 +19,11 @@ class Course extends Model implements HasMedia
 
     protected $connection = 'einundzwanzig';
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'name',
+        'description',
+    ];
 
     /**
      * The attributes that should be cast to native types.

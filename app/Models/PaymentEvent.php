@@ -9,7 +9,14 @@ class PaymentEvent extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'year',
+        'event_id',
+        'amount',
+        'paid',
+        'btc_pay_invoice',
+    ];
 
     public function pleb()
     {

@@ -20,12 +20,13 @@ class ProjectProposal extends Model implements HasMedia
     use HasSlug;
     use InteractsWithMedia;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'name',
+        'description',
+        'support_in_sats',
+        'website',
+    ];
 
     /**
      * The attributes that should be cast to native types.
