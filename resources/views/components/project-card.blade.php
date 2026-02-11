@@ -78,10 +78,7 @@
 
                  <!-- Second row: Action buttons -->
                  <div class="flex flex-wrap gap-2">
-                     @if(
-                         ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
-                         || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
-                          )
+                     @if(Illuminate\Support\Facades\Gate::forUser(App\Support\NostrAuth::user())->allows('delete', $project))
                          <flux:button
                              icon="trash"
                              size="xs"
@@ -89,7 +86,8 @@
                              wire:click="$dispatch('confirmDeleteProject', { id: {{ $project->id }} })">
                              Löschen
                          </flux:button>
-
+                     @endif
+                     @if(Illuminate\Support\Facades\Gate::forUser(App\Support\NostrAuth::user())->allows('update', $project))
                          <flux:button
                              icon="pencil"
                              size="xs"

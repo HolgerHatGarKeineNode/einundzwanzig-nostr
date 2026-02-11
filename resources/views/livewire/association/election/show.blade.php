@@ -4,6 +4,7 @@ use App\Models\Election;
 use App\Models\EinundzwanzigPleb;
 use App\Models\Profile;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -197,6 +198,13 @@ new class extends Component {
         if ($this->election->end_time?->isPast() || ! config('services.voting')) {
             $this->isNotClosed = false;
         }
+
+        $nostrUser = NostrAuth::user();
+        if ($nostrUser) {
+            $this->currentPubkey = $nostrUser->getPubkey();
+            $this->currentPleb = $nostrUser->getPleb();
+            $this->isAllowed = Gate::forUser($nostrUser)->allows('vote', $this->election);
+        }
     }
 
     public function handleNostrLoggedIn(string $pubkey): void
@@ -211,10 +219,14 @@ new class extends Component {
             abort(429, 'Too many login attempts.');
         }
 
+        NostrAuth::login($pubkey);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
-        $this->isAllowed = (bool) $this->currentPleb;
+
+        $nostrUser = NostrAuth::user();
+        $this->isAllowed = $nostrUser && Gate::forUser($nostrUser)->allows('vote', $this->election);
     }
 
     public function handleNostrLoggedOut(): void
@@ -291,6 +303,8 @@ new class extends Component {
 
     public function vote($pubkey, $type, $board = false): void
     {
+        Gate::forUser(NostrAuth::user())->authorize('vote', $this->election);
+
         $executed = RateLimiter::attempt(
             'voting:'.request()->ip(),
             10,

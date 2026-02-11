@@ -2,6 +2,7 @@
 
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -40,36 +41,29 @@ class extends Component
     {
         $this->project = ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
 
-        if (NostrAuth::check()) {
-            $currentPubkey = NostrAuth::pubkey();
-            $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
+        $nostrUser = NostrAuth::user();
 
-            if (
-                (
-                    $currentPleb
-                    && $currentPleb->id === $this->project->einundzwanzig_pleb_id
-                )
-                || in_array($currentPleb->npub, config('einundzwanzig.config.current_board'))
-            ) {
-                $this->isAllowed = true;
-                $this->form = [
-                    'name' => $this->project->name,
-                    'description' => $this->project->description,
-                    'support_in_sats' => (string) $this->project->support_in_sats,
-                    'website' => $this->project->website ?? '',
-                    'accepted' => (bool) $this->project->accepted,
-                    'sats_paid' => $this->project->sats_paid,
-                ];
-            }
+        if ($nostrUser && Gate::forUser($nostrUser)->allows('update', $this->project)) {
+            $this->isAllowed = true;
+            $this->form = [
+                'name' => $this->project->name,
+                'description' => $this->project->description,
+                'support_in_sats' => (string) $this->project->support_in_sats,
+                'website' => $this->project->website ?? '',
+                'accepted' => (bool) $this->project->accepted,
+                'sats_paid' => $this->project->sats_paid,
+            ];
+        }
 
-            if ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
-                $this->isAdmin = true;
-            }
+        if ($nostrUser && Gate::forUser($nostrUser)->allows('accept', $this->project)) {
+            $this->isAdmin = true;
         }
     }
 
     public function deleteMainImage(): void
     {
+        Gate::forUser(NostrAuth::user())->authorize('update', $this->project);
+
         if ($this->project->getFirstMedia('main')) {
             $this->project->getFirstMedia('main')->delete();
         }
@@ -85,6 +79,8 @@ class extends Component
 
     public function update(): void
     {
+        Gate::forUser(NostrAuth::user())->authorize('update', $this->project);
+
         $executed = RateLimiter::attempt(
             'project-proposal-update:'.request()->ip(),
             5,
@@ -103,13 +99,16 @@ class extends Component
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
+        $nostrUser = NostrAuth::user();
+        $canAccept = $nostrUser && Gate::forUser($nostrUser)->allows('accept', $this->project);
+
         $this->project->update([
             'name' => $this->form['name'],
             'description' => $this->form['description'],
             'support_in_sats' => (int) $this->form['support_in_sats'],
             'website' => $this->form['website'],
-            'accepted' => $this->isAdmin ? (bool) $this->form['accepted'] : $this->project->accepted,
-            'sats_paid' => $this->isAdmin ? $this->form['sats_paid'] : $this->project->sats_paid,
+            'accepted' => $canAccept ? (bool) $this->form['accepted'] : $this->project->accepted,
+            'sats_paid' => $canAccept ? $this->form['sats_paid'] : $this->project->sats_paid,
         ]);
 
         if ($this->file) {
