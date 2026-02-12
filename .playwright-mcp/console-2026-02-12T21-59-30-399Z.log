@@ -1,0 +1,3 @@
+[    3014ms] [ERROR] Access to font at 'http://localhost/storage/fonts/440f07d668/sinconsolatav37qlddnthlqrwh-oj1uhjlkenvzkwgvkl3gzqmawlyya15idhuna.woff2' from origin 'http://127.0.0.1:8321' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:8321/association/news:654
+[    3015ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost/storage/fonts/440f07d668/sinconsolatav37qlddnthlqrwh-oj1uhjlkenvzkwgvkl3gzqmawlyya15idhuna.woff2:0
+[    3126ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_CLOSED @ https://127.0.0.1:8321/favicon.ico:0

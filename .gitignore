@@ -23,3 +23,5 @@ yarn-error.log
 /.sisyphus
 /.opencode
 .switch-omo-config*
+/.playwright-mcp
+/*.png
