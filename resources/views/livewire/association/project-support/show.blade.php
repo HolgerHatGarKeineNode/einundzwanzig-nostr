@@ -168,7 +168,7 @@ new class extends Component {
                 </div>
 
                 <figure class="mb-6">
-                    <img class="rounded-sm h-48" src="{{ $projectProposal->getSignedMediaUrl('main') }}"
+                    <img class="rounded-sm h-48" src="{{ $projectProposal->getSignedMediaUrl('main', 60, 'preview') }}"
                          alt="Picture">
                 </figure>
 

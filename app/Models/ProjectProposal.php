@@ -78,14 +78,20 @@ class ProjectProposal extends Model implements HasMedia
             ->useFallbackUrl(asset('einundzwanzig-alpha.jpg'));
     }
 
-    public function getSignedMediaUrl(string $collection = 'main', int $expireMinutes = 60): string
+    public function getSignedMediaUrl(string $collection = 'main', int $expireMinutes = 60, ?string $conversion = null): string
     {
         $media = $this->getFirstMedia($collection);
         if (! $media) {
             return asset('einundzwanzig-alpha.jpg');
         }
 
-        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), ['media' => $media]);
+        $parameters = ['media' => $media];
+
+        if ($conversion && $media->hasGeneratedConversion($conversion)) {
+            $parameters['conversion'] = $conversion;
+        }
+
+        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), $parameters);
     }
 
     public function einundzwanzigPleb(): BelongsTo
