@@ -142,109 +142,89 @@ class extends Component {
 
 <div>
     @if($isAllowed)
-        <div class="lg:flex gap-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
 
             <!-- Main content -->
-            <div class="flex-1 min-w-0">
-                <!-- Header -->
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <flux:heading size="xl">News</flux:heading>
-                </div>
+            <div class="flex-1 min-w-0 flex flex-col gap-6">
+                <!-- Page title -->
+                <h1 class="text-[28px] font-semibold text-text-primary">News</h1>
 
-                <!-- Category filter (horizontal, scrollable on mobile) -->
-                <div class="mb-6 flex flex-nowrap gap-2 overflow-x-auto no-scrollbar pb-1">
-                    <flux:badge
-                        as="button"
+                <!-- Category filter pills -->
+                <div class="flex flex-nowrap gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <button
                         wire:click="clearFilter"
-                        :color="$selectedCategory === null ? 'amber' : 'zinc'"
-                        :variant="$selectedCategory === null ? 'solid' : 'outline'"
-                        size="sm"
-                        class="shrink-0 cursor-pointer"
+                        class="shrink-0 rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors cursor-pointer {{ $selectedCategory === null ? 'bg-orange-primary text-white' : 'border border-border-default text-text-secondary hover:text-text-primary' }}"
                     >
                         Alle
-                    </flux:badge>
+                    </button>
                     @foreach(\App\Enums\NewsCategory::selectOptions() as $category)
-                        <flux:badge
+                        <button
                             wire:key="cat_{{ $category['value'] }}"
-                            as="button"
                             wire:click="filterByCategory({{ $category['value'] }})"
-                            :color="$selectedCategory === $category['value'] ? 'amber' : 'zinc'"
-                            :variant="$selectedCategory === $category['value'] ? 'solid' : 'outline'"
-                            size="sm"
-                            class="shrink-0 cursor-pointer"
+                            class="shrink-0 rounded-full px-4 py-1.5 text-[13px] transition-colors cursor-pointer {{ $selectedCategory === $category['value'] ? 'bg-orange-primary text-white font-semibold' : 'border border-border-default text-text-secondary hover:text-text-primary font-normal' }}"
                         >
-                            <i class="fa-sharp-duotone fa-solid fa-{{ $category['icon'] }} mr-1"></i>
-                            {{ $category['label'] }}
-                        </flux:badge>
+                            {{ $category['emoji'] }} {{ $category['label'] }}
+                        </button>
                     @endforeach
                 </div>
 
                 <!-- News list -->
-                <div class="space-y-4">
+                <div class="flex flex-col gap-4">
                     @forelse($this->filteredNews as $post)
-                        <flux:card wire:key="post_{{ $post->id }}" class="space-y-0">
-                            <!-- Header row: avatar + meta + actions -->
-                            <div class="flex items-start gap-3">
-                                <flux:avatar
-                                    size="sm"
-                                    :src="$post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg')"
-                                    :name="$post->einundzwanzigPleb->profile?->name ?? 'Anonym'"
-                                    circle
+                        <div wire:key="post_{{ $post->id }}" class="news-card bg-bg-surface rounded-xl p-5 border border-border-subtle flex flex-col gap-4">
+                            <!-- Card header: avatar + meta -->
+                            <div class="flex items-center gap-3">
+                                <img
+                                    src="{{ $post->einundzwanzigPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                                    alt="{{ $post->einundzwanzigPleb->profile?->name ?? 'Anonym' }}"
+                                    class="w-10 h-10 rounded-full bg-bg-elevated object-cover shrink-0"
                                 />
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                                        <flux:text class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                            {{ $post->einundzwanzigPleb?->profile?->name ?? str($post->einundzwanzigPleb?->npub)->limit(32) }}
-                                        </flux:text>
-                                        <flux:text class="text-xs text-zinc-400 dark:text-zinc-500">
-                                            {{ $post->created_at->format('d.m.Y') }}
-                                        </flux:text>
+                                <div class="flex-1 min-w-0 flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-semibold text-text-primary">{{ $post->einundzwanzigPleb?->profile?->name ?? str($post->einundzwanzigPleb?->npub)->limit(32) }}</span>
+                                        <span class="text-xs text-text-tertiary">{{ $post->created_at->format('d.m.Y') }}</span>
                                     </div>
-                                    <flux:badge
-                                        as="button"
-                                        wire:click="filterByCategory({{ $post->category->value }})"
-                                        :color="$post->category->color()"
-                                        size="sm"
-                                        class="cursor-pointer"
-                                    >
-                                        <i class="fa-sharp-duotone fa-solid fa-{{ $post->category->icon() }} mr-1"></i>
-                                        {{ $post->category->label() }}
-                                    </flux:badge>
+                                    <div>
+                                        <button
+                                            wire:click="filterByCategory({{ $post->category->value }})"
+                                            class="news-category-badge news-category-badge--{{ $post->category->color() }} inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] cursor-pointer"
+                                        >
+                                            {{ $post->category->emoji() }} {{ $post->category->label() }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Body -->
-                            <div class="mt-3">
-                                <flux:heading class="mb-1">{{ $post->name }}</flux:heading>
+                            <!-- Card body -->
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-base font-semibold text-text-primary">{{ $post->name }}</h3>
                                 @if($post->description)
-                                    <flux:text class="text-sm">{{ $post->description }}</flux:text>
+                                    <p class="text-[13px] leading-relaxed text-text-secondary">{{ $post->description }}</p>
                                 @endif
                             </div>
 
-                            <!-- Actions -->
-                            <div class="mt-4 flex items-center gap-2">
+                            <!-- Card footer -->
+                            <div class="flex items-center">
                                 @if($post->getFirstMedia('pdf'))
-                                    <flux:button
-                                        size="sm"
-                                        variant="ghost"
+                                    <a
+                                        href="{{ url()->temporarySignedRoute('media.signed', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')]) }}"
                                         target="_blank"
-                                        :href="url()->temporarySignedRoute('media.signed', now()->addMinutes(30), ['media' => $post->getFirstMedia('pdf')])"
-                                        icon="document-arrow-down"
+                                        class="inline-flex items-center gap-2 rounded-lg border border-border-default px-4 py-2 text-[13px] font-medium text-text-secondary hover:text-text-primary transition-colors"
                                     >
+                                        <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13H6"/><path d="M14 13h-1"/></svg>
                                         PDF öffnen
-                                    </flux:button>
+                                    </a>
                                 @endif
                                 @if($canEdit)
-                                    <flux:spacer />
+                                    <div class="ml-auto">
                                     <flux:modal.trigger name="delete-news-{{ $post->id }}">
-                                        <flux:button
-                                            size="sm"
-                                            variant="danger"
-                                            icon="trash"
+                                        <button
                                             wire:click="confirmDelete({{ $post->id }})"
+                                            class="inline-flex items-center gap-1.5 rounded-lg bg-red-500/20 px-4 py-2 text-[13px] font-medium text-red-500 hover:bg-red-500/30 transition-colors cursor-pointer"
                                         >
+                                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                                             Löschen
-                                        </flux:button>
+                                        </button>
                                     </flux:modal.trigger>
 
                                     <flux:modal name="delete-news-{{ $post->id }}" class="min-w-88">
@@ -265,56 +245,61 @@ class extends Component {
                                             </div>
                                         </div>
                                     </flux:modal>
+                                    </div>
                                 @endif
                             </div>
-                        </flux:card>
+                        </div>
                     @empty
-                        <flux:card>
+                        <div class="bg-bg-surface rounded-xl p-5 border border-border-subtle">
                             <div class="py-6 text-center">
                                 @if($selectedCategory !== null)
-                                    <flux:icon name="funnel" class="mx-auto mb-3 text-zinc-300 dark:text-zinc-600" />
-                                    <flux:heading>Keine News in dieser Kategorie</flux:heading>
-                                    <flux:text class="mt-1 text-sm">Versuche eine andere Kategorie oder zeige alle an.</flux:text>
-                                    <flux:button wire:click="clearFilter" size="sm" class="mt-4">
+                                    <flux:icon name="funnel" class="mx-auto mb-3 text-text-disabled" />
+                                    <h3 class="text-base font-semibold text-text-primary">Keine News in dieser Kategorie</h3>
+                                    <p class="mt-1 text-sm text-text-secondary">Versuche eine andere Kategorie oder zeige alle an.</p>
+                                    <button wire:click="clearFilter" class="mt-4 rounded-lg border border-border-default px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors cursor-pointer">
                                         Alle anzeigen
-                                    </flux:button>
+                                    </button>
                                 @else
-                                    <flux:icon name="newspaper" class="mx-auto mb-3 text-zinc-300 dark:text-zinc-600" />
-                                    <flux:heading>Noch keine News vorhanden</flux:heading>
-                                    <flux:text class="mt-1 text-sm">Hier werden zukünftige Neuigkeiten angezeigt.</flux:text>
+                                    <flux:icon name="newspaper" class="mx-auto mb-3 text-text-disabled" />
+                                    <h3 class="text-base font-semibold text-text-primary">Noch keine News vorhanden</h3>
+                                    <p class="mt-1 text-sm text-text-secondary">Hier werden zukünftige Neuigkeiten angezeigt.</p>
                                 @endif
                             </div>
-                        </flux:card>
+                        </div>
                     @endforelse
                 </div>
             </div>
 
             <!-- Sidebar: create form (board members only) -->
             @if($canEdit)
-                <div class="w-full lg:w-80 shrink-0 mt-8 lg:mt-0">
-                    <div class="lg:sticky lg:top-16">
-                        <flux:card class="space-y-4">
-                            <flux:heading>News anlegen</flux:heading>
-                            <flux:separator />
+                <div class="w-full lg:w-[360px] shrink-0">
+                    <div class="lg:sticky lg:top-16 flex flex-col gap-6">
+                        <div class="flex flex-col gap-6">
+                            <h2 class="text-lg font-semibold text-text-primary">News anlegen</h2>
 
-                            <flux:file-upload wire:model="file" label="PDF hochladen">
-                                <flux:file-upload.dropzone heading="Datei hier ablegen oder klicken" text="PDF bis 10MB" />
-                            </flux:file-upload>
-                            <flux:error name="file" />
+                            <!-- Upload section -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm font-medium text-text-primary">PDF hochladen</label>
+                                <flux:file-upload wire:model="file">
+                                    <flux:file-upload.dropzone heading="Datei hier ablegen oder klicken" text="PDF bis 10MB" class="!border-orange-primary !border-2 !bg-orange-primary/10 !rounded-xl" />
+                                </flux:file-upload>
+                                <flux:error name="file" />
 
-                            @if ($file)
-                                <flux:file-item
-                                    :heading="$file->getClientOriginalName()"
-                                    :size="$file->getSize()"
-                                >
-                                    <x-slot name="actions">
-                                        <flux:file-item.remove wire:click="removeFile" aria-label="{{ 'Remove file: ' . $file->getClientOriginalName() }}" />
-                                    </x-slot>
-                                </flux:file-item>
-                            @endif
+                                @if ($file)
+                                    <flux:file-item
+                                        :heading="$file->getClientOriginalName()"
+                                        :size="$file->getSize()"
+                                    >
+                                        <x-slot name="actions">
+                                            <flux:file-item.remove wire:click="removeFile" aria-label="{{ 'Remove file: ' . $file->getClientOriginalName() }}" />
+                                        </x-slot>
+                                    </flux:file-item>
+                                @endif
+                            </div>
 
-                            <flux:field>
-                                <flux:label>Kategorie</flux:label>
+                            <!-- Kategorie -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm font-medium text-text-primary">Kategorie</label>
                                 <flux:select
                                     wire:model="form.category"
                                     placeholder="Wähle Kategorie"
@@ -327,25 +312,50 @@ class extends Component {
                                     @endforeach
                                 </flux:select>
                                 <flux:error name="form.category" />
-                            </flux:field>
+                            </div>
 
-                            <flux:field>
-                                <flux:label>Titel</flux:label>
+                            <!-- Titel -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm font-medium text-text-primary">Titel</label>
                                 <flux:input wire:model="form.name" placeholder="News-Titel" />
                                 <flux:error name="form.name" />
-                            </flux:field>
+                            </div>
 
-                            <flux:field>
-                                <flux:label>Beschreibung</flux:label>
-                                <flux:description>optional</flux:description>
+                            <!-- Beschreibung -->
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm font-medium text-text-primary">Beschreibung</label>
+                                    <span class="text-xs text-text-tertiary">optional</span>
+                                </div>
                                 <flux:textarea wire:model="form.description" rows="4" placeholder="Beschreibung..." />
                                 <flux:error name="form.description" />
-                            </flux:field>
+                            </div>
 
-                            <flux:button wire:click="save" variant="primary" class="w-full">
+                            <!-- Submit -->
+                            <button
+                                wire:click="save"
+                                class="w-full rounded-lg bg-orange-primary py-3 px-6 text-sm font-semibold text-white hover:bg-orange-light transition-colors cursor-pointer"
+                            >
                                 Hinzufügen
-                            </flux:button>
-                        </flux:card>
+                            </button>
+
+                            <!-- User badge -->
+                            @if(NostrAuth::check())
+                                @php
+                                    $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first();
+                                @endphp
+                                @if($currentPleb)
+                                    <div class="flex items-center gap-2.5 rounded-xl bg-bg-surface border border-border-subtle px-4 py-2.5">
+                                        <img
+                                            src="{{ $currentPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                                            alt="{{ $currentPleb->profile?->name ?? 'Anonym' }}"
+                                            class="w-8 h-8 rounded-full bg-bg-elevated object-cover shrink-0"
+                                        />
+                                        <span class="text-[13px] font-medium text-text-primary">{{ $currentPleb->profile?->name ?? str($currentPleb->npub)->limit(32) }}</span>
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endif
