@@ -22,16 +22,17 @@ beforeEach(function () {
         'event_id' => 'test_event_'.Str::random(40),
     ]);
 
-    $this->project = ProjectProposal::factory()->create([
+    $this->project = ProjectProposal::query()->create([
         'einundzwanzig_pleb_id' => $this->pleb->id,
         'name' => 'Original Project',
         'description' => 'Original Description',
         'support_in_sats' => 21000,
-        'website' => 'https://example.com',
+        'website' => 'https://original.example.com',
+        'accepted' => false,
+        'sats_paid' => 0,
     ]);
 
     // Get board member pubkeys from config
-    $boardPubkeys = config('einundzwanzig.config.current_board', []);
     $this->boardMember = EinundzwanzigPleb::query()->create([
         'pubkey' => 'board_pubkey_'.Str::random(20),
         'npub' => 'board_npub_'.Str::random(20),
@@ -45,8 +46,9 @@ beforeEach(function () {
 it('renders edit form for authorized project owners', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->assertStatus(200)
+        ->assertSee('Projektförderung bearbeiten')
         ->assertSet('form.name', $this->project->name)
         ->assertSet('form.description', $this->project->description);
 });
@@ -54,8 +56,9 @@ it('renders edit form for authorized project owners', function () {
 it('renders edit form for board members', function () {
     NostrAuth::login($this->boardMember->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
-        ->assertStatus(200);
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
+        ->assertStatus(200)
+        ->assertSee('Projektförderung bearbeiten');
 });
 
 it('does not render edit form for unauthorized users', function () {
@@ -67,14 +70,14 @@ it('does not render edit form for unauthorized users', function () {
 
     NostrAuth::login($unauthorizedPleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->assertSet('isAllowed', false);
 });
 
 it('validates required name field', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->set('form.name', '')
         ->set('form.description', 'Test description')
         ->call('update')
@@ -84,7 +87,7 @@ it('validates required name field', function () {
 it('validates required description field', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->set('form.name', 'Test Project')
         ->set('form.description', '')
         ->call('update')
@@ -94,11 +97,9 @@ it('validates required description field', function () {
 it('updates project proposal successfully', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->set('form.name', 'Updated Name')
         ->set('form.description', 'Updated Description')
-        ->set('form.support_in_sats', 42000)
-        ->set('form.website', 'https://updated.com')
         ->call('update')
         ->assertHasNoErrors();
 
@@ -107,14 +108,42 @@ it('updates project proposal successfully', function () {
     expect($this->project->description)->toBe('Updated Description');
 });
 
+it('saves accepted and sats_paid when admin updates', function () {
+    NostrAuth::login($this->boardMember->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
+        ->assertSet('isAdmin', true)
+        ->set('form.accepted', true)
+        ->set('form.sats_paid', 50000)
+        ->call('update')
+        ->assertHasNoErrors();
+
+    $this->project->refresh();
+    expect($this->project->accepted)->toBeTrue();
+    expect($this->project->sats_paid)->toBe(50000);
+});
+
+it('does not allow non-admin to change accepted and sats_paid', function () {
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
+        ->assertSet('isAdmin', false)
+        ->set('form.accepted', true)
+        ->set('form.sats_paid', 99999)
+        ->call('update')
+        ->assertHasNoErrors();
+
+    $this->project->refresh();
+    expect($this->project->accepted)->toBeFalse();
+    expect($this->project->sats_paid)->toBe(0);
+});
+
 it('disables update button during save', function () {
     NostrAuth::login($this->pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->set('form.name', 'Test')
         ->set('form.description', 'Test')
-        ->set('form.support_in_sats', 21000)
-        ->set('form.website', 'https://example.com')
         ->call('update')
         ->assertSeeHtml('wire:loading');
 });
