@@ -35,9 +35,9 @@ class extends Component
     #[Locked]
     public bool $isAdmin = false;
 
-    public function mount($projectProposal): void
+    public function mount(ProjectProposal $projectProposal): void
     {
-        $this->project = ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
+        $this->project = $projectProposal;
 
         if (NostrAuth::check()) {
             $currentPubkey = NostrAuth::pubkey();
@@ -204,11 +204,11 @@ class extends Component
                                     <div class="space-y-3 mt-3">
                                         <flux:field>
                                             <flux:label>Akzeptiert</flux:label>
-                                            <flux:switch wire:model="form.accepted" />
+                                            <flux:switch wire:model.live="form.accepted" />
                                         </flux:field>
                                         <flux:field>
                                             <flux:label>Sats bezahlt</flux:label>
-                                            <flux:input type="number" wire:model="form.sats_paid" />
+                                            <flux:input type="number" wire:model.live="form.sats_paid" />
                                         </flux:field>
                                     </div>
                                 @endif
