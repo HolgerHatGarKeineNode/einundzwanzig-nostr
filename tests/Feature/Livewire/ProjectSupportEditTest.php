@@ -22,15 +22,15 @@ beforeEach(function () {
         'event_id' => 'test_event_'.Str::random(40),
     ]);
 
-    $this->project = ProjectProposal::query()->create([
-        'einundzwanzig_pleb_id' => $this->pleb->id,
-        'name' => 'Original Project',
-        'description' => 'Original Description',
-        'support_in_sats' => 21000,
-        'website' => 'https://original.example.com',
-        'accepted' => false,
-        'sats_paid' => 0,
-    ]);
+    $this->project = new ProjectProposal;
+    $this->project->einundzwanzig_pleb_id = $this->pleb->id;
+    $this->project->name = 'Original Project';
+    $this->project->description = 'Original Description';
+    $this->project->support_in_sats = 21000;
+    $this->project->website = 'https://original.example.com';
+    $this->project->accepted = false;
+    $this->project->sats_paid = 0;
+    $this->project->save();
 
     // Get board member pubkeys from config
     $this->boardMember = EinundzwanzigPleb::query()->create([

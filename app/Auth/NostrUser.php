@@ -2,6 +2,7 @@
 
 namespace App\Auth;
 
+use App\Models\EinundzwanzigPleb;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class NostrUser implements Authenticatable
@@ -13,7 +14,7 @@ class NostrUser implements Authenticatable
     public function __construct(string $pubkey)
     {
         $this->pubkey = $pubkey;
-        $this->pleb = \App\Models\EinundzwanzigPleb::query()
+        $this->pleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)
             ->first();
     }

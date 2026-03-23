@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Enums\AssociationStatus;
+use App\Models\EinundzwanzigPleb;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EinundzwanzigPleb>
+ * @extends Factory<EinundzwanzigPleb>
  */
 class EinundzwanzigPlebFactory extends Factory
 {
@@ -20,14 +22,14 @@ class EinundzwanzigPlebFactory extends Factory
             'pubkey' => $this->faker->sha256(),
             'npub' => $this->faker->word(),
             'email' => $this->faker->safeEmail(),
-            'association_status' => \App\Enums\AssociationStatus::DEFAULT,
+            'association_status' => AssociationStatus::DEFAULT,
         ];
     }
 
     public function active(): static
     {
         return $this->state(fn (array $attributes) => [
-            'association_status' => \App\Enums\AssociationStatus::ACTIVE,
+            'association_status' => AssociationStatus::ACTIVE,
         ]);
     }
 
@@ -35,13 +37,13 @@ class EinundzwanzigPlebFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'npub' => config('einundzwanzig.config.current_board')[0],
-            'association_status' => \App\Enums\AssociationStatus::HONORARY,
+            'association_status' => AssociationStatus::HONORARY,
         ]);
     }
 
     public function withPaidCurrentYear(): static
     {
-        return $this->afterCreating(function (\App\Models\EinundzwanzigPleb $pleb) {
+        return $this->afterCreating(function (EinundzwanzigPleb $pleb) {
             $pleb->paymentEvents()->create([
                 'year' => date('Y'),
                 'amount' => 21000,

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Nostr;
 
+use App\Models\EinundzwanzigPleb;
 use App\Models\Event;
 use App\Traits\NostrEventRendererTrait;
 use Illuminate\Console\Command;
@@ -35,7 +36,7 @@ class FetchEvents extends Command
      */
     public function handle()
     {
-        $plebs = \App\Models\EinundzwanzigPleb::query()
+        $plebs = EinundzwanzigPleb::query()
             ->get();
 
         $subscription = new Subscription;

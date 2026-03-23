@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\EinundzwanzigPleb;
+use App\Models\ProjectProposal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProjectProposal>
+ * @extends Factory<ProjectProposal>
  */
 class ProjectProposalFactory extends Factory
 {
@@ -17,7 +19,7 @@ class ProjectProposalFactory extends Factory
     public function definition(): array
     {
         return [
-            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::factory(),
+            'einundzwanzig_pleb_id' => EinundzwanzigPleb::factory(),
             'name' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
             'support_in_sats' => $this->faker->numberBetween(10000, 1000000),

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Nostr;
 
+use App\Models\Event;
 use App\Traits\NostrEventRendererTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Broadcast;
@@ -29,7 +30,7 @@ class RenderAllEvents extends Command
      */
     public function handle()
     {
-        $events = \App\Models\Event::query()
+        $events = Event::query()
             ->get();
 
         foreach ($events as $event) {

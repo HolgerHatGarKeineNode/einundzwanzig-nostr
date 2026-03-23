@@ -1,7 +1,10 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\NostrAuthServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
+    AppServiceProvider::class,
     // App\Providers\FolioServiceProvider::class, // Disabled - laravel/folio package removed during Laravel 12 upgrade
-    App\Providers\NostrAuthServiceProvider::class,
+    NostrAuthServiceProvider::class,
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use App\Auth\NostrUser;
+use App\Enums\AssociationStatus;
 use App\Models\EinundzwanzigPleb;
 use App\Models\Election;
 use Illuminate\Support\Facades\Gate;
@@ -77,7 +78,7 @@ it('allows active member to vote in an election', function () {
 
 it('allows honorary member to vote in an election', function () {
     $pleb = EinundzwanzigPleb::factory()->create([
-        'association_status' => \App\Enums\AssociationStatus::HONORARY,
+        'association_status' => AssociationStatus::HONORARY,
     ]);
     $election = Election::factory()->create();
     $nostrUser = new NostrUser($pleb->pubkey);
@@ -87,7 +88,7 @@ it('allows honorary member to vote in an election', function () {
 
 it('denies passive member from voting in an election', function () {
     $pleb = EinundzwanzigPleb::factory()->create([
-        'association_status' => \App\Enums\AssociationStatus::PASSIVE,
+        'association_status' => AssociationStatus::PASSIVE,
     ]);
     $election = Election::factory()->create();
     $nostrUser = new NostrUser($pleb->pubkey);

@@ -107,9 +107,14 @@ class extends Component
             'description' => $this->form['description'],
             'support_in_sats' => (int) $this->form['support_in_sats'],
             'website' => $this->form['website'],
-            'accepted' => $canAccept ? (bool) $this->form['accepted'] : $this->project->accepted,
-            'sats_paid' => $canAccept ? $this->form['sats_paid'] : $this->project->sats_paid,
         ]);
+
+        // Update admin-only fields directly if user has permission
+        if ($canAccept) {
+            $this->project->accepted = (bool) $this->form['accepted'];
+            $this->project->sats_paid = $this->form['sats_paid'];
+            $this->project->save();
+        }
 
         if ($this->file) {
             $this->project->addMedia($this->file)->toMediaCollection('main');

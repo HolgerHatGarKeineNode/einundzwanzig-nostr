@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\Profile;
+use Illuminate\Support\Facades\Http;
 use swentel\nostr\Filter\Filter;
 use swentel\nostr\Key\Key;
 use swentel\nostr\Message\RequestMessage;
@@ -21,7 +22,7 @@ trait NostrFetcherTrait
     public function getNip05HandlesForPubkey(string $pubkey): array
     {
         try {
-            $response = \Illuminate\Support\Facades\Http::get(
+            $response = Http::get(
                 'https://einundzwanzig.space/.well-known/nostr.json',
             );
             $data = $response->json();

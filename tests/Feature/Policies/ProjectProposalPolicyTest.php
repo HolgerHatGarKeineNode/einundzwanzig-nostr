@@ -1,6 +1,7 @@
 <?php
 
 use App\Auth\NostrUser;
+use App\Enums\AssociationStatus;
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
 use Illuminate\Support\Facades\Gate;
@@ -48,7 +49,7 @@ it('denies creation for active member without paid membership', function () {
 
 it('denies creation for passive member without paid membership', function () {
     $pleb = EinundzwanzigPleb::factory()->create([
-        'association_status' => \App\Enums\AssociationStatus::PASSIVE,
+        'association_status' => AssociationStatus::PASSIVE,
     ]);
     $nostrUser = new NostrUser($pleb->pubkey);
 
@@ -57,7 +58,7 @@ it('denies creation for passive member without paid membership', function () {
 
 it('allows passive member with paid membership to create project proposals', function () {
     $pleb = EinundzwanzigPleb::factory()->withPaidCurrentYear()->create([
-        'association_status' => \App\Enums\AssociationStatus::PASSIVE,
+        'association_status' => AssociationStatus::PASSIVE,
     ]);
     $nostrUser = new NostrUser($pleb->pubkey);
 

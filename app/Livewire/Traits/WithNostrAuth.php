@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Traits;
 
+use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\On;
@@ -32,7 +33,7 @@ trait WithNostrAuth
         NostrAuth::login($pubkey);
 
         $this->currentPubkey = $pubkey;
-        $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
+        $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)
             ->first();
 

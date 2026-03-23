@@ -22,13 +22,10 @@ class ProjectProposal extends Model implements HasMedia
 
     /** @var list<string> */
     protected $fillable = [
-        'einundzwanzig_pleb_id',
         'name',
         'description',
         'support_in_sats',
         'website',
-        'accepted',
-        'sats_paid',
     ];
 
     /**

@@ -2,17 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\EinundzwanzigPleb;
+use App\Models\PaymentEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PaymentEvent>
+ * @extends Factory<PaymentEvent>
  */
 class PaymentEventFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::factory(),
+            'einundzwanzig_pleb_id' => EinundzwanzigPleb::factory(),
             'year' => fake()->year(),
             'event_id' => fake()->uuid(),
             'amount' => 21000,

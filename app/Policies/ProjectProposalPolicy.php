@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Auth\NostrUser;
+use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
 
 class ProjectProposalPolicy
@@ -87,7 +88,7 @@ class ProjectProposalPolicy
     }
 
     /**
-     * @param  \App\Models\EinundzwanzigPleb  $pleb
+     * @param  EinundzwanzigPleb  $pleb
      */
     private function isBoardMember(object $pleb): bool
     {

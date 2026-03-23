@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\NostrAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -41,7 +42,7 @@ Route::get('media/{media}', function (Media $media, Request $request) {
     ->middleware('signed');
 
 Route::post('logout', function () {
-    \App\Support\NostrAuth::logout();
+    NostrAuth::logout();
     Session::flush();
 
     return redirect('/');

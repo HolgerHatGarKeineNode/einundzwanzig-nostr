@@ -4,6 +4,7 @@ use App\Services\SecurityMonitor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            ThrottleRequests::class.':api',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

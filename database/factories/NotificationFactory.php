@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Enums\NewsCategory;
+use App\Models\EinundzwanzigPleb;
+use App\Models\Notification;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Notification>
+ * @extends Factory<Notification>
  */
 class NotificationFactory extends Factory
 {
@@ -19,8 +22,8 @@ class NotificationFactory extends Factory
         return [
             'name' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
-            'category' => $this->faker->randomElement(\App\Enums\NewsCategory::cases()),
-            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::factory(),
+            'category' => $this->faker->randomElement(NewsCategory::cases()),
+            'einundzwanzig_pleb_id' => EinundzwanzigPleb::factory(),
         ];
     }
 }

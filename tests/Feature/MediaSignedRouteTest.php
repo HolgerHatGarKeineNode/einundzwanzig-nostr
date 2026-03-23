@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ProjectProposal;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 it('serves original media via signed route', function () {
@@ -9,7 +10,7 @@ it('serves original media via signed route', function () {
     $project = ProjectProposal::factory()->create();
 
     $project->addMedia(
-        \Illuminate\Http\UploadedFile::fake()->image('test.jpg', 100, 100)
+        UploadedFile::fake()->image('test.jpg', 100, 100)
     )->toMediaCollection('main');
 
     $media = $project->getFirstMedia('main');
@@ -25,7 +26,7 @@ it('serves conversion media via signed route when conversion parameter is provid
     $project = ProjectProposal::factory()->create();
 
     $project->addMedia(
-        \Illuminate\Http\UploadedFile::fake()->image('test.jpg', 500, 500)
+        UploadedFile::fake()->image('test.jpg', 500, 500)
     )->toMediaCollection('main');
 
     $media = $project->getFirstMedia('main');
@@ -44,7 +45,7 @@ it('falls back to original when conversion does not exist', function () {
     $project = ProjectProposal::factory()->create();
 
     $project->addMedia(
-        \Illuminate\Http\UploadedFile::fake()->image('test.jpg', 100, 100)
+        UploadedFile::fake()->image('test.jpg', 100, 100)
     )->toMediaCollection('main');
 
     $media = $project->getFirstMedia('main');
@@ -63,7 +64,7 @@ it('rejects unsigned media requests', function () {
     $project = ProjectProposal::factory()->create();
 
     $project->addMedia(
-        \Illuminate\Http\UploadedFile::fake()->image('test.jpg', 100, 100)
+        UploadedFile::fake()->image('test.jpg', 100, 100)
     )->toMediaCollection('main');
 
     $media = $project->getFirstMedia('main');
@@ -77,7 +78,7 @@ it('generates signed url with conversion parameter', function () {
     $project = ProjectProposal::factory()->create();
 
     $project->addMedia(
-        \Illuminate\Http\UploadedFile::fake()->image('test.jpg', 500, 500)
+        UploadedFile::fake()->image('test.jpg', 500, 500)
     )->toMediaCollection('main');
 
     $urlWithoutConversion = $project->getSignedMediaUrl('main');

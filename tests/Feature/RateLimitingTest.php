@@ -2,6 +2,7 @@
 
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
+use App\Models\Vote;
 use App\Support\NostrAuth;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
@@ -46,7 +47,7 @@ test('voting actions are rate limited after 10 attempts', function () {
         RateLimiter::attempt('voting:127.0.0.1', 10, function () {});
     }
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleApprove')
         ->assertStatus(429);
 });
@@ -93,7 +94,7 @@ test('project proposal update is rate limited after 5 attempts', function () {
         RateLimiter::attempt('project-proposal-update:127.0.0.1', 5, function () {});
     }
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->set('form.name', 'Updated Name')
         ->call('update')
         ->assertStatus(429);
@@ -105,11 +106,11 @@ test('voting works within rate limit', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleApprove')
         ->assertHasNoErrors();
 
-    $vote = \App\Models\Vote::query()
+    $vote = Vote::query()
         ->where('project_proposal_id', $project->id)
         ->where('einundzwanzig_pleb_id', $pleb->id)
         ->first();
