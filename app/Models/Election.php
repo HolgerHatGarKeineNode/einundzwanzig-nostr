@@ -9,7 +9,8 @@ class Election extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [];
 
     protected function casts(): array
     {

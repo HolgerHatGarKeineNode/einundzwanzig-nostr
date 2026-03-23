@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Election;
+use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use swentel\nostr\Filter\Filter;
@@ -49,18 +51,31 @@ new class extends Component {
         $this->loadBoardEvents();
         $this->loadVotes();
         $this->loadBoardVotes();
+
+        $nostrUser = NostrAuth::user();
+        if ($nostrUser) {
+            $this->currentPubkey = $nostrUser->getPubkey();
+            $this->currentPleb = $nostrUser->getPleb();
+            $this->isAllowed = Gate::forUser($nostrUser)->allows('update', $this->election);
+        }
     }
 
     public function handleNostrLoggedIn(string $pubkey): void
     {
+        NostrAuth::login($pubkey);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
-        $this->isAllowed = (bool) $this->currentPleb;
+
+        $nostrUser = NostrAuth::user();
+        $this->isAllowed = $nostrUser && Gate::forUser($nostrUser)->allows('update', $this->election);
     }
 
     public function handleNostrLoggedOut(): void
     {
+        NostrAuth::logout();
+
         $this->currentPubkey = null;
         $this->currentPleb = null;
         $this->isAllowed = false;
@@ -139,17 +154,22 @@ new class extends Component {
 
     public function loadNostrEvents($kinds): array
     {
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return [];
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
         $filter = new Filter;
         $filter->setKinds($kinds);
         $requestMessage = new RequestMessage($subscriptionId, [$filter]);
         $relaySet = new RelaySet;
-        $relaySet->setRelays([new Relay(config('services.relay'))]);
+        $relaySet->setRelays([new Relay($relayUrl)]);
         $request = new Request($relaySet, $requestMessage);
         $response = $request->send();
 
-        return collect($response[config('services.relay')])
+        return collect($response[$relayUrl] ?? [])
             ->map(function ($event) {
                 if (! isset($event->event)) {
                     return false;

@@ -15,7 +15,17 @@ class EinundzwanzigPleb extends Authenticatable implements CipherSweetEncrypted
     use HasFactory;
     use UsesCipherSweet;
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'npub',
+        'pubkey',
+        'email',
+        'no_email',
+        'nip05_handle',
+        'association_status',
+        'application_text',
+        'archived_application_text',
+    ];
 
     protected function casts(): array
     {

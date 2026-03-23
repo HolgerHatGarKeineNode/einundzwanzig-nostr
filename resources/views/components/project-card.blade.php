@@ -24,7 +24,7 @@
             <a class="relative block w-full h-48 sm:w-56 sm:h-auto xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0 sm:shrink-0"
                href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
                 <img class="absolute object-cover object-center w-full h-full"
-                     src="{{ $project->getSignedMediaUrl('main') }}" alt="Meetup 01">
+                     src="{{ $project->getSignedMediaUrl('main', 60, 'preview') }}" alt="Meetup 01">
                 <button class="absolute top-0 right-0 mt-4 mr-4">
                     <img class="rounded-full h-8 w-8"
                          src="{{ $project->einundzwanzigPleb->profile?->picture }}"
@@ -36,7 +36,7 @@
             <a class="relative block w-full h-48 sm:w-56 sm:h-auto xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0 sm:shrink-0"
                href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">
                 <img class="absolute object-cover object-center w-full h-full"
-                     src="{{ $project->getSignedMediaUrl('main') }}" alt="Meetup 01">
+                     src="{{ $project->getSignedMediaUrl('main', 60, 'preview') }}" alt="Meetup 01">
                 <button class="absolute top-0 right-0 mt-4 mr-4">
                     <img class="rounded-full h-8 w-8"
                          src="{{ $project->einundzwanzigPleb->profile?->picture }}"
@@ -78,10 +78,7 @@
 
                  <!-- Second row: Action buttons -->
                  <div class="flex flex-wrap gap-2">
-                     @if(
-                         ($currentPleb && $currentPleb->id === $project->einundzwanzig_pleb_id)
-                         || ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true))
-                          )
+                     @if(Illuminate\Support\Facades\Gate::forUser(App\Support\NostrAuth::user())->allows('delete', $project))
                          <flux:button
                              icon="trash"
                              size="xs"
@@ -89,7 +86,8 @@
                              wire:click="$dispatch('confirmDeleteProject', { id: {{ $project->id }} })">
                              Löschen
                          </flux:button>
-
+                     @endif
+                     @if(Illuminate\Support\Facades\Gate::forUser(App\Support\NostrAuth::user())->allows('update', $project))
                          <flux:button
                              icon="pencil"
                              size="xs"

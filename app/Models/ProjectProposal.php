@@ -20,12 +20,13 @@ class ProjectProposal extends Model implements HasMedia
     use HasSlug;
     use InteractsWithMedia;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'name',
+        'description',
+        'support_in_sats',
+        'website',
+    ];
 
     /**
      * The attributes that should be cast to native types.
@@ -77,14 +78,20 @@ class ProjectProposal extends Model implements HasMedia
             ->useFallbackUrl(asset('einundzwanzig-alpha.jpg'));
     }
 
-    public function getSignedMediaUrl(string $collection = 'main', int $expireMinutes = 60): string
+    public function getSignedMediaUrl(string $collection = 'main', int $expireMinutes = 60, ?string $conversion = null): string
     {
         $media = $this->getFirstMedia($collection);
         if (! $media) {
             return asset('einundzwanzig-alpha.jpg');
         }
 
-        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), ['media' => $media]);
+        $parameters = ['media' => $media];
+
+        if ($conversion && $media->hasGeneratedConversion($conversion)) {
+            $parameters['conversion'] = $conversion;
+        }
+
+        return url()->temporarySignedRoute('media.signed', now()->addMinutes($expireMinutes), $parameters);
     }
 
     public function einundzwanzigPleb(): BelongsTo

@@ -4,6 +4,8 @@ use App\Livewire\Traits\WithNostrAuth;
 use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -60,8 +62,22 @@ new class extends Component {
 
     public function handleApprove(): void
     {
-        if (! $this->currentPleb) {
+        $nostrUser = NostrAuth::user();
+
+        if (! $nostrUser || ! $nostrUser->getPleb()) {
             return;
+        }
+
+        Gate::forUser($nostrUser)->authorize('create', [Vote::class, $this->projectProposal]);
+
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
         }
 
         Vote::query()->updateOrCreate([
@@ -75,8 +91,22 @@ new class extends Component {
 
     public function handleNotApprove(): void
     {
-        if (! $this->currentPleb) {
+        $nostrUser = NostrAuth::user();
+
+        if (! $nostrUser || ! $nostrUser->getPleb()) {
             return;
+        }
+
+        Gate::forUser($nostrUser)->authorize('create', [Vote::class, $this->projectProposal]);
+
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
         }
 
         Vote::query()->updateOrCreate([
@@ -138,7 +168,7 @@ new class extends Component {
                 </div>
 
                 <figure class="mb-6">
-                    <img class="rounded-sm h-48" src="{{ $projectProposal->getSignedMediaUrl('main') }}"
+                    <img class="rounded-sm h-48" src="{{ $projectProposal->getSignedMediaUrl('main', 60, 'preview') }}"
                          alt="Picture">
                 </figure>
 

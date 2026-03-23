@@ -2,6 +2,8 @@
 
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
@@ -34,15 +36,15 @@ class extends Component
 
     public function mount(): void
     {
-        if (NostrAuth::check()) {
-            $currentPubkey = NostrAuth::pubkey();
-            $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
+        $nostrUser = NostrAuth::user();
 
-            if ($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists()) {
-                $this->isAllowed = true;
-            }
+        if ($nostrUser && Gate::forUser($nostrUser)->allows('create', ProjectProposal::class)) {
+            $this->isAllowed = true;
+        }
 
-            if ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
+        if ($nostrUser) {
+            $pleb = $nostrUser->getPleb();
+            if ($pleb && in_array($pleb->npub, config('einundzwanzig.config.current_board'), true)) {
                 $this->isAdmin = true;
             }
         }
@@ -58,6 +60,18 @@ class extends Component
 
     public function save(): void
     {
+        Gate::forUser(NostrAuth::user())->authorize('create', ProjectProposal::class);
+
+        $executed = RateLimiter::attempt(
+            'project-proposal-create:'.request()->ip(),
+            5,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many requests.');
+        }
+
         $this->validate([
             'form.name' => 'required|string|max:255',
             'form.description' => 'required|string',
@@ -66,15 +80,15 @@ class extends Component
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
-        $projectProposal = ProjectProposal::query()->create([
-            'name' => $this->form['name'],
-            'description' => $this->form['description'],
-            'support_in_sats' => (int) $this->form['support_in_sats'],
-            'website' => $this->form['website'],
-            'accepted' => $this->form['accepted'],
-            'sats_paid' => $this->form['sats_paid'],
-            'einundzwanzig_pleb_id' => \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id,
-        ]);
+        $projectProposal = new ProjectProposal;
+        $projectProposal->name = $this->form['name'];
+        $projectProposal->description = $this->form['description'];
+        $projectProposal->support_in_sats = (int) $this->form['support_in_sats'];
+        $projectProposal->website = $this->form['website'];
+        $projectProposal->accepted = $this->isAdmin ? $this->form['accepted'] : false;
+        $projectProposal->sats_paid = $this->isAdmin ? $this->form['sats_paid'] : 0;
+        $projectProposal->einundzwanzig_pleb_id = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id;
+        $projectProposal->save();
 
         if ($this->file) {
             $projectProposal->addMedia($this->file)->toMediaCollection('main');

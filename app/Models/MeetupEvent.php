@@ -9,12 +9,10 @@ class MeetupEvent extends Model
 {
     protected $connection = 'einundzwanzig';
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'start',
+    ];
 
     /**
      * The attributes that should be cast to native types.

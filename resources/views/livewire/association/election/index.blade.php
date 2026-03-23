@@ -3,6 +3,7 @@
 use App\Models\EinundzwanzigPleb;
 use App\Models\Election;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -29,34 +30,31 @@ new class extends Component {
         $this->elections = Election::query()
             ->get()
             ->toArray();
-        if (NostrAuth::check()) {
-            $this->currentPubkey = NostrAuth::pubkey();
-            $logPubkeys = [
-                '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-                '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-            ];
-            if (in_array($this->currentPubkey, $logPubkeys, true)) {
-                $this->isAllowed = true;
-            }
+
+        $nostrUser = NostrAuth::user();
+
+        if ($nostrUser) {
+            $this->currentPubkey = $nostrUser->getPubkey();
+            $this->isAllowed = Gate::forUser($nostrUser)->allows('update', Election::query()->first() ?? new Election);
         }
     }
 
     public function handleNostrLoggedIn(string $pubkey): void
     {
+        NostrAuth::login($pubkey);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
 
-        $logPubkeys = [
-            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-        ];
-
-        $this->isAllowed = in_array($pubkey, $logPubkeys, true);
+        $nostrUser = NostrAuth::user();
+        $this->isAllowed = $nostrUser && Gate::forUser($nostrUser)->allows('update', Election::query()->first() ?? new Election);
     }
 
     public function handleNostrLoggedOut(): void
     {
+        NostrAuth::logout();
+
         $this->currentPubkey = null;
         $this->currentPleb = null;
         $this->isAllowed = false;
@@ -66,6 +64,9 @@ new class extends Component {
     {
         $election = $this->elections[$index];
         $electionModel = Election::find($election['id']);
+
+        Gate::forUser(NostrAuth::user())->authorize('update', $electionModel);
+
         $electionModel->candidates = $election['candidates'];
         $electionModel->save();
     }

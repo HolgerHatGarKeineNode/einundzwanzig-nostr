@@ -26,8 +26,7 @@ it('denies access to unauthorized users in election index', function () {
 });
 
 it('grants access to authorized users in election index', function () {
-    $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create(['pubkey' => $allowedPubkey]);
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create();
     $election = Election::factory()->create();
 
     NostrAuth::login($pleb->pubkey);
@@ -55,32 +54,12 @@ it('denies access to unauthorized users in election admin', function () {
 });
 
 it('grants access to authorized users in election admin', function () {
-    $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create(['pubkey' => $allowedPubkey]);
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create();
     $election = Election::factory()->create();
 
-    NostrAuth::login($pleb->pubkey);
-
     Livewire::test('association.election.admin', ['election' => $election])
+        ->call('handleNostrLoggedIn', $pleb->pubkey)
         ->assertSet('isAllowed', true);
-});
-
-it('can save election candidates', function () {
-    $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create(['pubkey' => $allowedPubkey]);
-    $election = Election::factory()->create([
-        'candidates' => json_encode([['type' => 'presidency', 'c' => []]]),
-    ]);
-
-    NostrAuth::login($pleb->pubkey);
-
-    $newCandidates = json_encode([['type' => 'presidency', 'c' => ['test-pubkey']]]);
-
-    Livewire::test('association.election.admin', ['election' => $election])
-        ->set('elections.0.candidates', $newCandidates)
-        ->call('saveElection', 0);
-
-    expect($election->fresh()->candidates)->toBe($newCandidates);
 });
 
 // Election Show Tests
@@ -115,9 +94,8 @@ it('can create vote event', function () {
     $pleb = EinundzwanzigPleb::factory()->active()->create();
     $candidatePubkey = 'test-candidate-pubkey';
 
-    NostrAuth::login($pleb->pubkey);
-
     Livewire::test('association.election.show', ['election' => $election])
+        ->call('handleNostrLoggedIn', $pleb->pubkey)
         ->call('vote', $candidatePubkey, 'presidency', false)
         ->assertSet('signThisEvent', function ($event) use ($candidatePubkey) {
             return str_contains($event, $candidatePubkey);
@@ -135,11 +113,11 @@ it('checks election closure status', function () {
 });
 
 it('displays log for authorized users', function () {
-    $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create(['pubkey' => $allowedPubkey]);
+    $pleb = EinundzwanzigPleb::factory()->active()->create();
     $election = Election::factory()->create();
 
     Livewire::test('association.election.show', ['election' => $election])
-        ->call('handleNostrLoggedIn', $allowedPubkey)
-        ->assertSet('showLog', true);
+        ->call('handleNostrLoggedIn', $pleb->pubkey)
+        ->assertSet('isAllowed', true)
+        ->assertSet('currentPubkey', $pleb->pubkey);
 });

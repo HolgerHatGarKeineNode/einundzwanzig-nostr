@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class RenderedEvent extends Model
 {
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'event_id',
+        'html',
+        'profile_image',
+        'profile_name',
+    ];
 
     public function event()
     {

@@ -19,8 +19,16 @@ Route::get('dl/{media}', function (Media $media, Request $request) {
     ->middleware('signed');
 
 Route::get('media/{media}', function (Media $media, Request $request) {
+    $conversion = $request->query('conversion');
+
+    if ($conversion && $media->hasGeneratedConversion($conversion)) {
+        $path = $media->getPathRelativeToRoot($conversion);
+    } else {
+        $path = $media->getPathRelativeToRoot();
+    }
+
     return Storage::disk($media->disk)->response(
-        $media->getPathRelativeToRoot(),
+        $path,
         $media->file_name,
         [
             'Content-Type' => $media->mime_type,

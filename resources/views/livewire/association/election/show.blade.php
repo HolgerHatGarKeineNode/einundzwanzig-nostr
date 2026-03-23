@@ -4,6 +4,8 @@ use App\Models\Election;
 use App\Models\EinundzwanzigPleb;
 use App\Models\Profile;
 use App\Support\NostrAuth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -55,7 +57,7 @@ new class extends Component {
     ];
 
     #[Computed]
-    public function loadedEvents(): array
+    public function loadedEvents(): \Illuminate\Support\Collection
     {
         return collect($this->events)
             ->map(function ($event) {
@@ -82,12 +84,11 @@ new class extends Component {
             })
             ->sortByDesc('created_at')
             ->unique(fn ($event) => $event['pubkey'].$event['type'])
-            ->values()
-            ->toArray();
+            ->values();
     }
 
     #[Computed]
-    public function loadedBoardEvents(): array
+    public function loadedBoardEvents(): \Illuminate\Support\Collection
     {
         return collect($this->boardEvents)
             ->map(function ($event) {
@@ -113,16 +114,15 @@ new class extends Component {
                 ];
             })
             ->sortByDesc('created_at')
-            ->values()
-            ->toArray();
+            ->values();
     }
 
     #[Computed]
-    public function electionConfig(): array
+    public function electionConfig(): \Illuminate\Support\Collection
     {
         $loadedEvents = $this->loadedEvents();
 
-        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+        return collect($this->election->candidates)
             ->map(function ($c) use ($loadedEvents) {
                 $candidates = Profile::query()
                     ->whereIn('pubkey', $c['c'])
@@ -147,16 +147,15 @@ new class extends Component {
                     'c' => $c['c'],
                     'candidates' => $candidates,
                 ];
-            })
-            ->toArray();
+            });
     }
 
     #[Computed]
-    public function electionConfigBoard(): array
+    public function electionConfigBoard(): \Illuminate\Support\Collection
     {
         $loadedBoardEvents = $this->loadedBoardEvents();
 
-        return collect(json_decode($this->election->candidates, true, 512, JSON_THROW_ON_ERROR))
+        return collect($this->election->candidates)
             ->map(function ($c) use ($loadedBoardEvents) {
                 $candidates = Profile::query()
                     ->whereIn('pubkey', $c['c'])
@@ -182,8 +181,7 @@ new class extends Component {
                     'c' => $c['c'],
                     'candidates' => $candidates,
                 ];
-            })
-            ->toArray();
+            });
     }
 
     public function mount(Election $election): void
@@ -200,14 +198,35 @@ new class extends Component {
         if ($this->election->end_time?->isPast() || ! config('services.voting')) {
             $this->isNotClosed = false;
         }
+
+        $nostrUser = NostrAuth::user();
+        if ($nostrUser) {
+            $this->currentPubkey = $nostrUser->getPubkey();
+            $this->currentPleb = $nostrUser->getPleb();
+            $this->isAllowed = Gate::forUser($nostrUser)->allows('vote', $this->election);
+        }
     }
 
     public function handleNostrLoggedIn(string $pubkey): void
     {
+        $executed = RateLimiter::attempt(
+            'nostr-login:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many login attempts.');
+        }
+
+        NostrAuth::login($pubkey);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();
-        $this->isAllowed = (bool) $this->currentPleb;
+
+        $nostrUser = NostrAuth::user();
+        $this->isAllowed = $nostrUser && Gate::forUser($nostrUser)->allows('vote', $this->election);
     }
 
     public function handleNostrLoggedOut(): void
@@ -248,17 +267,22 @@ new class extends Component {
 
     public function loadNostrEvents($kinds): array
     {
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return [];
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
         $filter = new Filter;
         $filter->setKinds($kinds);
         $requestMessage = new RequestMessage($subscriptionId, [$filter]);
         $relaySet = new RelaySet;
-        $relaySet->setRelays([new Relay(config('services.relay'))]);
+        $relaySet->setRelays([new Relay($relayUrl)]);
         $request = new Request($relaySet, $requestMessage);
         $response = $request->send();
 
-        return collect($response[config('services.relay')])
+        return collect($response[$relayUrl] ?? [])
             ->map(function ($event) {
                 if (! isset($event->event)) {
                     return false;
@@ -279,6 +303,18 @@ new class extends Component {
 
     public function vote($pubkey, $type, $board = false): void
     {
+        Gate::forUser(NostrAuth::user())->authorize('vote', $this->election);
+
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
+        }
+
         if ($this->election->end_time?->isPast()) {
             $this->isNotClosed = false;
 
@@ -303,6 +339,16 @@ new class extends Component {
 
     public function signEvent($event): void
     {
+        $executed = RateLimiter::attempt(
+            'voting:'.request()->ip(),
+            10,
+            function () {},
+        );
+
+        if (! $executed) {
+            abort(429, 'Too many voting attempts.');
+        }
+
         $note = new NostrEvent;
         $note->setId($event['id']);
         $note->setSignature($event['sig']);
@@ -311,8 +357,12 @@ new class extends Component {
         $note->setPublicKey($event['pubkey']);
         $note->setTags($event['tags']);
         $note->setCreatedAt($event['created_at']);
+        $relayUrl = config('services.relay');
+        if (! $relayUrl) {
+            return;
+        }
         $eventMessage = new EventMessage($note);
-        $relay = new Relay(config('services.relay'));
+        $relay = new Relay($relayUrl);
         $relay->setMessage($eventMessage);
         $relay->send();
         \App\Support\Broadcast::on('votes')->as('newVote')->sendNow();

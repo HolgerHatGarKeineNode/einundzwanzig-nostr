@@ -6,6 +6,7 @@ use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -31,8 +32,6 @@ new class extends Component {
     public ?ProjectProposal $projectToDelete = null;
 
     protected $listeners = [
-        'nostrLoggedIn' => 'handleNostrLoggedIn',
-        'nostrLoggedOut' => 'handleNostrLoggedOut',
         'confirmDeleteProject' => 'confirmDeleteProject',
     ];
 
@@ -79,6 +78,8 @@ new class extends Component {
     public function delete(): void
     {
         if ($this->projectToDelete) {
+            Gate::forUser(NostrAuth::user())->authorize('delete', $this->projectToDelete);
+
             $this->projectToDelete->delete();
             Flux::toast('Projektunterstützung gelöscht.');
             $this->loadProjects();
@@ -112,7 +113,7 @@ new class extends Component {
                 </form>
 
                 <!-- Add meetup button -->
-                @if($currentPleb && $currentPleb->association_status->value > 1 && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists())
+                @if(Gate::forUser(NostrAuth::user())->allows('create', App\Models\ProjectProposal::class))
                     <flux:button :href="route('association.projectSupport.create')" icon="plus" variant="primary">
                         Projekt einreichen
                     </flux:button>
