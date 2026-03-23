@@ -48,7 +48,7 @@ it('renders edit form for authorized project owners', function () {
 
     Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->assertStatus(200)
-        ->assertSee('Projektförderung bearbeiten')
+        ->assertSee('Projektförderungs-Antrag bearbeiten')
         ->assertSet('form.name', $this->project->name)
         ->assertSet('form.description', $this->project->description);
 });
@@ -58,7 +58,7 @@ it('renders edit form for board members', function () {
 
     Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
         ->assertStatus(200)
-        ->assertSee('Projektförderung bearbeiten');
+        ->assertSee('Projektförderungs-Antrag bearbeiten');
 });
 
 it('does not render edit form for unauthorized users', function () {

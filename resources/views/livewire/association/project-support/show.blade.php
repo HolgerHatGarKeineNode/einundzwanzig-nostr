@@ -27,9 +27,9 @@ new class extends Component {
     #[Locked]
     public bool $ownVoteExists = false;
 
-    public function mount($projectProposal): void
+    public function mount(ProjectProposal $projectProposal): void
     {
-        $this->projectProposal = ProjectProposal::query()->where('slug', $projectProposal)->firstOrFail();
+        $this->projectProposal = $projectProposal;
         if (NostrAuth::check()) {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->isAllowed = true;

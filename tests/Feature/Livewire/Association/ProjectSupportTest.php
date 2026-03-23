@@ -2,6 +2,7 @@
 
 use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
+use App\Models\Vote;
 use App\Support\NostrAuth;
 use Livewire\Livewire;
 
@@ -130,7 +131,7 @@ it('renders project support edit component', function () {
         'einundzwanzig_pleb_id' => $pleb->id,
     ]);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->assertStatus(200);
 });
 
@@ -140,7 +141,7 @@ it('denies access to edit when not owner', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->assertSet('isAllowed', false);
 });
 
@@ -152,7 +153,7 @@ it('grants access to edit when owner', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->assertSet('isAllowed', true);
 });
 
@@ -165,7 +166,7 @@ it('can update project proposal', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->set('form.name', 'New Name')
         ->set('form.description', 'Updated Description')
         ->set('form.support_in_sats', 21000)
@@ -184,7 +185,7 @@ it('validates project proposal update', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $project])
         ->set('form.name', '')
         ->call('update')
         ->assertHasErrors(['form.name']);
@@ -194,14 +195,14 @@ it('validates project proposal update', function () {
 it('renders project support show component', function () {
     $project = ProjectProposal::factory()->create();
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertStatus(200);
 });
 
 it('denies access to show when not authenticated', function () {
     $project = ProjectProposal::factory()->create();
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('isAllowed', false);
 });
 
@@ -211,7 +212,7 @@ it('grants access to show when authenticated', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('isAllowed', true);
 });
 
@@ -224,7 +225,7 @@ it('displays project details', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('projectProposal.name', 'Test Project Name')
         ->assertSee('Test Project Name')
         ->assertSee('Test Project Description');
@@ -236,7 +237,7 @@ it('initializes currentPleb when authenticated', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('currentPleb.id', $pleb->id);
 });
 
@@ -246,7 +247,7 @@ it('initializes ownVoteExists to false when no vote exists', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('ownVoteExists', false)
         ->assertSee('Zustimmen')
         ->assertSee('Ablehnen');
@@ -255,7 +256,7 @@ it('initializes ownVoteExists to false when no vote exists', function () {
 it('initializes ownVoteExists to true when vote exists', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
     $project = ProjectProposal::factory()->create();
-    \App\Models\Vote::create([
+    Vote::create([
         'project_proposal_id' => $project->id,
         'einundzwanzig_pleb_id' => $pleb->id,
         'value' => true,
@@ -263,7 +264,7 @@ it('initializes ownVoteExists to true when vote exists', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSet('ownVoteExists', true)
         ->assertDontSee('Zustimmen')
         ->assertDontSee('Ablehnen')
@@ -276,11 +277,11 @@ it('can handle approve vote', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleApprove')
         ->assertHasNoErrors();
 
-    $vote = \App\Models\Vote::query()
+    $vote = Vote::query()
         ->where('project_proposal_id', $project->id)
         ->where('einundzwanzig_pleb_id', $pleb->id)
         ->first();
@@ -295,11 +296,11 @@ it('can handle not approve vote', function () {
 
     NostrAuth::login($pleb->pubkey);
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleNotApprove')
         ->assertHasNoErrors();
 
-    $vote = \App\Models\Vote::query()
+    $vote = Vote::query()
         ->where('project_proposal_id', $project->id)
         ->where('einundzwanzig_pleb_id', $pleb->id)
         ->first();
@@ -311,27 +312,27 @@ it('can handle not approve vote', function () {
 it('does not throw error when unauthenticated user calls handleApprove', function () {
     $project = ProjectProposal::factory()->create();
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleApprove')
         ->assertHasNoErrors();
 
-    expect(\App\Models\Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
+    expect(Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
 });
 
 it('does not throw error when unauthenticated user calls handleNotApprove', function () {
     $project = ProjectProposal::factory()->create();
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->call('handleNotApprove')
         ->assertHasNoErrors();
 
-    expect(\App\Models\Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
+    expect(Vote::where('project_proposal_id', $project->id)->exists())->toBeFalse();
 });
 
 it('hides voting buttons from unauthenticated users', function () {
     $project = ProjectProposal::factory()->create();
 
-    Livewire::test('association.project-support.show', ['projectProposal' => $project->slug])
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertDontSee('Zustimmen')
         ->assertDontSee('Ablehnen');
 });
