@@ -1822,16 +1822,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v13.1.1",
+            "version": "v13.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "5525d87797815c55f7a89d0dfc1dd89e9de98b63"
+                "reference": "9e48d1fe933e89de628dafa167d2c5778566d4cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/5525d87797815c55f7a89d0dfc1dd89e9de98b63",
-                "reference": "5525d87797815c55f7a89d0dfc1dd89e9de98b63",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/9e48d1fe933e89de628dafa167d2c5778566d4cf",
+                "reference": "9e48d1fe933e89de628dafa167d2c5778566d4cf",
                 "shasum": ""
             },
             "require": {
@@ -1849,6 +1849,7 @@
                 "ext-tokenizer": "*",
                 "fruitcake/php-cors": "^1.3",
                 "guzzlehttp/guzzle": "^7.8.2",
+                "guzzlehttp/promises": "^2.0.3",
                 "guzzlehttp/uri-template": "^1.0",
                 "laravel/prompts": "^0.3.0",
                 "laravel/serializable-closure": "^2.0.10",
@@ -1933,7 +1934,6 @@
                 "aws/aws-sdk-php": "^3.322.9",
                 "ext-gmp": "*",
                 "fakerphp/faker": "^1.24",
-                "guzzlehttp/promises": "^2.0.3",
                 "guzzlehttp/psr7": "^2.4",
                 "laravel/pint": "^1.18",
                 "league/flysystem-aws-s3-v3": "^3.25.1",
@@ -2039,7 +2039,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-03-18T17:10:25+00:00"
+            "time": "2026-03-24T18:42:09+00:00"
         },
         {
             "name": "laravel/nightwatch",
@@ -2137,16 +2137,16 @@
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.3.15",
+            "version": "v0.3.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "4bb8107ec97651fd3f17f897d6489dbc4d8fb999"
+                "reference": "11e7d5f93803a2190b00e145142cb00a33d17ad2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/4bb8107ec97651fd3f17f897d6489dbc4d8fb999",
-                "reference": "4bb8107ec97651fd3f17f897d6489dbc4d8fb999",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/11e7d5f93803a2190b00e145142cb00a33d17ad2",
+                "reference": "11e7d5f93803a2190b00e145142cb00a33d17ad2",
                 "shasum": ""
             },
             "require": {
@@ -2190,22 +2190,22 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.3.15"
+                "source": "https://github.com/laravel/prompts/tree/v0.3.16"
             },
-            "time": "2026-03-17T13:45:17+00:00"
+            "time": "2026-03-23T14:35:33+00:00"
         },
         {
             "name": "laravel/reverb",
-            "version": "v1.8.1",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/reverb.git",
-                "reference": "70e3d28ed31466da34de0c055f3681b75a5a538c"
+                "reference": "7a1ef2235cfe085cdf3190d0dcfaed4f7d251734"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/reverb/zipball/70e3d28ed31466da34de0c055f3681b75a5a538c",
-                "reference": "70e3d28ed31466da34de0c055f3681b75a5a538c",
+                "url": "https://api.github.com/repos/laravel/reverb/zipball/7a1ef2235cfe085cdf3190d0dcfaed4f7d251734",
+                "reference": "7a1ef2235cfe085cdf3190d0dcfaed4f7d251734",
                 "shasum": ""
             },
             "require": {
@@ -2269,9 +2269,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/reverb/issues",
-                "source": "https://github.com/laravel/reverb/tree/v1.8.1"
+                "source": "https://github.com/laravel/reverb/tree/v1.9.0"
             },
-            "time": "2026-03-14T16:59:35+00:00"
+            "time": "2026-03-20T20:16:59+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2594,16 +2594,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.32.0",
+            "version": "3.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "254b1595b16b22dbddaaef9ed6ca9fdac4956725"
+                "reference": "570b8871e0ce693764434b29154c54b434905350"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/254b1595b16b22dbddaaef9ed6ca9fdac4956725",
-                "reference": "254b1595b16b22dbddaaef9ed6ca9fdac4956725",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/570b8871e0ce693764434b29154c54b434905350",
+                "reference": "570b8871e0ce693764434b29154c54b434905350",
                 "shasum": ""
             },
             "require": {
@@ -2671,9 +2671,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.32.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.33.0"
             },
-            "time": "2026-02-25T17:01:41+00:00"
+            "time": "2026-03-25T07:59:30+00:00"
         },
         {
             "name": "league/flysystem-local",
@@ -2964,16 +2964,16 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v2.13.0",
+            "version": "v2.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
-                "reference": "741be2d4526e90b97c7a59e079a2f27ecdce2461"
+                "reference": "5bee3d50ea8382e178d2b10a3412a82e6ecfb4a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/flux/zipball/741be2d4526e90b97c7a59e079a2f27ecdce2461",
-                "reference": "741be2d4526e90b97c7a59e079a2f27ecdce2461",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/5bee3d50ea8382e178d2b10a3412a82e6ecfb4a3",
+                "reference": "5bee3d50ea8382e178d2b10a3412a82e6ecfb4a3",
                 "shasum": ""
             },
             "require": {
@@ -3024,25 +3024,25 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v2.13.0"
+                "source": "https://github.com/livewire/flux/tree/v2.13.1"
             },
-            "time": "2026-03-03T03:32:35+00:00"
+            "time": "2026-03-26T00:02:01+00:00"
         },
         {
             "name": "livewire/flux-pro",
-            "version": "2.13.0",
+            "version": "2.13.1",
             "dist": {
                 "type": "zip",
-                "url": "https://composer.fluxui.dev/download/a1357bcd-0c9f-48ec-a532-2aced09459e7/flux-pro-2.13.0.zip",
-                "reference": "3d91059d053ac94a2f522944f581c3876963656c",
-                "shasum": "dc3d4e5baedc6e525f41f25474885413e5c1e13e"
+                "url": "https://composer.fluxui.dev/download/a16373f8-0de4-4b5e-b741-1ca11754c32b/flux-pro-2.13.1.zip",
+                "reference": "3a764f5bfc8733a4cb43459ae2cb797377725165",
+                "shasum": "40cd2207c66885e856315a258990443329e6e7a3"
             },
             "require": {
                 "illuminate/console": "^10.0|^11.0|^12.0|^13.0",
                 "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
                 "illuminate/view": "^10.0|^11.0|^12.0|^13.0",
                 "laravel/prompts": "^0.1.24|^0.2|^0.3",
-                "livewire/flux": "2.13.0|dev-main",
+                "livewire/flux": "2.13.1|dev-main",
                 "livewire/livewire": "^3.7.4|^4.0",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0|^8.0"
@@ -3099,20 +3099,20 @@
                 "livewire",
                 "ui"
             ],
-            "time": "2026-03-03T04:07:04+00:00"
+            "time": "2026-03-26T00:33:15+00:00"
         },
         {
             "name": "livewire/livewire",
-            "version": "v4.2.1",
+            "version": "v4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "93e972fa42c1b34fff1550093ab94f778d81ea5a"
+                "reference": "71c28888f99b4bfdaad89a07a104adbc3f98c04b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/93e972fa42c1b34fff1550093ab94f778d81ea5a",
-                "reference": "93e972fa42c1b34fff1550093ab94f778d81ea5a",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/71c28888f99b4bfdaad89a07a104adbc3f98c04b",
+                "reference": "71c28888f99b4bfdaad89a07a104adbc3f98c04b",
                 "shasum": ""
             },
             "require": {
@@ -3167,7 +3167,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v4.2.1"
+                "source": "https://github.com/livewire/livewire/tree/v4.2.2"
             },
             "funding": [
                 {
@@ -3175,20 +3175,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-28T00:01:19+00:00"
+            "time": "2026-03-25T23:19:23+00:00"
         },
         {
             "name": "livewire/volt",
-            "version": "v1.10.4",
+            "version": "v1.10.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/volt.git",
-                "reference": "8b58d1bfbe9a7b377ddeb26848746113afb58e5b"
+                "reference": "32a111951779f9dcf2a08a5704acb940ac9a146c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/volt/zipball/8b58d1bfbe9a7b377ddeb26848746113afb58e5b",
-                "reference": "8b58d1bfbe9a7b377ddeb26848746113afb58e5b",
+                "url": "https://api.github.com/repos/livewire/volt/zipball/32a111951779f9dcf2a08a5704acb940ac9a146c",
+                "reference": "32a111951779f9dcf2a08a5704acb940ac9a146c",
                 "shasum": ""
             },
             "require": {
@@ -3246,7 +3246,7 @@
                 "issues": "https://github.com/livewire/volt/issues",
                 "source": "https://github.com/livewire/volt"
             },
-            "time": "2026-03-05T19:21:22+00:00"
+            "time": "2026-03-18T14:16:30+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -4517,30 +4517,31 @@
         },
         {
             "name": "phrity/net-stream",
-            "version": "2.3.3",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sirn-se/phrity-net-stream.git",
-                "reference": "f46694e1b721867ec3c19731a7fcbbead3c6ac89"
+                "reference": "a0726a8dddf11a4cd3a9e45d17e145d78e948f43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sirn-se/phrity-net-stream/zipball/f46694e1b721867ec3c19731a7fcbbead3c6ac89",
-                "reference": "f46694e1b721867ec3c19731a7fcbbead3c6ac89",
+                "url": "https://api.github.com/repos/sirn-se/phrity-net-stream/zipball/a0726a8dddf11a4cd3a9e45d17e145d78e948f43",
+                "reference": "a0726a8dddf11a4cd3a9e45d17e145d78e948f43",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.1",
                 "phrity/util-errorhandler": "^1.1",
+                "phrity/util-interpolator": "^1.1",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.1 || ^2.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^2.0",
-                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "phrity/net-uri": "^2.0",
                 "robiningelbrecht/phpunit-coverage-tools": "^1.9",
-                "squizlabs/php_codesniffer": "^3.5 || ^4.0"
+                "squizlabs/php_codesniffer": "^4.0"
             },
             "type": "library",
             "autoload": {
@@ -4572,9 +4573,9 @@
             ],
             "support": {
                 "issues": "https://github.com/sirn-se/phrity-net-stream/issues",
-                "source": "https://github.com/sirn-se/phrity-net-stream/tree/2.3.3"
+                "source": "https://github.com/sirn-se/phrity-net-stream/tree/2.4.0"
             },
-            "time": "2025-12-24T12:07:07+00:00"
+            "time": "2026-03-25T18:16:40+00:00"
         },
         {
             "name": "phrity/net-uri",
@@ -4639,6 +4640,58 @@
             "time": "2025-12-05T10:39:22+00:00"
         },
         {
+            "name": "phrity/util-accessor",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-util-accessor.git",
+                "reference": "e9741da6b532fa2da7f627fce60fa77f00f6e354"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-util-accessor/zipball/e9741da6b532fa2da7f627fce60fa77f00f6e354",
+                "reference": "e9741da6b532fa2da7f627fce60fa77f00f6e354",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "phrity/util-transformer": "^1.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "robiningelbrecht/phpunit-coverage-tools": "^1.9",
+                "squizlabs/php_codesniffer": "^3.5 || ^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Util\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "Utility to handle access to a data set by using access paths. Similar to and partly compatible with xpath and json-pointer.",
+            "homepage": "https://phrity.sirn.se/util-accessor",
+            "keywords": [
+                "accessor"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-util-accessor/issues",
+                "source": "https://github.com/sirn-se/phrity-util-accessor/tree/1.3.1"
+            },
+            "time": "2025-12-05T21:18:15+00:00"
+        },
+        {
             "name": "phrity/util-errorhandler",
             "version": "1.2.2",
             "source": {
@@ -4689,6 +4742,118 @@
                 "source": "https://github.com/sirn-se/phrity-util-errorhandler/tree/1.2.2"
             },
             "time": "2025-12-05T21:25:36+00:00"
+        },
+        {
+            "name": "phrity/util-interpolator",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-util-interpolator.git",
+                "reference": "18b0362d2aff60984c530808333c5e64c80c3e50"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-util-interpolator/zipball/18b0362d2aff60984c530808333c5e64c80c3e50",
+                "reference": "18b0362d2aff60984c530808333c5e64c80c3e50",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "phrity/util-accessor": "^1.3",
+                "phrity/util-transformer": "^1.3"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "robiningelbrecht/phpunit-coverage-tools": "^1.9",
+                "squizlabs/php_codesniffer": "^3.5 || ^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Util\\Interpolator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "Interpolator class and trait.",
+            "homepage": "https://phrity.sirn.se/util-interpolator",
+            "keywords": [
+                "interpolate",
+                "interpolator"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-util-interpolator/issues",
+                "source": "https://github.com/sirn-se/phrity-util-interpolator/tree/1.1.1"
+            },
+            "time": "2025-12-05T21:35:25+00:00"
+        },
+        {
+            "name": "phrity/util-transformer",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-util-transformer.git",
+                "reference": "3fd4d7fa4077deafe5130c4b9ee8146b5488abe3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-util-transformer/zipball/3fd4d7fa4077deafe5130c4b9ee8146b5488abe3",
+                "reference": "3fd4d7fa4077deafe5130c4b9ee8146b5488abe3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+                "robiningelbrecht/phpunit-coverage-tools": "^1.9",
+                "squizlabs/php_codesniffer": "^3.5 || ^4.0",
+                "symfony/property-access": "^6.0 || ^7.0 || ^8.0",
+                "symfony/serializer": "^6.0 || ^7.0 || ^8.0",
+                "symfony/translation-contracts": "^3.0",
+                "symfony/uid": "^6.0 || ^7.0 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Util\\Transformer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "Type transformers, normalizers and resolvers.",
+            "homepage": "https://phrity.sirn.se/util-transformer",
+            "keywords": [
+                "normalizer",
+                "resolver",
+                "transformer",
+                "type"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-util-transformer/issues",
+                "source": "https://github.com/sirn-se/phrity-util-transformer/tree/1.3.1"
+            },
+            "time": "2025-12-05T22:07:04+00:00"
         },
         {
             "name": "phrity/websocket",
@@ -5507,16 +5672,16 @@
         },
         {
             "name": "ralphjsmit/laravel-seo",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ralphjsmit/laravel-seo.git",
-                "reference": "7cf4ca05feeb808286ac7c97fc38cc9897c1b362"
+                "reference": "fef1dddfbc4f3f8f361eca9dab16d220ab595828"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ralphjsmit/laravel-seo/zipball/7cf4ca05feeb808286ac7c97fc38cc9897c1b362",
-                "reference": "7cf4ca05feeb808286ac7c97fc38cc9897c1b362",
+                "url": "https://api.github.com/repos/ralphjsmit/laravel-seo/zipball/fef1dddfbc4f3f8f361eca9dab16d220ab595828",
+                "reference": "fef1dddfbc4f3f8f361eca9dab16d220ab595828",
                 "shasum": ""
             },
             "require": {
@@ -5577,9 +5742,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ralphjsmit/laravel-seo/issues",
-                "source": "https://github.com/ralphjsmit/laravel-seo/tree/1.8.0"
+                "source": "https://github.com/ralphjsmit/laravel-seo/tree/1.8.1"
             },
-            "time": "2026-03-18T22:44:19+00:00"
+            "time": "2026-03-26T20:29:46+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -6419,23 +6584,23 @@
         },
         {
             "name": "sentry/sentry-laravel",
-            "version": "4.23.0",
+            "version": "4.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-laravel.git",
-                "reference": "dcb44590017c613f62018e5e3163cb704b1da9a7"
+                "reference": "f823bd85e38e06cb4f1b7a82d48a2fc95320b31d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-laravel/zipball/dcb44590017c613f62018e5e3163cb704b1da9a7",
-                "reference": "dcb44590017c613f62018e5e3163cb704b1da9a7",
+                "url": "https://api.github.com/repos/getsentry/sentry-laravel/zipball/f823bd85e38e06cb4f1b7a82d48a2fc95320b31d",
+                "reference": "f823bd85e38e06cb4f1b7a82d48a2fc95320b31d",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0 | ^13.0",
                 "nyholm/psr7": "^1.0",
                 "php": "^7.2 | ^8.0",
-                "sentry/sentry": "^4.22.0",
+                "sentry/sentry": "^4.23.0",
                 "symfony/psr-http-message-bridge": "^1.0 | ^2.0 | ^6.0 | ^7.0 | ^8.0"
             },
             "require-dev": {
@@ -6494,7 +6659,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-laravel/issues",
-                "source": "https://github.com/getsentry/sentry-laravel/tree/4.23.0"
+                "source": "https://github.com/getsentry/sentry-laravel/tree/4.24.0"
             },
             "funding": [
                 {
@@ -6506,7 +6671,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-03-19T13:22:14+00:00"
+            "time": "2026-03-24T10:33:54+00:00"
         },
         {
             "name": "simplesoftwareio/simple-qrcode",
@@ -7051,16 +7216,16 @@
         },
         {
             "name": "spatie/laravel-backup",
-            "version": "10.2.0",
+            "version": "10.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-backup.git",
-                "reference": "b0cf953073b91ffbc48afa79b8112cf442effdfb"
+                "reference": "e69bda927005e4909e67b7b86eb7697ed1fe51bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-backup/zipball/b0cf953073b91ffbc48afa79b8112cf442effdfb",
-                "reference": "b0cf953073b91ffbc48afa79b8112cf442effdfb",
+                "url": "https://api.github.com/repos/spatie/laravel-backup/zipball/e69bda927005e4909e67b7b86eb7697ed1fe51bc",
+                "reference": "e69bda927005e4909e67b7b86eb7697ed1fe51bc",
                 "shasum": ""
             },
             "require": {
@@ -7135,7 +7300,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-backup/issues",
-                "source": "https://github.com/spatie/laravel-backup/tree/10.2.0"
+                "source": "https://github.com/spatie/laravel-backup/tree/10.2.1"
             },
             "funding": [
                 {
@@ -7147,7 +7312,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-03-19T18:01:53+00:00"
+            "time": "2026-03-24T10:30:33+00:00"
         },
         {
             "name": "spatie/laravel-ciphersweet",
@@ -10883,16 +11048,16 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v7.19.2",
+            "version": "v7.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9"
+                "reference": "81c80677c9ec0ed4ef16b246167f11dec81a6e3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
-                "reference": "66e4f7910cecf67736bccf2b8bd53a2e3eb98bd9",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/81c80677c9ec0ed4ef16b246167f11dec81a6e3d",
+                "reference": "81c80677c9ec0ed4ef16b246167f11dec81a6e3d",
                 "shasum": ""
             },
             "require": {
@@ -10916,7 +11081,7 @@
                 "ext-pcntl": "*",
                 "ext-pcov": "*",
                 "ext-posix": "*",
-                "phpstan/phpstan": "^2.1.40",
+                "phpstan/phpstan": "^2.1.44",
                 "phpstan/phpstan-deprecation-rules": "^2.0.4",
                 "phpstan/phpstan-phpunit": "^2.0.16",
                 "phpstan/phpstan-strict-rules": "^2.0.10",
@@ -10960,7 +11125,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.19.2"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.20.0"
             },
             "funding": [
                 {
@@ -10972,7 +11137,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-03-09T14:33:17+00:00"
+            "time": "2026-03-29T15:46:14+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -11270,16 +11435,16 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v2.3.4",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "9e3dd5f05b59394e463e78853067dc36c63a0394"
+                "reference": "f6241df9fd81a86d79a051851177d4ffe3e28506"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/9e3dd5f05b59394e463e78853067dc36c63a0394",
-                "reference": "9e3dd5f05b59394e463e78853067dc36c63a0394",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/f6241df9fd81a86d79a051851177d4ffe3e28506",
+                "reference": "f6241df9fd81a86d79a051851177d4ffe3e28506",
                 "shasum": ""
             },
             "require": {
@@ -11332,20 +11497,20 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2026-03-17T16:42:14+00:00"
+            "time": "2026-03-25T16:37:40+00:00"
         },
         {
             "name": "laravel/mcp",
-            "version": "v0.6.3",
+            "version": "v0.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/mcp.git",
-                "reference": "8a2c97ec1184e16029080e3f6172a7ca73de4df9"
+                "reference": "f822c5eb5beed19adb2e5bfe2f46f8c977ecea42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/mcp/zipball/8a2c97ec1184e16029080e3f6172a7ca73de4df9",
-                "reference": "8a2c97ec1184e16029080e3f6172a7ca73de4df9",
+                "url": "https://api.github.com/repos/laravel/mcp/zipball/f822c5eb5beed19adb2e5bfe2f46f8c977ecea42",
+                "reference": "f822c5eb5beed19adb2e5bfe2f46f8c977ecea42",
                 "shasum": ""
             },
             "require": {
@@ -11405,7 +11570,7 @@
                 "issues": "https://github.com/laravel/mcp/issues",
                 "source": "https://github.com/laravel/mcp"
             },
-            "time": "2026-03-12T12:46:43+00:00"
+            "time": "2026-03-19T12:37:13+00:00"
         },
         {
             "name": "laravel/pail",

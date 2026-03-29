@@ -2,11 +2,13 @@
 
 use App\Enums\AssociationStatus;
 use App\Models\EinundzwanzigPleb;
+use App\Models\PaymentEvent;
 use App\Support\NostrAuth;
 use Flux\Flux;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 new class extends Component
 {
@@ -193,6 +195,63 @@ new class extends Component
         Flux::modal('payment-details')->close();
     }
 
+    public function exportCsv(): StreamedResponse
+    {
+        $currentYear = (int) date('Y');
+        $years = PaymentEvent::query()
+            ->where('year', '>=', 2025)
+            ->distinct()
+            ->orderBy('year')
+            ->pluck('year')
+            ->toArray();
+
+        for ($y = 2025; $y <= $currentYear; $y++) {
+            if (! in_array($y, $years)) {
+                $years[] = $y;
+            }
+        }
+        sort($years);
+
+        $plebs = EinundzwanzigPleb::query()
+            ->with([
+                'profile',
+                'paymentEvents' => fn ($query) => $query->where('paid', true)->where('year', '>=', 2025),
+            ])
+            ->get();
+
+        return response()->streamDownload(function () use ($plebs, $years) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            $headers = ['Name', 'npub', 'Email', 'Status'];
+            foreach ($years as $year) {
+                $headers[] = 'Beitrag '.$year;
+            }
+            fputcsv($handle, $headers, ';');
+
+            foreach ($plebs as $pleb) {
+                $row = [
+                    $pleb->profile?->name ?: $pleb->profile?->display_name ?? '',
+                    $pleb->npub,
+                    $pleb->email ?? '',
+                    $pleb->association_status->label(),
+                ];
+
+                $paymentsByYear = $pleb->paymentEvents->keyBy('year');
+                foreach ($years as $year) {
+                    $payment = $paymentsByYear->get($year);
+                    $row[] = $payment ? 'Bezahlt' : 'Offen';
+                }
+
+                fputcsv($handle, $row, ';');
+            }
+
+            fclose($handle);
+        }, 'mitglieder-export-'.date('Y-m-d').'.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
     #[Computed]
     public function selectedPleb(): ?EinundzwanzigPleb
     {
@@ -216,6 +275,13 @@ new class extends Component
                 icon="check"
             >
                 {{ $showPaidOnly ? 'Alle anzeigen' : 'Nur Bezahlt' }}
+            </flux:button>
+            <flux:button
+                wire:click="exportCsv"
+                variant="ghost"
+                icon="arrow-down-tray"
+            >
+                CSV Export
             </flux:button>
         </div>
 
