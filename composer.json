@@ -35,6 +35,7 @@
         "spatie/laravel-sluggable": "^3.6",
         "spatie/laravel-tags": "^4.9.2",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
+        "stevebauman/purify": "^6.3",
         "swentel/nostr-php": "^1.4"
     },
     "require-dev": {

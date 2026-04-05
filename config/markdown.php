@@ -36,7 +36,7 @@ return [
      * More info: https://spatie.be/docs/laravel-markdown/v1/using-the-blade-component/passing-options-to-commonmark
      */
     'commonmark_options' => [
-        'html_input' => 'escape',
+        'html_input' => 'allow',
         'allow_unsafe_links' => false,
     ],
 

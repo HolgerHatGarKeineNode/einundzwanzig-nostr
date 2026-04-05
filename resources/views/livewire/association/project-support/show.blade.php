@@ -138,7 +138,7 @@ new class extends Component {
                         {{ $projectProposal->name }}
                     </h1>
                     <x-markdown>
-                        {!! $projectProposal->description !!}
+                        {!! \Stevebauman\Purify\Facades\Purify::clean($projectProposal->description) !!}
                     </x-markdown>
                 </header>
 
