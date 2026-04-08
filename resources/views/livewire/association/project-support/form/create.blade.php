@@ -2,6 +2,7 @@
 
 use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
+use App\Support\RichTextMarkdownNormalizer;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
@@ -58,6 +59,11 @@ class extends Component
         }
     }
 
+    public function convertMarkdownToHtml(string $markdown): string
+    {
+        return (new RichTextMarkdownNormalizer)->toHtml($markdown);
+    }
+
     public function save(): void
     {
         Gate::forUser(NostrAuth::user())->authorize('create', ProjectProposal::class);
@@ -82,7 +88,7 @@ class extends Component
 
         $projectProposal = new ProjectProposal;
         $projectProposal->name = $this->form['name'];
-        $projectProposal->description = $this->form['description'];
+        $projectProposal->description = (new RichTextMarkdownNormalizer)->normalize($this->form['description']);
         $projectProposal->support_in_sats = (int) $this->form['support_in_sats'];
         $projectProposal->website = $this->form['website'];
         $projectProposal->accepted = $this->isAdmin ? $this->form['accepted'] : false;
@@ -196,6 +202,8 @@ class extends Component
                     </div>
                 </div>
             </div>
+
+            @include('partials.markdown-paste-listener')
         @else
             <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                 <flux:callout variant="warning" icon="exclamation-circle">

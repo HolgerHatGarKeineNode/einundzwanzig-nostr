@@ -137,10 +137,8 @@ new class extends Component {
                     <h1 class="text-2xl md:text-3xl text-zinc-800 dark:text-zinc-100 font-bold mb-2">
                         {{ $projectProposal->name }}
                     </h1>
-                    <div class="prose">
-                        <x-markdown>
-                            {!! $projectProposal->description !!}
-                        </x-markdown>
+                    <div class="prose dark:prose-invert max-w-none break-words [&_code]:break-all [&_a]:break-all">
+                        {!! $projectProposal->description !!}
                     </div>
                 </header>
 
