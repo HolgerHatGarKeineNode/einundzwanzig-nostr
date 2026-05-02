@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CourseEvent extends Model
 {
+    use HasFactory;
+
     protected $connection = 'einundzwanzig';
 
     /** @var list<string> */
     protected $fillable = [
         'from',
         'to',
+        'course_id',
+        'venue_id',
+        'created_by',
     ];
 
     /**

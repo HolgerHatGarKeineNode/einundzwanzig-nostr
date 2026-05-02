@@ -107,7 +107,7 @@ new class extends Component
         if ($this->search) {
             $query->where(function ($query) {
                 $query->whereHas('profile', function ($query) {
-                    $query->where('name', 'ilike', '%'.$this->search.'%');
+                    $query->whereLike('name', '%'.$this->search.'%');
                 })->orWhere('npub', 'like', '%'.$this->search.'%');
             });
         }

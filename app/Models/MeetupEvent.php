@@ -2,16 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MeetupEvent extends Model
 {
+    use HasFactory;
+
     protected $connection = 'einundzwanzig';
 
     /** @var list<string> */
     protected $fillable = [
         'start',
+        'meetup_id',
+        'location',
+        'description',
+        'link',
+        'attendees',
+        'might_attendees',
+        'nostr_status',
+        'created_by',
     ];
 
     /**

@@ -243,7 +243,7 @@ new class extends Component {
             ->whereIn('association_status', [3, 4])
             ->where(fn ($query) => $query
                 ->where('pubkey', 'like', "%$value%")
-                ->orWhereHas('profile', fn ($query) => $query->where('name', 'ilike', "%$value%")))
+                ->orWhereHas('profile', fn ($query) => $query->whereLike('name', "%$value%")))
             ->orderBy('association_status', 'desc')
             ->get()
             ->toArray();

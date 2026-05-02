@@ -97,7 +97,15 @@ return [
             'sslmode' => 'prefer',
         ],
 
-        'einundzwanzig' => [
+        'einundzwanzig' => env('DB_CONNECTION', 'sqlite') === 'sqlite' ? [
+            'driver' => 'sqlite',
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'busy_timeout' => null,
+            'journal_mode' => null,
+            'synchronous' => null,
+        ] : [
             'driver' => 'pgsql',
             'url' => env('DB_URL_EINUNDZANZIG'),
             'host' => env('DB_HOST_EINUNDZANZIG', '127.0.0.1'),

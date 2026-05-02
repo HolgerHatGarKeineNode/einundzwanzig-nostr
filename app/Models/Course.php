@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,6 +15,7 @@ use Spatie\Tags\HasTags;
 
 class Course extends Model implements HasMedia
 {
+    use HasFactory;
     use HasTags;
     use InteractsWithMedia;
 
@@ -23,6 +25,9 @@ class Course extends Model implements HasMedia
     protected $fillable = [
         'name',
         'description',
+        'lecturer_id',
+        'duration_minutes',
+        'created_by',
     ];
 
     /**

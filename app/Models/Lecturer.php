@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,6 +17,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Lecturer extends Model implements HasMedia
 {
+    use HasFactory;
     use HasSlug;
     use InteractsWithMedia;
 
@@ -24,6 +26,12 @@ class Lecturer extends Model implements HasMedia
     /** @var list<string> */
     protected $fillable = [
         'name',
+        'bio',
+        'npub',
+        'pubkey',
+        'website',
+        'active',
+        'created_by',
     ];
 
     /**

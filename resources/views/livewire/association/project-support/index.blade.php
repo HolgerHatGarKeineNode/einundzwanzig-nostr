@@ -54,10 +54,10 @@ new class extends Component {
             ])
             ->where(function ($query) {
                 $query
-                    ->where('name', 'ilike', '%'.$this->search.'%')
-                    ->orWhere('description', 'ilike', '%'.$this->search.'%')
+                    ->whereLike('name', '%'.$this->search.'%')
+                    ->orWhereLike('description', '%'.$this->search.'%')
                     ->orWhereHas('einundzwanzigPleb.profile', function ($q) {
-                        $q->where('name', 'ilike', '%'.$this->search.'%');
+                        $q->whereLike('name', '%'.$this->search.'%');
                     });
             })
             ->orderBy('created_at', 'desc')

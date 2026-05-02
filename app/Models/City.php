@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Akuechler\Geoly;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,6 +14,7 @@ use Spatie\Sluggable\SlugOptions;
 class City extends Model
 {
     use Geoly;
+    use HasFactory;
     use HasSlug;
 
     protected $connection = 'einundzwanzig';
@@ -20,6 +22,12 @@ class City extends Model
     /** @var list<string> */
     protected $fillable = [
         'name',
+        'country_id',
+        'latitude',
+        'longitude',
+        'osm_relation',
+        'simplified_geojson',
+        'created_by',
     ];
 
     /**
