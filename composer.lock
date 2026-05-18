@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5121eada64499feb19cf07e547b35e6",
+    "content-hash": "ace0c3a2dda03eff71198f525b214140",
     "packages": [
         {
             "name": "akuechler/laravel-geoly",
@@ -3920,36 +3920,36 @@
         },
         {
             "name": "openspout/openspout",
-            "version": "v4.32.0",
+            "version": "v5.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openspout/openspout.git",
-                "reference": "41f045c1f632e1474e15d4c7bc3abcb4a153563d"
+                "reference": "b82aa46191802c187f67e9639ddc604b9e7a73e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openspout/openspout/zipball/41f045c1f632e1474e15d4c7bc3abcb4a153563d",
-                "reference": "41f045c1f632e1474e15d4c7bc3abcb4a153563d",
+                "url": "https://api.github.com/repos/openspout/openspout/zipball/b82aa46191802c187f67e9639ddc604b9e7a73e9",
+                "reference": "b82aa46191802c187f67e9639ddc604b9e7a73e9",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "ext-fileinfo": "*",
                 "ext-filter": "*",
                 "ext-libxml": "*",
                 "ext-xmlreader": "*",
                 "ext-zip": "*",
-                "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
+                "php": "~8.4.0 || ~8.5.0"
             },
             "require-dev": {
+                "ext-fileinfo": "*",
                 "ext-zlib": "*",
-                "friendsofphp/php-cs-fixer": "^3.86.0",
-                "infection/infection": "^0.31.2",
-                "phpbench/phpbench": "^1.4.1",
-                "phpstan/phpstan": "^2.1.22",
-                "phpstan/phpstan-phpunit": "^2.0.7",
-                "phpstan/phpstan-strict-rules": "^2.0.6",
-                "phpunit/phpunit": "^12.3.7"
+                "friendsofphp/php-cs-fixer": "^3.95.1",
+                "infection/infection": "^0.32.7",
+                "phpbench/phpbench": "^1.6.1",
+                "phpstan/phpstan": "^2.1.53",
+                "phpstan/phpstan-phpunit": "^2.0.16",
+                "phpstan/phpstan-strict-rules": "^2.0.10",
+                "phpunit/phpunit": "^13.1.7"
             },
             "suggest": {
                 "ext-iconv": "To handle non UTF-8 CSV files (if \"php-mbstring\" is not already installed or is too limited)",
@@ -3997,7 +3997,7 @@
             ],
             "support": {
                 "issues": "https://github.com/openspout/openspout/issues",
-                "source": "https://github.com/openspout/openspout/tree/v4.32.0"
+                "source": "https://github.com/openspout/openspout/tree/v5.7.0"
             },
             "funding": [
                 {
@@ -4009,7 +4009,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-03T16:03:54+00:00"
+            "time": "2026-04-29T07:42:36+00:00"
         },
         {
             "name": "paragonie/ciphersweet",
