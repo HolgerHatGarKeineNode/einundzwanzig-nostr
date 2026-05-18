@@ -15,11 +15,21 @@
         'approved' => ($approveCount === 3 || $disapproveCount !== 3),
         default => true,
     };
+
+    $showBoardVoteRibbon = $currentPleb
+        && $currentPleb->isBoardMember()
+        && ! $project->sats_paid
+        && ! $project->hasVoteFrom($currentPleb);
 @endphp
 
 @if($shouldDisplay)
 
-    <flux:card class="flex flex-col sm:flex-row overflow-hidden" wire:key="project_{{ $project->id }}">
+    <flux:card class="relative flex flex-col sm:flex-row overflow-hidden" wire:key="project_{{ $project->id }}">
+        @if($showBoardVoteRibbon)
+            <div class="vote-ribbon">
+                <span class="vote-ribbon__label">Jetzt voten</span>
+            </div>
+        @endif
         @if(!$project->sats_paid)
             <a class="relative block w-full h-48 sm:w-56 sm:h-auto xl:sidebar-expanded:w-40 2xl:sidebar-expanded:w-56 shrink-0 sm:shrink-0"
                href="{{ route('association.projectSupport.item', ['projectProposal' => $project]) }}">

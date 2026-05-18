@@ -143,4 +143,21 @@
         color: #f43658;
         border: none;
     }
+
+    /**
+     * Board Vote Ribbon
+     *
+     * Diagonal ribbon in der oberen rechten Ecke einer Card, das
+     * Vorstandsmitglieder auf ausstehende Voting-Entscheidungen hinweist.
+     */
+    .vote-ribbon {
+        @apply pointer-events-none absolute top-6 -right-12 z-10 w-44 rotate-45
+            bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600
+            py-1.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-white
+            shadow-[0_4px_12px_rgba(249,115,22,0.45)] ring-1 ring-white/20;
+    }
+
+    .vote-ribbon__label {
+        @apply drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)];
+    }
 }

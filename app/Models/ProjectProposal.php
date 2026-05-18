@@ -103,4 +103,9 @@ class ProjectProposal extends Model implements HasMedia
     {
         return $this->hasMany(Vote::class);
     }
+
+    public function hasVoteFrom(EinundzwanzigPleb $pleb): bool
+    {
+        return $this->votes->contains('einundzwanzig_pleb_id', $pleb->id);
+    }
 }
