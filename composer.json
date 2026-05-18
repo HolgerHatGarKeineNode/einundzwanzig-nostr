@@ -32,7 +32,7 @@
         "spatie/laravel-google-fonts": "^1.4",
         "spatie/laravel-markdown": "^2.5",
         "spatie/laravel-medialibrary": "^11.9",
-        "spatie/laravel-sluggable": "^3.6",
+        "spatie/laravel-sluggable": "^4.0",
         "spatie/laravel-tags": "^4.9.2",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
         "swentel/nostr-php": "^1.4"
