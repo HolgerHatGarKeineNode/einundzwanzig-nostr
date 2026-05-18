@@ -90,7 +90,7 @@ it('creates project proposal successfully', function () {
     expect(ProjectProposal::count())->toBe(1);
     $project = ProjectProposal::first();
     expect($project->name)->toBe('Test Project');
-    expect($project->description)->toBe('This is a test project for unit testing purposes.');
+    expect($project->description)->toBe('<p>This is a test project for unit testing purposes.</p>');
 });
 
 it('associates project proposal with current pleb', function () {

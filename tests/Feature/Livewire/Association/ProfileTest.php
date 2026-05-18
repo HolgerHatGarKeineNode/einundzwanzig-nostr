@@ -144,7 +144,7 @@ it('can update no email preference', function () {
         ->set('no', true)
         ->assertSet('showEmail', false);
 
-    expect($pleb->fresh()->no_email)->toBeTrue();
+    expect((bool) $pleb->fresh()->no_email)->toBeTrue();
 });
 
 it('can save membership application', function () {

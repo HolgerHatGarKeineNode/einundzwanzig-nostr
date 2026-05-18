@@ -105,7 +105,7 @@ it('updates project proposal successfully', function () {
 
     $this->project->refresh();
     expect($this->project->name)->toBe('Updated Name');
-    expect($this->project->description)->toBe('Updated Description');
+    expect($this->project->description)->toBe('<p>Updated Description</p>');
 });
 
 it('saves accepted and sats_paid when admin updates', function () {
