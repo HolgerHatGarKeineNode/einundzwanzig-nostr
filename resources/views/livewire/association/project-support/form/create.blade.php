@@ -43,11 +43,8 @@ class extends Component
             $this->isAllowed = true;
         }
 
-        if ($nostrUser) {
-            $pleb = $nostrUser->getPleb();
-            if ($pleb && in_array($pleb->npub, config('einundzwanzig.config.current_board'), true)) {
-                $this->isAdmin = true;
-            }
+        if ($nostrUser && $nostrUser->isBoardMember()) {
+            $this->isAdmin = true;
         }
     }
 

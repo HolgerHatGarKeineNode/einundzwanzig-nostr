@@ -9,7 +9,7 @@ class NostrUser implements Authenticatable
 {
     protected string $pubkey;
 
-    protected ?object $pleb;
+    protected ?EinundzwanzigPleb $pleb;
 
     public function __construct(string $pubkey)
     {
@@ -62,5 +62,10 @@ class NostrUser implements Authenticatable
     public function getPleb(): ?object
     {
         return $this->pleb;
+    }
+
+    public function isBoardMember(): bool
+    {
+        return $this->pleb?->isBoardMember() ?? false;
     }
 }

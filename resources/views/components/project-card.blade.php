@@ -2,7 +2,7 @@
 
 @php
     $boardVotes = $project->votes->filter(function ($vote) {
-        return in_array($vote->einundzwanzigPleb->npub, config('einundzwanzig.config.current_board'));
+        return $vote->einundzwanzigPleb->isBoardMember();
     });
     $approveCount = $boardVotes->where('value', 1)->count();
     $disapproveCount = $boardVotes->where('value', 0)->count();

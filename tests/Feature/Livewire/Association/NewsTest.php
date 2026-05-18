@@ -54,6 +54,18 @@ it('allows board member to edit news', function () {
         ->assertSet('canEdit', true);
 });
 
+it('grants board member access even without active membership or paid year', function () {
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create([
+        'association_status' => AssociationStatus::DEFAULT,
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.news')
+        ->assertSet('isAllowed', true)
+        ->assertSet('canEdit', true);
+});
+
 it('can create news entry with pdf', function () {
     $pleb = EinundzwanzigPleb::factory()->boardMember()->withPaidCurrentYear()->create();
 

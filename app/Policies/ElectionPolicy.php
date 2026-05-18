@@ -29,7 +29,7 @@ class ElectionPolicy
      */
     public function create(NostrUser $user): bool
     {
-        return $this->isBoardMember($user);
+        return $user->isBoardMember();
     }
 
     /**
@@ -38,7 +38,7 @@ class ElectionPolicy
      */
     public function update(NostrUser $user, Election $election): bool
     {
-        return $this->isBoardMember($user);
+        return $user->isBoardMember();
     }
 
     /**
@@ -47,7 +47,7 @@ class ElectionPolicy
      */
     public function delete(NostrUser $user, Election $election): bool
     {
-        return $this->isBoardMember($user);
+        return $user->isBoardMember();
     }
 
     /**
@@ -63,16 +63,5 @@ class ElectionPolicy
         }
 
         return $pleb->association_status->value >= 3;
-    }
-
-    private function isBoardMember(NostrUser $user): bool
-    {
-        $pleb = $user->getPleb();
-
-        if (! $pleb) {
-            return false;
-        }
-
-        return in_array($pleb->npub, config('einundzwanzig.config.current_board'), true);
     }
 }

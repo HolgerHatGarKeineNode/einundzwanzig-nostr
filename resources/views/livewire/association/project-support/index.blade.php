@@ -50,7 +50,7 @@ new class extends Component {
         $this->projects = ProjectProposal::query()
             ->with([
                 'einundzwanzigPleb.profile',
-                'votes',
+                'votes.einundzwanzigPleb',
             ])
             ->where(function ($query) {
                 $query

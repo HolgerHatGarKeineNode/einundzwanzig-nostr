@@ -38,28 +38,27 @@ class extends Component {
     #[Locked]
     public bool $canEdit = false;
 
+    #[Locked]
+    public ?\App\Models\EinundzwanzigPleb $currentPleb = null;
+
     public ?int $confirmDeleteId = null;
 
     public function mount(): void
     {
-        if (NostrAuth::check()) {
-            $currentPubkey = NostrAuth::pubkey();
-            $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', $currentPubkey)->first();
+        $this->currentPleb = NostrAuth::user()?->getPleb();
 
-            if (
-                $currentPleb
-                && $currentPleb->association_status->value > 1
-                && $currentPleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists()
-            ) {
-                $this->isAllowed = true;
-            }
-
-            if ($currentPleb && in_array($currentPleb->npub, config('einundzwanzig.config.current_board'))) {
-                $this->canEdit = true;
-            }
-
-            $this->loadNews();
+        if (! $this->currentPleb) {
+            return;
         }
+
+        if ($this->currentPleb->isBoardMember()) {
+            $this->isAllowed = true;
+            $this->canEdit = true;
+        } elseif ($this->currentPleb->hasPaidMembership()) {
+            $this->isAllowed = true;
+        }
+
+        $this->loadNews();
     }
 
     #[Computed]
@@ -101,13 +100,11 @@ class extends Component {
             'form.description' => 'nullable|string',
         ]);
 
-        $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first();
-
         $news = new Notification;
         $news->name = $this->form['name'];
         $news->description = $this->form['description'] ?? null;
         $news->category = $this->form['category'];
-        $news->einundzwanzig_pleb_id = $currentPleb->id;
+        $news->einundzwanzig_pleb_id = $this->currentPleb->id;
         $news->save();
 
         if ($this->file) {
@@ -340,20 +337,15 @@ class extends Component {
                             </button>
 
                             <!-- User badge -->
-                            @if(NostrAuth::check())
-                                @php
-                                    $currentPleb = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first();
-                                @endphp
-                                @if($currentPleb)
-                                    <div class="flex items-center gap-2.5 rounded-xl bg-bg-surface border border-border-subtle px-4 py-2.5">
-                                        <img
-                                            src="{{ $currentPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
-                                            alt="{{ $currentPleb->profile?->name ?? 'Anonym' }}"
-                                            class="w-8 h-8 rounded-full bg-bg-elevated object-cover shrink-0"
-                                        />
-                                        <span class="text-[13px] font-medium text-text-primary">{{ $currentPleb->profile?->name ?? str($currentPleb->npub)->limit(32) }}</span>
-                                    </div>
-                                @endif
+                            @if($currentPleb)
+                                <div class="flex items-center gap-2.5 rounded-xl bg-bg-surface border border-border-subtle px-4 py-2.5">
+                                    <img
+                                        src="{{ $currentPleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg') }}"
+                                        alt="{{ $currentPleb->profile?->name ?? 'Anonym' }}"
+                                        class="w-8 h-8 rounded-full bg-bg-elevated object-cover shrink-0"
+                                    />
+                                    <span class="text-[13px] font-medium text-text-primary">{{ $currentPleb->profile?->name ?? str($currentPleb->npub)->limit(32) }}</span>
+                                </div>
                             @endif
                         </div>
                     </div>

@@ -45,7 +45,7 @@ new class extends Component {
     {
         return Vote::query()
             ->where('project_proposal_id', $this->projectProposal->id)
-            ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board')))
+            ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board', [])))
             ->get();
     }
 
@@ -55,7 +55,7 @@ new class extends Component {
             ->where('project_proposal_id', $this->projectProposal->id)
             ->whereDoesntHave(
                 'einundzwanzigPleb',
-                fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board'))
+                fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board', []))
             )
             ->get();
     }

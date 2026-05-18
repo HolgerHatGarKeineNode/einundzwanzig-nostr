@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Auth\NostrUser;
-use App\Models\EinundzwanzigPleb;
 use App\Models\ProjectProposal;
 
 class ProjectProposalPolicy
@@ -26,7 +25,7 @@ class ProjectProposalPolicy
 
     /**
      * Determine whether the user can create project proposals.
-     * Requires: authenticated, association_status > 1, paid membership for current year.
+     * Allowed for: board members (always) OR active members with paid membership for the current year.
      */
     public function create(NostrUser $user): bool
     {
@@ -36,8 +35,7 @@ class ProjectProposalPolicy
             return false;
         }
 
-        return $pleb->association_status->value > 1
-            && $pleb->paymentEvents()->where('year', date('Y'))->where('paid', true)->exists();
+        return $pleb->isBoardMember() || $pleb->hasPaidMembership();
     }
 
     /**
@@ -53,7 +51,7 @@ class ProjectProposalPolicy
         }
 
         return $pleb->id === $projectProposal->einundzwanzig_pleb_id
-            || $this->isBoardMember($pleb);
+            || $pleb->isBoardMember();
     }
 
     /**
@@ -69,7 +67,7 @@ class ProjectProposalPolicy
         }
 
         return $pleb->id === $projectProposal->einundzwanzig_pleb_id
-            || $this->isBoardMember($pleb);
+            || $pleb->isBoardMember();
     }
 
     /**
@@ -84,14 +82,6 @@ class ProjectProposalPolicy
             return false;
         }
 
-        return $this->isBoardMember($pleb);
-    }
-
-    /**
-     * @param  EinundzwanzigPleb  $pleb
-     */
-    private function isBoardMember(object $pleb): bool
-    {
-        return in_array($pleb->npub, config('einundzwanzig.config.current_board'), true);
+        return $pleb->isBoardMember();
     }
 }

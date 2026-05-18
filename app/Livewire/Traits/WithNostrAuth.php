@@ -37,7 +37,7 @@ trait WithNostrAuth
             ->where('pubkey', $pubkey)
             ->first();
 
-        if ($this->currentPleb && in_array($this->currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
+        if ($this->currentPleb && $this->currentPleb->isBoardMember()) {
             $this->canEdit = true;
         }
 
@@ -62,7 +62,7 @@ trait WithNostrAuth
             $this->currentPleb = $user->getPleb();
             $this->isAllowed = true;
 
-            if ($this->currentPleb && in_array($this->currentPleb->npub, config('einundzwanzig.config.current_board'), true)) {
+            if ($this->currentPleb && $this->currentPleb->isBoardMember()) {
                 $this->canEdit = true;
             }
         }

@@ -50,4 +50,18 @@ class EinundzwanzigPleb extends Authenticatable implements CipherSweetEncrypted
     {
         return $this->hasMany(PaymentEvent::class);
     }
+
+    public function isBoardMember(): bool
+    {
+        return in_array($this->npub, config('einundzwanzig.config.current_board', []), true);
+    }
+
+    public function hasPaidMembership(?int $year = null): bool
+    {
+        return $this->association_status->value > 1
+            && $this->paymentEvents()
+                ->where('year', $year ?? (int) date('Y'))
+                ->where('paid', true)
+                ->exists();
+    }
 }

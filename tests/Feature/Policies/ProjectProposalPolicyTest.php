@@ -69,6 +69,15 @@ it('denies creation for unauthenticated users', function () {
     expect(Gate::forUser(null)->allows('create', ProjectProposal::class))->toBeFalse();
 });
 
+it('allows board member to create project proposals without active membership or paid year', function () {
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create([
+        'association_status' => AssociationStatus::DEFAULT,
+    ]);
+    $nostrUser = new NostrUser($pleb->pubkey);
+
+    expect(Gate::forUser($nostrUser)->allows('create', ProjectProposal::class))->toBeTrue();
+});
+
 // update
 it('allows project creator to update their project proposal', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
