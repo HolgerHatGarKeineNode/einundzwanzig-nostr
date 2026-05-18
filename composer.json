@@ -20,7 +20,7 @@
         "livewire/flux-pro": "^2.10",
         "livewire/livewire": "^4.0",
         "livewire/volt": "^1.0",
-        "openspout/openspout": "^4.24",
+        "openspout/openspout": "^5.0",
         "power-components/livewire-powergrid": "^6.7",
         "pusher/pusher-php-server": "^7.2.2",
         "ralphjsmit/laravel-seo": "^1.7",
