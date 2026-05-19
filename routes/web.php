@@ -64,6 +64,3 @@ Route::livewire('/association/project-support', 'association.project-support.ind
 Route::livewire('/association/project-support/create', 'association.project-support.form.create')->name('association.projectSupport.create');
 Route::livewire('/association/project-support/{projectProposal:slug}', 'association.project-support.show')->name('association.projectSupport.item');
 Route::livewire('/association/project-support/edit/{projectProposal:slug}', 'association.project-support.form.edit')->name('association.projectSupport.edit');
-
-// Other pages
-Route::livewire('/welcome', 'welcome')->name('welcome');
