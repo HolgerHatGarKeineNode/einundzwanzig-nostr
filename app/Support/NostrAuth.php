@@ -40,6 +40,25 @@ class NostrAuth
     }
 
     /**
+     * Return the active session challenge if still valid, otherwise issue a
+     * fresh one. Keeps the sidebar + navbar auth-button mounts in sync —
+     * without this, the second mount would overwrite the first in the
+     * session and leave the first instance's rendered data-attribute
+     * pointing at a stale challenge.
+     */
+    public static function currentOrIssueChallenge(): string
+    {
+        $existing = Session::get(self::CHALLENGE_SESSION_KEY);
+        $expiresAt = (int) Session::get(self::CHALLENGE_EXPIRES_SESSION_KEY, 0);
+
+        if (is_string($existing) && $existing !== '' && $expiresAt >= now()->timestamp) {
+            return $existing;
+        }
+
+        return self::issueChallenge();
+    }
+
+    /**
      * Verify a signed NIP-42-style login event and log the holder of the pubkey in.
      *
      * Idempotent across concurrent Livewire listeners: once the challenge has been
@@ -106,7 +125,10 @@ class NostrAuth
             && $expiresAt >= now()->timestamp
             && hash_equals($expectedChallenge, $challengeFromEvent);
 
-        $eventJson = json_encode([
+        // swentel's verify() accepts an object directly, so we pass a normalized
+        // stdClass and skip an unnecessary json_encode + json_decode round-trip.
+        // Casts here enforce the property types swentel checks against.
+        $normalizedEvent = (object) [
             'id' => (string) $signedEvent['id'],
             'pubkey' => (string) $signedEvent['pubkey'],
             'created_at' => $createdAt,
@@ -114,11 +136,11 @@ class NostrAuth
             'tags' => $signedEvent['tags'],
             'content' => (string) $signedEvent['content'],
             'sig' => (string) $signedEvent['sig'],
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        ];
 
         $sigValid = false;
         try {
-            $sigValid = (new NostrEvent)->verify($eventJson);
+            $sigValid = (new NostrEvent)->verify($normalizedEvent);
         } catch (\Throwable) {
             $sigValid = false;
         }

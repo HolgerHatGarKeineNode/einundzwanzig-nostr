@@ -21,7 +21,10 @@ new class extends Component
         $this->isLoggedIn = NostrAuth::check();
 
         if (! $this->isLoggedIn) {
-            $this->nostrChallenge = NostrAuth::issueChallenge();
+            // Sidebar + navbar mount the same component on the same page; using
+            // currentOrIssueChallenge keeps both rendered data-attributes
+            // pointing at the same live session value.
+            $this->nostrChallenge = NostrAuth::currentOrIssueChallenge();
         }
     }
 
@@ -87,8 +90,8 @@ new class extends Component
          x-bind:aria-busy="nostrLoginInProgress"
          aria-labelledby="nostr-login-progress-heading-{{ $location }}"
          aria-describedby="nostr-login-progress-description-{{ $location }}"
-         @keydown.window.escape.prevent.stop
-         @keydown.window.tab.prevent.stop
+         @keydown.window.escape="if (nostrLoginInProgress) { $event.preventDefault(); $event.stopPropagation(); }"
+         @keydown.window.tab="if (nostrLoginInProgress) { $event.preventDefault(); $event.stopPropagation(); }"
          x-effect="document.body.style.overflow = nostrLoginInProgress ? 'hidden' : ''"
          class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 backdrop-blur-md">
         <div class="mx-4 w-full max-w-md rounded-2xl bg-white px-8 py-10 text-center shadow-2xl ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">

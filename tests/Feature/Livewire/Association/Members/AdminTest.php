@@ -34,26 +34,28 @@ it('grants access to authorized pubkeys', function () {
         ->assertSet('isAllowed', true);
 });
 
-it('handles nostr login for authorized user', function () {
+it('reflects an authorized nostr session on mount', function () {
     $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create([
+    EinundzwanzigPleb::factory()->create([
         'pubkey' => $allowedPubkey,
     ]);
 
+    NostrAuth::login($allowedPubkey);
+
     Livewire::test('association.members.admin')
-        ->call('handleNostrLoggedIn', $allowedPubkey)
         ->assertSet('isAllowed', true)
         ->assertSet('currentPubkey', $allowedPubkey);
 });
 
-it('handles nostr logout', function () {
+it('clears state on nostr logout', function () {
     $allowedPubkey = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
-    $pleb = EinundzwanzigPleb::factory()->create([
+    EinundzwanzigPleb::factory()->create([
         'pubkey' => $allowedPubkey,
     ]);
 
+    NostrAuth::login($allowedPubkey);
+
     Livewire::test('association.members.admin')
-        ->call('handleNostrLoggedIn', $allowedPubkey)
         ->call('handleNostrLoggedOut')
         ->assertSet('isAllowed', false)
         ->assertSet('currentPubkey', null);

@@ -24,22 +24,24 @@ it('rejects non-string values for the nip05Handle field', function () {
         ->assertStatus(422);
 });
 
-it('handles nostr login correctly', function () {
+it('reflects an authenticated nostr session on mount', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
+    NostrAuth::login($pleb->pubkey);
+
     Livewire::test('association.profile')
-        ->call('handleNostrLoggedIn', $pleb->pubkey)
         ->assertSet('currentPubkey', $pleb->pubkey)
         ->assertSet('currentPleb.pubkey', $pleb->pubkey);
 });
 
-it('handles nostr login for active member and initializes payment state', function () {
+it('initializes payment state for an active member on mount', function () {
     $pleb = EinundzwanzigPleb::factory()->active()->create();
 
     expect($pleb->paymentEvents()->count())->toBe(0);
 
+    NostrAuth::login($pleb->pubkey);
+
     Livewire::test('association.profile')
-        ->call('handleNostrLoggedIn', $pleb->pubkey)
         ->assertSet('currentPubkey', $pleb->pubkey)
         ->assertSet('currentPleb.pubkey', $pleb->pubkey)
         ->assertSet('amountToPay', config('app.env') === 'production' ? 21000 : 1);
@@ -47,11 +49,12 @@ it('handles nostr login for active member and initializes payment state', functi
     expect($pleb->paymentEvents()->count())->toBeGreaterThan(0);
 });
 
-it('handles nostr logout correctly', function () {
+it('clears state on nostr logout', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
+    NostrAuth::login($pleb->pubkey);
+
     Livewire::test('association.profile')
-        ->call('handleNostrLoggedIn', $pleb->pubkey)
         ->call('handleNostrLoggedOut')
         ->assertSet('currentPubkey', null)
         ->assertSet('currentPleb', null);

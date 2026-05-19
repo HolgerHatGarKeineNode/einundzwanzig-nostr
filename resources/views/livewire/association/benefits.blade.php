@@ -109,9 +109,9 @@ new class extends Component
         Flux::toast('Watchtower-Adresse in die Zwischenablage kopiert!');
     }
 
-    public function handleNostrLoggedIn(string $pubkey): void
+    public function handleNostrLoggedIn($signedEvent = null): void
     {
-        NostrAuth::login($pubkey);
+        NostrAuth::loginWithSignedEvent($signedEvent);
         $this->mount();
     }
 

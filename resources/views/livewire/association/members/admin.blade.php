@@ -69,8 +69,10 @@ new class extends Component
         $this->plebs = $this->loadPlebs();
     }
 
-    public function handleNostrLoggedIn(string $pubkey): void
+    public function handleNostrLoggedIn($signedEvent = null): void
     {
+        $pubkey = NostrAuth::loginWithSignedEvent($signedEvent);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->where('pubkey', $pubkey)->first();

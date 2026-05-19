@@ -207,7 +207,7 @@ new class extends Component {
         }
     }
 
-    public function handleNostrLoggedIn(string $pubkey): void
+    public function handleNostrLoggedIn($signedEvent = null): void
     {
         $executed = RateLimiter::attempt(
             'nostr-login:'.request()->ip(),
@@ -219,7 +219,7 @@ new class extends Component {
             abort(429, 'Too many login attempts.');
         }
 
-        NostrAuth::login($pubkey);
+        $pubkey = NostrAuth::loginWithSignedEvent($signedEvent);
 
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()

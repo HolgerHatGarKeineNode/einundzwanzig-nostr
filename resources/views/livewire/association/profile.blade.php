@@ -166,8 +166,10 @@ new class extends Component {
         $this->profileForm->nip05Handle = strtolower($this->profileForm->nip05Handle);
     }
 
-    public function handleNostrLoggedIn(string $pubkey): void
+    public function handleNostrLoggedIn($signedEvent = null): void
     {
+        $pubkey = NostrAuth::loginWithSignedEvent($signedEvent);
+
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
             ->with([
