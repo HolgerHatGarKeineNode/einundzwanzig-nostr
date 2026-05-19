@@ -55,20 +55,23 @@ it('can delete project', function () {
     expect(ProjectProposal::find($project->id))->toBeNull();
 });
 
-it('handles nostr login', function () {
+it('reflects an authenticated nostr session on mount', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
+    NostrAuth::login($pleb->pubkey);
+
     Livewire::test('association.project-support.index')
-        ->call('handleNostrLogin', $pleb->pubkey)
         ->assertSet('currentPubkey', $pleb->pubkey)
         ->assertSet('isAllowed', true);
 });
 
-it('handles nostr logout', function () {
+it('clears state on nostr logout', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
+    NostrAuth::login($pleb->pubkey);
+
     Livewire::test('association.project-support.index')
-        ->call('handleNostrLogin', $pleb->pubkey)
+        ->assertSet('currentPubkey', $pleb->pubkey)
         ->call('handleNostrLogout')
         ->assertSet('currentPubkey', null)
         ->assertSet('isAllowed', false);

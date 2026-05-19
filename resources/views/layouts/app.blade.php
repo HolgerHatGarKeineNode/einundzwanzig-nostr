@@ -20,9 +20,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
 </head>
-<body class="min-h-screen bg-bg-page antialiased"
-      x-data="nostrLogin"
->
+<body class="min-h-screen bg-bg-page antialiased">
 <flux:header sticky class="bg-bg-surface h-18">
     <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left"/>
 

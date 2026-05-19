@@ -53,14 +53,14 @@ test('voting actions are rate limited after 10 attempts', function () {
 });
 
 test('nostr login is rate limited after 10 attempts', function () {
-    $pleb = EinundzwanzigPleb::factory()->create();
-
     for ($i = 0; $i < 10; $i++) {
         RateLimiter::attempt('nostr-login:127.0.0.1', 10, function () {});
     }
 
+    // Rate limit is checked before signature verification, so an empty
+    // payload is enough to trigger the 429.
     Livewire::test('association.project-support.index')
-        ->call('handleNostrLogin', $pleb->pubkey)
+        ->call('handleNostrLogin', [])
         ->assertStatus(429);
 });
 

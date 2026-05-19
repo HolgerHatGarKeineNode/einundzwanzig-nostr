@@ -38,4 +38,17 @@ class NostrSessionGuard extends SessionGuard
 
         return $this->user;
     }
+
+    /**
+     * Nostr auth has no remember-me cookie, so we override the parent's
+     * cookie-clearing logout to avoid CookieJar dependencies in code paths
+     * (e.g. tests) where the cookie jar isn't bound.
+     */
+    public function logout(): void
+    {
+        $this->session->remove($this->getName());
+
+        $this->user = null;
+        $this->loggedOut = true;
+    }
 }

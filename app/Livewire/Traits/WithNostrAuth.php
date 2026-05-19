@@ -18,7 +18,7 @@ trait WithNostrAuth
     public bool $canEdit = false;
 
     #[On('nostrLoggedIn')]
-    public function handleNostrLogin(string $pubkey): void
+    public function handleNostrLogin($signedEvent = null): void
     {
         $executed = RateLimiter::attempt(
             'nostr-login:'.request()->ip(),
@@ -30,7 +30,7 @@ trait WithNostrAuth
             abort(429, 'Too many login attempts.');
         }
 
-        NostrAuth::login($pubkey);
+        $pubkey = NostrAuth::loginWithSignedEvent($signedEvent);
 
         $this->currentPubkey = $pubkey;
         $this->currentPleb = EinundzwanzigPleb::query()
