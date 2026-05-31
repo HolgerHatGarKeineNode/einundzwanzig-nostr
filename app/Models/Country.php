@@ -15,8 +15,6 @@ class Country extends Model
     /** @var list<string> */
     protected $fillable = [
         'name',
-        'code',
-        'language_codes',
     ];
 
     /**

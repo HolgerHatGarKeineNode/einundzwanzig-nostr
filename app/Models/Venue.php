@@ -31,7 +31,6 @@ class Venue extends Model implements HasMedia
         'description',
         'address',
         'website',
-        'created_by',
     ];
 
     /**

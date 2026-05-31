@@ -30,8 +30,6 @@ class Lecturer extends Model implements HasMedia
         'npub',
         'pubkey',
         'website',
-        'active',
-        'created_by',
     ];
 
     /**

@@ -15,14 +15,11 @@ class MeetupEvent extends Model
     /** @var list<string> */
     protected $fillable = [
         'start',
-        'meetup_id',
         'location',
         'description',
         'link',
-        'attendees',
         'might_attendees',
         'nostr_status',
-        'created_by',
     ];
 
     /**

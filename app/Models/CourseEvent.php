@@ -16,9 +16,6 @@ class CourseEvent extends Model
     protected $fillable = [
         'from',
         'to',
-        'course_id',
-        'venue_id',
-        'created_by',
     ];
 
     /**

@@ -22,12 +22,10 @@ class City extends Model
     /** @var list<string> */
     protected $fillable = [
         'name',
-        'country_id',
         'latitude',
         'longitude',
         'osm_relation',
         'simplified_geojson',
-        'created_by',
     ];
 
     /**

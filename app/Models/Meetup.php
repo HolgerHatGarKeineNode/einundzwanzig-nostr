@@ -26,13 +26,11 @@ class Meetup extends Model implements HasMedia
     /** @var list<string> */
     protected $fillable = [
         'name',
-        'city_id',
         'description',
         'website',
         'nostr_pubkey',
         'github_data',
         'simplified_geojson',
-        'created_by',
     ];
 
     /**

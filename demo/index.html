@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>EINUNDZWANZIG VEREINS PORTAL + NOSTR</title>
+
+    <link rel="icon" type="image/jpeg" href="img/einundzwanzig-alpha.jpg">
+
+    <!-- Reveal.js core + dark theme as base -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+
+    <!-- Code highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+    <!-- FontAwesome (gleiche Lib wie das Projekt) -->
+    <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
+
+    <!-- Einundzwanzig Brand Theme -->
+    <link rel="stylesheet" href="css/einundzwanzig-theme.css">
+</head>
+<body>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- =========================================================
+             SLIDE 1 — Titel
+        ============================================================== -->
+        <section class="eu-title-slide" data-background-color="#0A0A0B">
+            <img src="img/einundzwanzig-horizontal-inverted.svg" alt="EINUNDZWANZIG Logo">
+            <h1>VEREINS&nbsp;PORTAL <span class="orange">+ NOSTR</span></h1>
+            <p class="subtitle">Wie der Verein seine Mitglieder organisiert.</p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 2 — Was ist das Vereinsportal?
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2><span class="orange">Was</span> ist das Vereinsportal?</h2>
+
+            <blockquote>
+                Das Vereinsportal ist der <strong>digitale Schreibtisch</strong>
+                für jedes Einundzwanzig&#8209;Mitglied.
+            </blockquote>
+
+            <div class="eu-grid-3" style="margin-top: 0.8em;">
+                <div class="eu-card">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-newspaper"></i></div>
+                    <div class="eu-feature-title">Informieren</div>
+                    <div class="eu-feature-desc">News aus dem Verein lesen</div>
+                </div>
+                <div class="eu-card">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <div class="eu-feature-title">Mitwirken</div>
+                    <div class="eu-feature-desc">Projekte vorschlagen &amp; unterstützen</div>
+                </div>
+                <div class="eu-card">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-gift"></i></div>
+                    <div class="eu-feature-title">Profitieren</div>
+                    <div class="eu-feature-desc">Mitglieder&#8209;Vorteile einlösen</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 3 — Feature-Übersicht (kompakte Liste)
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2>Was kann ich <span class="orange">konkret</span> machen?</h2>
+
+            <div class="eu-grid-2" style="margin-top: 0.6em;">
+                <div class="eu-card">
+                    <strong><i class="fa-solid fa-newspaper orange"></i>&nbsp; News lesen</strong>
+                    <div class="muted small">Updates vom Vorstand &mdash; kein Newsletter.</div>
+                </div>
+                <div class="eu-card">
+                    <strong><i class="fa-solid fa-identification orange"></i>&nbsp; Mein Mitgliederstatus</strong>
+                    <div class="muted small">Mitglied? Seit wann? Welche Rolle?</div>
+                </div>
+                <div class="eu-card">
+                    <strong><i class="fa-solid fa-gift orange"></i>&nbsp; Vorteile einlösen</strong>
+                    <div class="muted small">Rabatte und Angebote von Partnern.</div>
+                </div>
+                <div class="eu-card">
+                    <strong><i class="fa-solid fa-heart orange"></i>&nbsp; Projekte unterstützen</strong>
+                    <div class="muted small">Förderanträge sehen, einreichen, priorisieren.</div>
+                </div>
+                <div class="eu-card">
+                    <strong><i class="fa-solid fa-users-gear orange"></i>&nbsp; Mitglieder verwalten</strong>
+                    <div class="muted small">Nur für Vorstand.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 4 — Wie logge ich mich ein? (Teaser)
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2>Wie logge ich mich <span class="orange">ein</span>?</h2>
+
+            <p>Sonst überall im Internet:</p>
+            <ul>
+                <li>E-Mail eintippen</li>
+                <li>Passwort ausdenken &amp; vergessen</li>
+                <li>"Passwort zurücksetzen"&#8209;Mail&hellip;</li>
+            </ul>
+
+            <p style="margin-top: 1em;">Bei Einundzwanzig: <strong class="orange">Login per Nostr</strong>.</p>
+            <p class="muted small">Keine E-Mail, kein Passwort, kein Anbieter dazwischen.</p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 5 — Spaß 1: Fax-Login
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-meme-frame">
+                <h2 style="margin-top: 0;">Option 1: <span class="orange">Das Fax-Login</span> &trade;</h2>
+
+                <div class="eu-two-col" style="margin-top: 0.6em; gap: 1.2em;">
+                    <div class="eu-emoji-art">📠</div>
+                    <div>
+                        <ol style="margin-left: 1em;">
+                            <li>Du rufst die Fax-Nummer von <strong>Markus Turm</strong> an</li>
+                            <li>Er faxt dir dein <em>persönliches Login-Passwort</em></li>
+                            <li>Du faxt die unterschriebene Anmeldung zurück</li>
+                            <li>4&ndash;6 Wochen Bearbeitungszeit</li>
+                            <li>Eingeloggt! <span class="orange">(Vielleicht.)</span></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 6 — Spaß 2: Nostr-Bändchen
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-meme-frame">
+                <h2 style="margin-top: 0;">Option 2: <span class="orange">Das Nostr-Bändchen</span> &trade;</h2>
+
+                <div class="eu-two-col" style="margin-top: 0.6em; gap: 1.2em;">
+                    <div class="eu-emoji-art">📿</div>
+                    <div>
+                        <ol style="margin-left: 1em;">
+                            <li>Du bestellst dein offizielles <strong>Einundzwanzig Nostr&#8209;Bändchen</strong></li>
+                            <li>Wir versenden es per Brieftaube 🕊️</li>
+                            <li>Du klatschst das Bändchen ans Handy&hellip;</li>
+                            <li><strong class="orange">*BIIIP*</strong> &mdash; eingeloggt!</li>
+                            <li>Limitierte Auflage: <strong>21 Stück</strong></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 7 — Übergang: Jetzt ernsthaft
+        ============================================================== -->
+        <section data-background-color="#0A0A0B" style="text-align: center;">
+            <p class="muted" style="letter-spacing: 0.2em;">SPASS&nbsp;BEISEITE</p>
+            <h1 style="margin-top: 0.3em;">So funktioniert <span class="orange">Nostr&#8209;Login</span> wirklich.</h1>
+            <p class="muted" style="margin-top: 0.8em;">Zwei echte Wege &mdash; einer am Desktop, einer am Handy.</p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 8 — Was ist Nostr (vereinfacht)
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2>Kurz: Was ist <span class="orange">Nostr</span>?</h2>
+
+            <p>Ein <strong>offenes Protokoll</strong> für Identität im Internet &mdash; <strong>ohne</strong> Firma dahinter.</p>
+
+            <p style="margin-top: 0.6em;">Statt eines Accounts hast du <strong>zwei Schlüssel</strong>:</p>
+
+            <div class="eu-grid-2" style="margin-top: 0.4em;">
+                <div class="eu-card">
+                    <strong class="orange"><i class="fa-solid fa-key"></i>&nbsp; Öffentlicher Schlüssel</strong>
+                    <div class="muted small">Dein "Benutzername". Darf jeder sehen.</div>
+                </div>
+                <div class="eu-card">
+                    <strong class="orange"><i class="fa-solid fa-lock"></i>&nbsp; Privater Schlüssel</strong>
+                    <div class="muted small">Dein "Passwort". Bleibt <em>immer</em> bei dir.</div>
+                </div>
+            </div>
+
+            <blockquote style="margin-top: 0.8em;">
+                Du beweist deine Identität, ohne deinen privaten Schlüssel jemals an die Webseite zu schicken.
+            </blockquote>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 9 — Methode 1: Browser-Extension
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <span class="eu-badge">Weg 1 &mdash; Desktop</span>
+            <h2 style="margin-top: 0.3em;"><i class="fa-solid fa-puzzle-piece orange"></i>&nbsp; Browser-Extension</h2>
+            <p class="muted">Für alle, die das Portal am Rechner nutzen.</p>
+
+            <div class="eu-two-col" style="margin-top: 0.6em; gap: 1.5em;">
+                <div>
+                    <p><strong>Beliebte Extensions:</strong></p>
+                    <ul>
+                        <li><strong>Alby</strong> &mdash; mit Bitcoin-Wallet</li>
+                        <li><strong>nos2x</strong> &mdash; minimal, nur Nostr</li>
+                    </ul>
+                    <p class="small muted" style="margin-top: 0.6em;">
+                        Die Extension speichert deinen Schlüssel sicher im Browser.
+                    </p>
+                </div>
+                <div>
+                    <p><strong>So läufts ab:</strong></p>
+                    <div class="eu-step">
+                        <div class="eu-step-num">1</div>
+                        <div class="eu-step-body">"Mit Nostr verbinden" klicken</div>
+                    </div>
+                    <div class="eu-step">
+                        <div class="eu-step-num">2</div>
+                        <div class="eu-step-body">Pop-up der Extension bestätigen</div>
+                    </div>
+                    <div class="eu-step">
+                        <div class="eu-step-num">3</div>
+                        <div class="eu-step-body"><strong>Eingeloggt.</strong></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 10 — Methode 2: Mobile mit Amber
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <span class="eu-badge green">Weg 2 &mdash; Mobile</span>
+            <h2 style="margin-top: 0.3em;"><i class="fa-solid fa-mobile-screen orange"></i>&nbsp; Login mit Amber-App</h2>
+            <p class="muted">Für alle am Handy &mdash; mit der App <strong>Amber</strong> (Android).</p>
+
+            <div class="eu-two-col" style="margin-top: 0.6em; gap: 1.5em;">
+                <div>
+                    <p><strong>Was macht Amber?</strong></p>
+                    <p class="muted small">
+                        Amber ist wie ein kleiner Tresor auf deinem Handy.
+                        Er bewahrt deinen Schlüssel sicher auf und fragt dich,
+                        bevor jemand etwas damit machen darf.
+                    </p>
+                </div>
+                <div>
+                    <p><strong>So läufts ab:</strong></p>
+                    <div class="eu-step">
+                        <div class="eu-step-num">1</div>
+                        <div class="eu-step-body">Im Portal: QR&#8209;Code anzeigen lassen</div>
+                    </div>
+                    <div class="eu-step">
+                        <div class="eu-step-num">2</div>
+                        <div class="eu-step-body">Mit Amber den QR&#8209;Code scannen</div>
+                    </div>
+                    <div class="eu-step">
+                        <div class="eu-step-num">3</div>
+                        <div class="eu-step-body">Amber fragt: "Login erlauben?" &rarr; OK</div>
+                    </div>
+                    <div class="eu-step">
+                        <div class="eu-step-num">4</div>
+                        <div class="eu-step-body"><strong>Eingeloggt.</strong></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 11 — Was passiert im Hintergrund (vereinfacht)
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2>Was passiert im <span class="orange">Hintergrund</span>?</h2>
+            <p class="muted">Egal welcher Weg &mdash; immer dieselben 3 Schritte:</p>
+
+            <div class="eu-grid-3" style="margin-top: 0.6em;">
+                <div class="eu-card-elevated">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-1"></i></div>
+                    <div class="eu-feature-title">Frage</div>
+                    <div class="eu-feature-desc">
+                        Das Portal stellt dir eine Zufallsfrage &mdash; nur für dich.
+                    </div>
+                </div>
+                <div class="eu-card-elevated">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-2"></i></div>
+                    <div class="eu-feature-title">Unterschrift</div>
+                    <div class="eu-feature-desc">
+                        Dein Gerät unterschreibt die Frage mit deinem Schlüssel.
+                    </div>
+                </div>
+                <div class="eu-card-elevated">
+                    <div class="eu-feature-icon"><i class="fa-solid fa-3"></i></div>
+                    <div class="eu-feature-title">Prüfung</div>
+                    <div class="eu-feature-desc">
+                        Das Portal prüft die Unterschrift &mdash; passt sie, bist du drin.
+                    </div>
+                </div>
+            </div>
+
+            <p class="small muted" style="margin-top: 1em; text-align: center;">
+                <i class="fa-solid fa-shield-halved orange"></i>&nbsp;
+                Dein Schlüssel verlässt nie dein Gerät.
+            </p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 12 — Welche Methode?
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <h2><span class="orange">Welche</span> Methode für mich?</h2>
+
+            <div class="eu-grid-2" style="margin-top: 0.6em;">
+                <div class="eu-card">
+                    <span class="eu-badge">Browser-Extension</span>
+                    <p style="margin-top: 0.5em;"><strong>Am besten wenn&hellip;</strong></p>
+                    <ul>
+                        <li>Du das Portal am Rechner nutzt</li>
+                        <li>Du Alby ohnehin hast</li>
+                        <li>Du es schnell &amp; einfach magst</li>
+                    </ul>
+                </div>
+                <div class="eu-card">
+                    <span class="eu-badge green">Amber-App</span>
+                    <p style="margin-top: 0.5em;"><strong>Am besten wenn&hellip;</strong></p>
+                    <ul>
+                        <li>Du am Handy unterwegs bist</li>
+                        <li>Du an wechselnden Rechnern arbeitest</li>
+                        <li>Dir maximale Sicherheit wichtig ist</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 13 — Live-Demo
+        ============================================================== -->
+        <section data-background-color="#0A0A0B" style="text-align: center;">
+            <img src="img/einundzwanzig-horizontal-inverted.svg" alt="Einundzwanzig Logo" style="max-width: 40%; margin-bottom: 1em;">
+            <h1 style="font-size: 2em;">Jetzt: <span class="orange">Live-Demo</span></h1>
+            <p class="muted" style="margin-top: 1em;">
+                Wir öffnen das Portal und loggen uns ein.
+            </p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 14 — Übergang: jetzt die Features
+        ============================================================== -->
+        <section data-background-color="#0A0A0B" style="text-align: center;">
+            <img src="img/einundzwanzig-horizontal-inverted.svg" alt="Einundzwanzig Logo" style="max-width: 40%; margin-bottom: 1em;">
+            <h1 style="font-size: 2em;">Was steckt <span class="orange">drin</span>?</h1>
+            <p class="muted" style="margin-top: 1em;">
+                Ein Rundgang durch die Features des Portals.
+            </p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 15 — Feature: News
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">FEATURE 1 / 5</div>
+            <h2 style="margin-top: 0;"><i class="fa-solid fa-newspaper orange"></i>&nbsp; News</h2>
+            <p class="muted">Alle Vereins-Updates an einem Ort &mdash; nach Kategorien gefiltert.</p>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">einundzwanzig.space / association / news</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div class="eu-app-h1">News</div>
+
+                    <div class="eu-app-filter-row">
+                        <span class="eu-app-chip active">Alle</span>
+                        <span class="eu-app-chip">Vorstand</span>
+                        <span class="eu-app-chip">Projekte</span>
+                        <span class="eu-app-chip">Events</span>
+                    </div>
+
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-bullhorn"></i></div>
+                        <div class="body">
+                            <div class="title">Protokoll der Mitgliederversammlung 2026</div>
+                            <div class="meta">Vorstand &middot; vor 2 Tagen &middot; PDF</div>
+                        </div>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-rocket"></i></div>
+                        <div class="body">
+                            <div class="title">Neues Förderprojekt freigegeben</div>
+                            <div class="meta">Projekte &middot; vor 1 Woche</div>
+                        </div>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-calendar"></i></div>
+                        <div class="body">
+                            <div class="title">Save the Date: Sommercamp 2026</div>
+                            <div class="meta">Events &middot; vor 2 Wochen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 16 — Feature: Mein Mitgliederstatus / Profil
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">FEATURE 2 / 5</div>
+            <h2 style="margin-top: 0;"><i class="fa-solid fa-id-card orange"></i>&nbsp; Mein Mitgliederstatus</h2>
+            <p class="muted">Profil sehen und Mitgliedsbeitrag mit Lightning bezahlen &mdash; direkt im Portal.</p>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">einundzwanzig.space / association / profile</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div style="display: flex; gap: 1em; align-items: center; margin-bottom: 0.8em;">
+                        <div style="width: 3em; height: 3em; border-radius: 999px; background: var(--eu-bg-elevated); border: 1px solid var(--eu-border-default); display: flex; align-items: center; justify-content: center; font-size: 1.4em;">
+                            <i class="fa-solid fa-user orange"></i>
+                        </div>
+                        <div>
+                            <div style="color: var(--eu-text-primary); font-weight: 700;">satoshi@einundzwanzig.space</div>
+                            <div style="color: var(--eu-text-tertiary); font-size: 0.85em;">Mitglied seit 2024</div>
+                        </div>
+                        <div style="margin-left: auto;">
+                            <span class="eu-app-status-badge green"><i class="fa-solid fa-check"></i>&nbsp; Aktiv</span>
+                        </div>
+                    </div>
+
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="body">
+                            <div class="title">Mitgliedsbeitrag 2026</div>
+                            <div class="meta">21 000 Sats &middot; bezahlt am 14.01.2026</div>
+                        </div>
+                        <span class="eu-app-status-badge green">Bezahlt</span>
+                    </div>
+
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="body">
+                            <div class="title">Beitrag 2027</div>
+                            <div class="meta">Bereit zur Zahlung &mdash; Rechnung erstellen</div>
+                        </div>
+                        <button class="eu-app-button"><i class="fa-solid fa-bolt"></i>&nbsp; Pay</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 17 — Feature: Vorteile
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">FEATURE 3 / 5</div>
+            <h2 style="margin-top: 0;"><i class="fa-solid fa-gift orange"></i>&nbsp; Vorteile deiner Mitgliedschaft</h2>
+            <p class="muted">Drei exklusive Services, die nur Mitglieder freischalten können.</p>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">einundzwanzig.space / association / benefits</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div class="eu-grid-3" style="gap: 0.6em;">
+                        <div class="eu-benefit-card amber">
+                            <div class="ico"><i class="fa-solid fa-bolt"></i></div>
+                            <div>
+                                <div class="title">Nostr Relay</div>
+                                <div class="desc">Schreib-Rechte auf dem Premium-Relay des Vereins.</div>
+                            </div>
+                        </div>
+                        <div class="eu-benefit-card emerald">
+                            <div class="ico"><i class="fa-solid fa-check-circle"></i></div>
+                            <div>
+                                <div class="title">NIP-05 Verifizierung</div>
+                                <div class="desc">Lesbarer Name: <span class="eu-code-inline">du@einundzwanzig.space</span></div>
+                            </div>
+                        </div>
+                        <div class="eu-benefit-card violet">
+                            <div class="ico"><i class="fa-solid fa-tower-observation"></i></div>
+                            <div>
+                                <div class="title">Lightning Watchtower</div>
+                                <div class="desc">Schützt deine Lightning-Channels, wenn du offline bist.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 18 — Feature: Projekt-Unterstützungen
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">FEATURE 4 / 5</div>
+            <h2 style="margin-top: 0;"><i class="fa-solid fa-heart orange"></i>&nbsp; Projekt-Unterstützungen</h2>
+            <p class="muted">Projekte einreichen, prüfen und gemeinsam fördern.</p>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">einundzwanzig.space / association / project-support</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7em;">
+                        <div class="eu-app-filter-row" style="margin: 0;">
+                            <span class="eu-app-chip active">Alle</span>
+                            <span class="eu-app-chip">Neu</span>
+                            <span class="eu-app-chip">Unterstützt</span>
+                        </div>
+                        <button class="eu-app-button"><i class="fa-solid fa-plus"></i>&nbsp; Projekt einreichen</button>
+                    </div>
+
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div class="body">
+                            <div class="title">Bitcoin-Workshop für Schulen</div>
+                            <div class="meta">Eingereicht von Carla &middot; 500 000 Sats benötigt</div>
+                        </div>
+                        <span class="eu-app-status-badge green">Unterstützt</span>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-microphone"></i></div>
+                        <div class="body">
+                            <div class="title">Podcast-Equipment für Lokalgruppe</div>
+                            <div class="meta">Eingereicht von Tom &middot; 250 000 Sats benötigt</div>
+                        </div>
+                        <span class="eu-app-status-badge orange">Neu</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 19 — Feature: Mitgliederverwaltung (Vorstand)
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">FEATURE 5 / 5 &mdash; NUR&nbsp;VORSTAND</div>
+            <h2 style="margin-top: 0;"><i class="fa-solid fa-users-gear orange"></i>&nbsp; Mitglieder verwalten</h2>
+            <p class="muted">Überblick über alle Mitglieder, Beitragsstatus und Aufnahme&#8209;Anträge.</p>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">einundzwanzig.space / association / members / admin</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-user"></i></div>
+                        <div class="body">
+                            <div class="title">Alice</div>
+                            <div class="meta">alice@einundzwanzig.space &middot; Beitrag 2026 bezahlt</div>
+                        </div>
+                        <span class="eu-app-status-badge green">Aktiv</span>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-user"></i></div>
+                        <div class="body">
+                            <div class="title">Bob</div>
+                            <div class="meta">bob@einundzwanzig.space &middot; Beitrag offen</div>
+                        </div>
+                        <span class="eu-app-status-badge orange">Erinnerung</span>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-user-plus"></i></div>
+                        <div class="body">
+                            <div class="title">Carla</div>
+                            <div class="meta">Möchte <strong>aktives Mitglied</strong> werden &mdash; Bewerbung prüfen</div>
+                        </div>
+                        <button class="eu-app-button ghost">Aktives Mitglied werden</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 20 — Übergang: Beispiel Projekt einreichen
+        ============================================================== -->
+        <section data-background-color="#0A0A0B" style="text-align: center;">
+            <img src="img/einundzwanzig-horizontal-inverted.svg" alt="Einundzwanzig Logo" style="max-width: 35%; margin-bottom: 1em;">
+            <h1 style="font-size: 1.8em;">Beispiel: <span class="orange">Projekt einreichen</span></h1>
+            <p class="muted" style="margin-top: 1em;">
+                In 3 Schritten zur eigenen Projekt&#8209;Unterstützung.
+            </p>
+            <p class="small" style="margin-top: 0.6em;">
+                <i class="fa-solid fa-wallet orange"></i>&nbsp; Echtes Beispiel aus dem Portal: <strong>Sparrow Wallet</strong>
+            </p>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 21 — Schritt 1: Liste mit "Projekt einreichen"
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">SCHRITT 1 / 3</div>
+            <h2 style="margin-top: 0;">Auf der Projekt&#8209;Seite auf <span class="orange">"Projekt einreichen"</span> klicken</h2>
+
+            <div class="eu-app-frame" style="margin-top: 0.6em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">verein.einundzwanzig.space / association / project-support</div>
+                </div>
+                <div class="eu-app-frame-body">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7em;">
+                        <div class="eu-app-filter-row" style="margin: 0;">
+                            <span class="eu-app-chip active">Alle</span>
+                            <span class="eu-app-chip">Neu</span>
+                            <span class="eu-app-chip">Unterstützt</span>
+                        </div>
+                        <button class="eu-app-button eu-highlight-ring"><i class="fa-solid fa-plus"></i>&nbsp; Projekt einreichen</button>
+                    </div>
+
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="body">
+                            <div class="title">Peer2Peer Rights Foundation</div>
+                            <div class="meta">Chris @ seedor_io &middot; 10 000 000 Sats</div>
+                        </div>
+                        <span class="eu-app-status-badge green">Unterstützt</span>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-microphone"></i></div>
+                        <div class="body">
+                            <div class="title">STANDUP</div>
+                            <div class="meta">DrShift &middot; 5 500 000 Sats</div>
+                        </div>
+                        <span class="eu-app-status-badge green">Unterstützt</span>
+                    </div>
+                    <div class="eu-app-list-item">
+                        <div class="icon"><i class="fa-solid fa-people-group"></i></div>
+                        <div class="body">
+                            <div class="title">21Meetup</div>
+                            <div class="meta">M.W. &middot; 2 500 000 Sats</div>
+                        </div>
+                        <span class="eu-app-status-badge orange">Neu</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 22 — Schritt 2: Formular ausfüllen
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">SCHRITT 2 / 3</div>
+            <h2 style="margin-top: 0;">Formular ausfüllen &mdash; <span class="orange">fertig in 30 Sekunden</span></h2>
+
+            <div class="eu-app-frame" style="margin-top: 0.5em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">verein.einundzwanzig.space / project-support / create</div>
+                </div>
+                <div class="eu-app-frame-body" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1em;">
+                    <div>
+                        <div class="eu-form-row">
+                            <label class="eu-form-label">Name</label>
+                            <div class="eu-form-input">Sparrow Wallet</div>
+                        </div>
+                        <div class="eu-form-row">
+                            <label class="eu-form-label">Website</label>
+                            <div class="eu-form-input">https://sparrowwallet.com</div>
+                        </div>
+                        <div class="eu-form-row">
+                            <label class="eu-form-label">Unterstützung (Sats)</label>
+                            <div class="eu-form-input">2 100 000</div>
+                        </div>
+                        <div class="eu-form-row">
+                            <label class="eu-form-label">Beschreibung</label>
+                            <div class="eu-form-textarea">Bitcoin&#8209;only Desktop&#8209;Wallet mit Fokus auf Bedienbarkeit. UTXO&#8209;Verwaltung, Multi&#8209;Sig, viel in Workshops genutzt.</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="eu-form-row">
+                            <label class="eu-form-label">Bild</label>
+                            <div class="eu-form-dropzone">
+                                <i class="fa-solid fa-image" style="font-size: 1.4em; color: var(--eu-orange);"></i>
+                                <div style="margin-top: 0.3em;">Bild ablegen oder klicken</div>
+                            </div>
+                        </div>
+                        <button class="eu-app-button eu-highlight-ring" style="width: 100%; justify-content: center; margin-top: 0.6em;">
+                            <i class="fa-solid fa-paper-plane"></i>&nbsp; Speichern
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 23 — Schritt 3: Eingereicht & zur Abstimmung
+        ============================================================== -->
+        <section data-background-color="#0A0A0B">
+            <div class="eu-section-label">SCHRITT 3 / 3</div>
+            <h2 style="margin-top: 0;">Eingereicht &mdash; jetzt <span class="orange">stimmt die Community ab</span></h2>
+
+            <div class="eu-app-frame" style="margin-top: 0.5em;">
+                <div class="eu-app-frame-bar">
+                    <div class="eu-app-frame-dots">
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                        <span class="eu-app-frame-dot"></span>
+                    </div>
+                    <div class="eu-app-frame-url">verein.einundzwanzig.space / project-support / sparrow-wallet</div>
+                </div>
+                <div class="eu-app-frame-body" style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 1em;">
+                    <div>
+                        <div style="color: var(--eu-purple-accent); font-weight: 700; font-size: 0.8em; text-transform: uppercase; margin-bottom: 0.2em;">22.12.2024</div>
+                        <div style="color: var(--eu-text-primary); font-weight: 700; font-size: 1.3em; margin-bottom: 0.4em;">Sparrow Wallet</div>
+                        <p class="muted small" style="margin-top: 0;">
+                            Bitcoin&#8209;only Desktop&#8209;Wallet mit UTXO&#8209;Verwaltung und Multi&#8209;Sig.
+                        </p>
+                        <div style="display: flex; gap: 0.5em; align-items: center; margin-top: 0.6em;">
+                            <span style="background: rgba(34, 197, 94, 0.15); color: var(--eu-green-success); font-size: 0.75em; font-weight: 700; padding: 0.2em 0.7em; border-radius: 999px; text-transform: uppercase;">
+                                2 100 000 Sats
+                            </span>
+                            <span class="eu-tag">sparrowwallet.com</span>
+                        </div>
+                        <div class="muted small" style="margin-top: 0.6em;">
+                            Eingereicht von <strong style="color: var(--eu-text-primary);">gmblr247</strong>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="color: var(--eu-text-secondary); font-size: 0.75em; font-weight: 700; margin-bottom: 0.3em;">ABSTIMMUNG</div>
+                        <div class="eu-vote-card">
+                            <span><i class="fa-solid fa-thumbs-up" style="color: var(--eu-green-success);"></i>&nbsp; Vorstand</span>
+                            <span class="num">5</span>
+                        </div>
+                        <div class="eu-vote-card">
+                            <span><i class="fa-solid fa-thumbs-up" style="color: var(--eu-green-success);"></i>&nbsp; Mitglieder</span>
+                            <span class="num">8</span>
+                        </div>
+                        <button class="eu-app-button" style="width: 100%; justify-content: center; margin-top: 0.5em;">
+                            <i class="fa-solid fa-thumbs-up"></i>&nbsp; Zustimmen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Reveal.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        controls: true,
+        progress: true,
+        transition: 'slide',
+        transitionSpeed: 'default',
+        backgroundTransition: 'fade',
+        width: 1280,
+        height: 800,
+        margin: 0.04,
+        center: true,
+        plugins: [RevealNotes, RevealHighlight],
+    });
+</script>
+</body>
+</html>
