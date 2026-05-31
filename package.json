@@ -11,7 +11,7 @@
         "autoprefixer": "^10.4.24",
         "chart.js": "^4.4.4",
         "chartjs-adapter-date-fns": "^3.0.0",
-        "date-fns": "^4.1.0",
+        "date-fns": "^4.4.0",
         "flatpickr": "^4.6.13",
         "laravel-echo": "^2.3.0",
         "laravel-vite-plugin": "^3.0.0",
@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.18",
-        "concurrently": "^9.2.1",
+        "concurrently": "^10.0.0",
         "shiki": "^4.0.0"
     }
 }
