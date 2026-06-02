@@ -20,10 +20,22 @@ return Application::configure(basePath: dirname(__DIR__))
             ThrottleRequests::class.':api',
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        Integration::handles($exceptions);
+    ->withExceptions(function (Exceptions $exceptions): void {
+        // Record Livewire tampering exceptions, then return false to stop them
+        // reaching Sentry/Nightwatch/log. Must run before Integration::handles()
+        // (callbacks fire in order; false short-circuits the rest). dontReport()
+        // is unusable here — it short-circuits before the recording would run.
+        $exceptions->report(function (Throwable $e): bool {
+            $monitor = app(SecurityMonitor::class);
 
-        $exceptions->report(function (Throwable $e) {
-            app(SecurityMonitor::class)->recordFromException($e);
+            if ($monitor->shouldRecord($e)) {
+                $monitor->recordFromException($e);
+
+                return false;
+            }
+
+            return true;
         });
+
+        Integration::handles($exceptions);
     })->create();

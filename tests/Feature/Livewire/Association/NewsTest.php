@@ -112,6 +112,58 @@ it('can delete news entry', function () {
     expect(Notification::find($news->id))->toBeNull();
 });
 
+it('forbids guests from deleting news', function () {
+    $author = EinundzwanzigPleb::factory()->create();
+    $news = Notification::factory()->create([
+        'einundzwanzig_pleb_id' => $author->id,
+    ]);
+
+    Livewire::test('association.news')
+        ->call('delete')
+        ->assertForbidden();
+
+    expect(Notification::find($news->id))->not->toBeNull();
+});
+
+it('forbids non-board members from deleting news', function () {
+    $author = EinundzwanzigPleb::factory()->create();
+    $news = Notification::factory()->create([
+        'einundzwanzig_pleb_id' => $author->id,
+    ]);
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.news')
+        ->call('delete')
+        ->assertForbidden();
+
+    expect(Notification::find($news->id))->not->toBeNull();
+});
+
+it('forbids non-board members from creating news', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.news')
+        ->call('save')
+        ->assertForbidden();
+
+    expect(Notification::count())->toBe(0);
+});
+
+it('does not load news for unauthorized visitors', function () {
+    $author = EinundzwanzigPleb::factory()->create();
+    Notification::factory()->count(2)->create([
+        'einundzwanzig_pleb_id' => $author->id,
+    ]);
+
+    Livewire::test('association.news')
+        ->assertSet('isAllowed', false)
+        ->assertSet('news', []);
+});
+
 it('displays news list', function () {
     $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
     $news1 = Notification::factory()->create();

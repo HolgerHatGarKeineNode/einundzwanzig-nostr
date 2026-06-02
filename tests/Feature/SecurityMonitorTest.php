@@ -2,7 +2,9 @@
 
 use App\Models\SecurityAttempt;
 use App\Services\SecurityMonitor;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 
 beforeEach(function () {
@@ -143,6 +145,38 @@ it('truncates long values', function () {
 
     $attempt = SecurityAttempt::first();
     expect(strlen($attempt->user_agent))->toBeLessThanOrEqual(500);
+});
+
+it('records a security attempt when a locked-property exception is reported through the handler', function () {
+    $exception = new CannotUpdateLockedPropertyException('isLoggedIn');
+
+    app(ExceptionHandler::class)->report($exception);
+
+    expect(SecurityAttempt::count())->toBe(1)
+        ->and(SecurityAttempt::first()->target_property)->toBe('isLoggedIn');
+});
+
+it('does not forward locked-property exceptions to the default log stack', function () {
+    Log::spy();
+
+    app(ExceptionHandler::class)->report(new CannotUpdateLockedPropertyException('isLoggedIn'));
+
+    expect(SecurityAttempt::count())->toBe(1);
+
+    Log::shouldNotHaveReceived('log');
+    Log::shouldNotHaveReceived('error');
+    Log::shouldNotHaveReceived('critical');
+    Log::shouldNotHaveReceived('warning');
+});
+
+it('still forwards non-security exceptions to the default log stack', function () {
+    Log::spy();
+
+    app(ExceptionHandler::class)->report(new RuntimeException('boom'));
+
+    expect(SecurityAttempt::count())->toBe(0);
+
+    Log::shouldHaveReceived('error');
 });
 
 it('handles X-Forwarded-For header', function () {

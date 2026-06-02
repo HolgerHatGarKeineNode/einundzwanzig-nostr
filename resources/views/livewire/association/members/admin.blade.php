@@ -12,6 +12,23 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 new class extends Component
 {
+    /**
+     * Pubkeys permitted to manage members. Authorization is re-checked
+     * server-side on every sensitive action — gating the view on $isAllowed
+     * is cosmetic only, because Livewire exposes every public method as a
+     * directly callable endpoint regardless of what the view renders.
+     *
+     * @var array<int, string>
+     */
+    private const ALLOWED_PUBKEYS = [
+        '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
+        '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
+        '7acf30cf60b85c62b8f654556cc21e4016df8f5604b3b6892794f88bb80d7a1d',
+        'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
+        '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
+        'acbcec475a1a4f9481939ecfbd1c3d111f5b5a474a39ae039bbc720fdd305bec',
+    ];
+
     #[Locked]
     public bool $isAllowed = false;
 
@@ -25,10 +42,13 @@ new class extends Component
 
     public string $sortDirection = 'desc';
 
+    #[Locked]
     public ?int $selectedPlebId = null;
 
+    #[Locked]
     public ?int $confirmAcceptId = null;
 
+    #[Locked]
     public ?int $confirmDeleteId = null;
 
     public string $search = '';
@@ -39,6 +59,8 @@ new class extends Component
 
     public function updatedSearch(): void
     {
+        $this->ensureAuthorized();
+
         $this->plebs = $this->loadPlebs();
     }
 
@@ -51,42 +73,18 @@ new class extends Component
     {
         if (NostrAuth::check()) {
             $this->currentPubkey = NostrAuth::pubkey();
-            $this->currentPleb = \App\Models\EinundzwanzigPleb::query()
-                ->where('pubkey', $this->currentPubkey)->first();
-            $allowedPubkeys = [
-                '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-                '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-                '7acf30cf60b85c62b8f654556cc21e4016df8f5604b3b6892794f88bb80d7a1d',
-                'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
-                '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
-                'acbcec475a1a4f9481939ecfbd1c3d111f5b5a474a39ae039bbc720fdd305bec',
-            ];
-            if (in_array($this->currentPubkey, $allowedPubkeys, true)) {
-                $this->isAllowed = true;
-            }
+            $this->currentPleb = NostrAuth::user()?->getPleb();
         }
 
-        $this->plebs = $this->loadPlebs();
+        $this->refreshAccess();
     }
 
     public function handleNostrLoggedIn($signedEvent = null): void
     {
-        $pubkey = NostrAuth::loginWithSignedEvent($signedEvent);
+        $this->currentPubkey = NostrAuth::loginWithSignedEvent($signedEvent);
+        $this->currentPleb = NostrAuth::user()?->getPleb();
 
-        $this->currentPubkey = $pubkey;
-        $this->currentPleb = EinundzwanzigPleb::query()
-            ->where('pubkey', $pubkey)->first();
-
-        $allowedPubkeys = [
-            '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033',
-            '430169631f2f0682c60cebb4f902d68f0c71c498fd1711fd982f052cf1fd4279',
-            '7acf30cf60b85c62b8f654556cc21e4016df8f5604b3b6892794f88bb80d7a1d',
-            'f240be2b684f85cc81566f2081386af81d7427ea86250c8bde6b7a8500c761ba',
-            '19e358b8011f5f4fc653c565c6d4c2f33f32661f4f90982c9eedc292a8774ec3',
-            'acbcec475a1a4f9481939ecfbd1c3d111f5b5a474a39ae039bbc720fdd305bec',
-        ];
-
-        $this->isAllowed = in_array($pubkey, $allowedPubkeys, true);
+        $this->refreshAccess();
     }
 
     public function handleNostrLoggedOut(): void
@@ -94,6 +92,27 @@ new class extends Component
         $this->currentPubkey = null;
         $this->currentPleb = null;
         $this->isAllowed = false;
+        $this->plebs = [];
+    }
+
+    private function isAuthorized(): bool
+    {
+        return NostrAuth::check()
+            && in_array(NostrAuth::pubkey(), self::ALLOWED_PUBKEYS, true);
+    }
+
+    private function ensureAuthorized(): void
+    {
+        abort_unless($this->isAuthorized(), 403);
+    }
+
+    private function refreshAccess(): void
+    {
+        $this->isAllowed = $this->isAuthorized();
+
+        if ($this->isAllowed) {
+            $this->plebs = $this->loadPlebs();
+        }
     }
 
     private function loadPlebs()
@@ -127,6 +146,8 @@ new class extends Component
 
     public function sort(string $column): void
     {
+        $this->ensureAuthorized();
+
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -139,30 +160,40 @@ new class extends Component
 
     public function togglePaidFilter(): void
     {
+        $this->ensureAuthorized();
+
         $this->showPaidOnly = !$this->showPaidOnly;
         $this->plebs = $this->loadPlebs();
     }
 
     public function openPaymentModal(int $plebId): void
     {
+        $this->ensureAuthorized();
+
         $this->selectedPlebId = $plebId;
         Flux::modal('payment-details')->show();
     }
 
     public function accept($rowId): void
     {
+        $this->ensureAuthorized();
+
         $this->confirmAcceptId = $rowId;
         Flux::modal('confirm-accept-pleb')->show();
     }
 
     public function delete($rowId): void
     {
+        $this->ensureAuthorized();
+
         $this->confirmDeleteId = $rowId;
         Flux::modal('confirm-delete-pleb')->show();
     }
 
     public function acceptPleb(): void
     {
+        $this->ensureAuthorized();
+
         if ($this->confirmAcceptId) {
             $pleb = EinundzwanzigPleb::query()->findOrFail($this->confirmAcceptId);
             $for = $pleb->application_for;
@@ -180,6 +211,8 @@ new class extends Component
 
     public function deletePleb(): void
     {
+        $this->ensureAuthorized();
+
         if ($this->confirmDeleteId) {
             $pleb = EinundzwanzigPleb::query()->findOrFail($this->confirmDeleteId);
             $pleb->application_for = null;
@@ -199,6 +232,8 @@ new class extends Component
 
     public function exportCsv(): StreamedResponse
     {
+        $this->ensureAuthorized();
+
         $currentYear = (int) date('Y');
         $years = PaymentEvent::query()
             ->where('year', '>=', 2025)
@@ -257,6 +292,10 @@ new class extends Component
     #[Computed]
     public function selectedPleb(): ?EinundzwanzigPleb
     {
+        if (! $this->isAuthorized()) {
+            return null;
+        }
+
         return EinundzwanzigPleb::with(['paymentEvents'])->find($this->selectedPlebId);
     }
 };

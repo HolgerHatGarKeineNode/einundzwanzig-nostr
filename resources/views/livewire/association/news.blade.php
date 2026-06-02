@@ -41,6 +41,7 @@ class extends Component {
     #[Locked]
     public ?\App\Models\EinundzwanzigPleb $currentPleb = null;
 
+    #[Locked]
     public ?int $confirmDeleteId = null;
 
     public function mount(): void
@@ -58,7 +59,9 @@ class extends Component {
             $this->isAllowed = true;
         }
 
-        $this->loadNews();
+        if ($this->isAllowed) {
+            $this->loadNews();
+        }
     }
 
     #[Computed]
@@ -93,6 +96,8 @@ class extends Component {
 
     public function save(): void
     {
+        $this->ensureCanEdit();
+
         $this->validate([
             'file' => 'required|file|mimes:pdf',
             'form.category' => 'required|string|in:'.implode(',', NewsCategory::values()),
@@ -119,11 +124,15 @@ class extends Component {
 
     public function confirmDelete(int $id): void
     {
+        $this->ensureCanEdit();
+
         $this->confirmDeleteId = $id;
     }
 
     public function delete(): void
     {
+        $this->ensureCanEdit();
+
         $news = Notification::query()->findOrFail($this->confirmDeleteId);
         $news->delete();
         $this->loadNews();
@@ -131,8 +140,20 @@ class extends Component {
 
     public function removeFile(): void
     {
+        $this->ensureCanEdit();
+
         $this->file->delete();
         $this->file = null;
+    }
+
+    private function canEditNews(): bool
+    {
+        return NostrAuth::user()?->isBoardMember() ?? false;
+    }
+
+    private function ensureCanEdit(): void
+    {
+        abort_unless($this->canEditNews(), 403);
     }
 };
 ?>

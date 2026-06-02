@@ -4,6 +4,8 @@ use App\Models\EinundzwanzigPleb;
 use App\Support\NostrAuth;
 use Livewire\Livewire;
 
+const ALLOWED_ADMIN_PUBKEY = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
+
 it('denies access to unauthorized users', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
@@ -72,4 +74,61 @@ it('displays einundzwanzig pleb table when authorized', function () {
     Livewire::test('association.members.admin')
         ->assertSet('isAllowed', true)
         ->assertSee('einundzwanzig-pleb-table');
+});
+
+it('does not load the member list for unauthorized visitors', function () {
+    EinundzwanzigPleb::factory()->count(3)->create();
+
+    Livewire::test('association.members.admin')
+        ->assertSet('isAllowed', false)
+        ->assertSet('plebs', []);
+});
+
+it('forbids guests from exporting the member CSV', function () {
+    Livewire::test('association.members.admin')
+        ->call('exportCsv')
+        ->assertForbidden();
+});
+
+it('forbids unauthorized members from exporting the member CSV', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.members.admin')
+        ->call('exportCsv')
+        ->assertForbidden();
+});
+
+it('forbids unauthorized members from accepting an application', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.members.admin')
+        ->call('acceptPleb')
+        ->assertForbidden();
+});
+
+it('forbids unauthorized members from rejecting an application', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.members.admin')
+        ->call('deletePleb')
+        ->assertForbidden();
+});
+
+it('lets an authorized member pass the authorization guard', function () {
+    $pleb = EinundzwanzigPleb::factory()->create([
+        'pubkey' => ALLOWED_ADMIN_PUBKEY,
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.members.admin')
+        ->call('acceptPleb')
+        ->assertStatus(200)
+        ->assertHasNoErrors();
 });
