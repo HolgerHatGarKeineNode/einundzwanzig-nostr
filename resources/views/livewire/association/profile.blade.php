@@ -1191,7 +1191,7 @@ new class extends Component {
                                 </div>
                             </template>
 
-                            @if($currentPubkey && $currentPleb->association_status->value < 2)
+                            @if($currentPubkey && $currentPleb && $currentPleb->association_status->value < 2)
                                 <flux:card class="mt-4">
                                     <div class="flex items-start gap-3">
                                         <svg class="shrink-0 fill-current text-green-500 mt-0.5" width="16" height="16"
@@ -1208,7 +1208,7 @@ new class extends Component {
                     </div>
                 @endif
 
-                @if($currentPubkey && !$currentPleb->application_for && $currentPleb->association_status->value < 2)
+                @if($currentPubkey && $currentPleb && !$currentPleb->application_for && $currentPleb->association_status->value < 2)
                     <!-- Membership Registration Section -->
                     <div class="space-y-4 py-6">
                         <div>

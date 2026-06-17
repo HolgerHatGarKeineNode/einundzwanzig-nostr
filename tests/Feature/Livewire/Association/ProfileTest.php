@@ -60,6 +60,15 @@ it('clears state on nostr logout', function () {
         ->assertSet('currentPleb', null);
 });
 
+it('renders without error for a logged-in pubkey that has no pleb record', function () {
+    NostrAuth::login(str_repeat('a', 64));
+
+    Livewire::test('association.profile')
+        ->assertSet('currentPubkey', str_repeat('a', 64))
+        ->assertSet('currentPleb', null)
+        ->assertStatus(200);
+});
+
 it('can save email address', function () {
     $pleb = EinundzwanzigPleb::factory()->create();
 
