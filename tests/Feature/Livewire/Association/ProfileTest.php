@@ -12,6 +12,15 @@ it('rejects non-string values for the fax field', function () {
         ->assertStatus(422);
 });
 
+it('lists all member benefits including blossom for guests with a link to the benefits page', function () {
+    Livewire::test('association.profile')
+        ->assertSee('Nostr Relay')
+        ->assertSee('NIP-05 Verifizierung')
+        ->assertSee('Lightning Watchtower')
+        ->assertSee('Blossom Medienserver')
+        ->assertSeeHtml(route('association.benefits'));
+});
+
 it('rejects non-string values for the email field', function () {
     Livewire::test('association.profile')
         ->set('profileForm.email', [])

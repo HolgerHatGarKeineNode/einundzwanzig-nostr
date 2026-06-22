@@ -653,268 +653,57 @@ new class extends Component {
                     <flux:heading size="xl" level="1">Vorteile deiner Mitgliedschaft</flux:heading>
                     <flux:separator variant="subtle" class="mb-6"/>
 
-                    <!-- Benefits Grid -->
-                    <div class="grid grid-cols-1 gap-4">
-                        <!-- Benefit 1 -->
-                        <div
-                            class="bg-linear-to-br from-amber-50 to-orange-50 dark:from-amber-300/10 dark:to-orange-900/10 rounded-lg p-4 border border-amber-200 dark:border-amber-200/30">
-                            <div class="flex items-start gap-3">
-                                <div class="shrink-0">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center">
-                                        <i class="fa-sharp-duotone fa-solid fa-bolt text-amber-600 dark:text-amber-400 text-base"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
-                                        Nostr Relay
-                                    </h3>
-                                    <p class="text-sm text-text-secondary">
-                                        Exklusive Schreib-Rechte auf Premium Nostr Relay von Einundzwanzig.
-                                    </p>
-                                    @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
-                                        <div class="mt-3 space-y-2">
-                                            <p class="text-xs text-text-secondary leading-relaxed">
-                                                Ein Outbox-Relay ist wie ein Postbote für deine Nostr-Nachrichten. Es
-                                                speichert und
-                                                verteilt deine Posts. Um unser Relay nutzen zu können, musst du es in
-                                                deinem
-                                                Nostr-Client hinzufügen.
-                                            </p>
-                                            <p class="text-xs text-text-secondary leading-relaxed">
-                                                Gehe in deinem Nostr-Client zu den Einstellungen (meistens "Settings"
-                                                oder
-                                                "Relays") und füge folgende Outbox-Relay-Adresse hinzu:
-                                            </p>
-                                            <div class="flex items-center gap-2 mt-2">
-                                                <code
-                                                    class="text-xs bg-bg-elevated px-2 py-1 rounded text-text-secondary font-mono cursor-pointer hover:bg-bg-surface transition-colors"
-                                                    wire:click="copyRelayUrl">
-                                                    wss://nostr.einundzwanzig.space
-                                                </code>
-                                            </div>
-                                            <p class="text-xs text-text-secondary leading-relaxed">
-                                                <strong>Wichtige Hinweise:</strong> Du kannst deine Posts auf mehreren
-                                                Relays gleichzeitig
-                                                veröffentlichen. So stellst du sicher, dass deine Inhalte auch über
-                                                unser Relay erreichbar sind.
-                                            </p>
-                                        </div>
-                                    @endif
-                                </div>
+                    <!-- Kompakte Vorteils-Liste (Details & Einrichtung auf der Vorteile-Seite) -->
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="shrink-0 w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center">
+                                <i class="fa-sharp-duotone fa-solid fa-bolt text-amber-600 dark:text-amber-400"></i>
                             </div>
-                        </div>
-
-                        <!-- Benefit 2: NIP-05 -->
-                        <div
-                            class="bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-300/10 dark:to-teal-900/10 rounded-lg p-4 border border-emerald-200 dark:border-emerald-200/30">
-                            <div class="flex items-start gap-3 mb-3">
-                                <div class="shrink-0">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center">
-                                        <i class="fa-sharp-duotone fa-solid fa-check-circle text-emerald-600 dark:text-emerald-400 text-base"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
-                                        Get NIP-05 verified
-                                    </h3>
-                                    <p class="text-sm text-text-secondary">
-                                        Verifiziere deine Identität mit einem menschenlesbaren Nostr-Namen.
-                                    </p>
-                                </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-semibold text-text-primary">Nostr Relay</h3>
+                                <p class="text-xs text-text-secondary">Premium Outbox-Relay von Einundzwanzig.</p>
                             </div>
-
-                            <!-- NIP-05 Input -->
-                            @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
-                                <div class="space-y-3">
-                                    <flux:field>
-                                        <flux:label>Dein NIP-05 Handle</flux:label>
-                                        <flux:input.group>
-                                            <flux:input
-                                                wire:model.live.debounce="profileForm.nip05Handle"
-                                                placeholder="dein-name"
-                                                wire:dirty.class="border-amber-500 dark:border-amber-400"
-                                            />
-                                            <flux:input.group.suffix class="!bg-[#4a7c59] !text-white font-medium">@einundzwanzig.space</flux:input.group.suffix>
-                                        </flux:input.group>
-                                        <flux:error name="profileForm.nip05Handle"/>
-                                        <div wire:dirty wire:target="profileForm.nip05Handle" class="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                                            Nicht gespeichert...
-                                        </div>
-                                    </flux:field>
-
-                                    <div class="flex gap-3">
-                                        <flux:button
-                                            wire:click="saveNip05Handle"
-                                            wire:loading.attr="disabled"
-                                            size="sm"
-                                            variant="outline">
-                                            <span wire:loading.remove wire:target="saveNip05Handle">Speichern</span>
-                                            <span wire:loading wire:target="saveNip05Handle">Speichert...</span>
-                                        </flux:button>
-                                    </div>
-
-                                    <!-- Rules Info -->
-                                    <div
-                                        class="mt-3 p-3 bg-bg-elevated rounded border border-border-default">
-                                        <p class="text-xs text-text-secondary leading-relaxed">
-                                            <strong>Regeln für dein Handle:</strong> Nur Kleinbuchstaben (a-z), Zahlen
-                                            (0-9) und die Zeichen "-" und "_" sind erlaubt. Dein Handle wird automatisch
-                                            kleingeschrieben.
-                                        </p>
-                                    </div>
-
-                                    <!-- Explanation -->
-                                    <div
-                                        class="mt-4 p-3 bg-bg-elevated rounded border border-border-default">
-                                        <p class="text-xs text-text-secondary leading-relaxed">
-                                            <flux:link href="https://nostr.how/en/guides/get-verified#self-hosted"
-                                                       target="_blank">NIP-05
-                                            </flux:link>
-                                            verifiziert deine Identität auf Nostr. Das Handle ist wie eine
-                                            E-Mail-Adresse (z.B. name@einundzwanzig.space). Clients zeigen ein Häkchen
-                                            für verifizierte Benutzer. Dies macht dein Profil einfacher zu teilen und
-                                            vertrauenswürdiger.
-                                        </p>
-                                    </div>
-
-                                    <!-- NIP-05 Verification Status -->
-                                    @if($nip05Verified)
-                                        <flux:callout variant="success" icon="check-circle" class="mt-4">
-                                            <p class="font-medium text-text-primary">
-                                                Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen
-                                                Pubkey!
-                                            </p>
-                                            @if($nip05HandleMismatch)
-                                                <p class="text-sm text-text-secondary mt-1">
-                                                    Die Synchronisation zu <strong
-                                                        class="break-all">{{ $profileForm->nip05Handle }}
-                                                        @einundzwanzig.space</strong> wird automatisch im Hintergrund
-                                                    durchgeführt.
-                                                </p>
-                                            @endif
-                                        </flux:callout>
-
-                                        <!-- List of all active handles -->
-                                        <div
-                                            class="mt-4 p-4 bg-bg-elevated rounded border border-border-default">
-                                            <p class="text-sm font-medium text-text-secondary mb-2">
-                                                Deine aktivierten Handles:
-                                            </p>
-                                            <ul class="space-y-2">
-                                                @foreach($nip05VerifiedHandles as $handle)
-                                                    <li class="flex items-center gap-2 text-sm">
-                                                        <span
-                                                            class="break-all text-text-primary font-mono">
-                                                            {{ $handle }}@einundzwanzig.space
-                                                        </span>
-                                                        <flux:badge color="green" size="xs">OK</flux:badge>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @elseif($profileForm->nip05Handle)
-                                        <flux:callout variant="secondary" icon="information-circle" class="mt-4">
-                                            <p class="font-medium text-text-primary">
-                                                Dein Handle <strong class="break-all">{{ $profileForm->nip05Handle }}
-                                                    @einundzwanzig.space</strong> ist noch nicht aktiv.
-                                            </p>
-                                            <p class="text-sm text-text-secondary mt-1">
-                                                Das Handle ist gespeichert, aber noch nicht in der NIP-05 Konfiguration
-                                                veröffentlicht.
-                                                Der Vorstand wird dies bald aktivieren.
-                                            </p>
-                                        </flux:callout>
-                                    @endif
-                                </div>
-                            @else
-                                <div class="text-xs text-text-tertiary italic">
-                                    Aktiviere deine Mitgliedschaft, um NIP-05 zu verifizieren.
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Benefit 3: Lightning Watchtower -->
-                        <div
-                            class="bg-linear-to-br from-purple-50 to-blue-50 dark:from-purple-300/10 dark:to-blue-900/10 rounded-lg p-4 border border-purple-200 dark:border-purple-200/30">
-                            <div class="flex items-start gap-3 mb-3">
-                                <div class="shrink-0">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/60 flex items-center justify-center">
-                                        <i class="fa-sharp-duotone fa-solid fa-shield-halved text-purple-600 dark:text-purple-400 text-base"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-text-primary mb-1">
-                                        Lightning Watchtower
-                                    </h3>
-                                    <p class="text-sm text-text-secondary">
-                                        Nutze unseren Watchtower zum Schutz deiner Lightning Channel.
-                                    </p>
-                                </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="shrink-0 w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center">
+                                <i class="fa-sharp-duotone fa-solid fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
                             </div>
-
-                            @if($currentPleb && $currentPleb->association_status->value > 1 && $currentYearIsPaid)
-                                <div class="space-y-3">
-                                    <p class="text-xs text-text-secondary leading-relaxed">
-                                        Ein Watchtower überwacht deine Lightning Channel und schützt sie, falls deine
-                                        Node
-                                        offline ist. Wenn du die Zahlung von Channel-Closing-Transaktionen verpasst,
-                                        kümmert sich
-                                        der Watchtower darum und verhindert den Verlust deiner Sats.
-                                    </p>
-
-                                    <p class="text-xs text-text-secondary leading-relaxed">
-                                        Um unseren Watchtower zu nutzen, füge folgende URI in deiner Lightning Node
-                                        Konfiguration hinzu:
-                                    </p>
-
-                                    <div class="flex items-center gap-2">
-                                        <code
-                                            class="text-xs bg-bg-elevated px-2 py-1 rounded text-text-secondary font-mono cursor-pointer hover:bg-bg-surface transition-colors break-all"
-                                            wire:click="copyWatchtowerUrl">
-                                            03a09f56bba3d2c200cc55eda2f1f069564a97c1fb74345e1560e2868a8ab3d7d0@62.171.139.240:9911
-                                        </code>
-                                    </div>
-
-                                    <div
-                                        class="mt-3 p-3 bg-bg-elevated rounded border border-border-default">
-                                        <p class="text-xs text-text-secondary leading-relaxed font-medium mb-2">
-                                            Einrichtung für gängige Lightning Clients:
-                                        </p>
-                                        <ul class="text-xs text-text-secondary leading-relaxed space-y-1 list-disc list-inside">
-                                            <li><strong>LND:</strong>
-                                                <flux:link
-                                                    href="https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower"
-                                                    target="_blank">
-                                                    https://docs.lightning.engineering/lightning-network-tools/lnd/watchtower
-                                                </flux:link>
-                                            </li>
-                                            <li><strong>Core Lightning:</strong> Nutze den <code
-                                                    class="bg-bg-elevated px-1 rounded">watchtower-client</code>
-                                                Plugin mit der URI
-                                            </li>
-                                            <li><strong>Eclair:</strong> Füge die URI zu den Watchtower-Einstellungen in
-                                                deiner eclair.conf hinzu
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <p class="text-xs text-text-secondary leading-relaxed">
-                                        <strong>Wichtig:</strong> Der Watchtower überwacht deine Channel passiv. Er hat
-                                        keinen Zugriff auf
-                                        deine privaten Schlüssel oder dein Guthaben.
-                                    </p>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-semibold text-text-primary">NIP-05 Verifizierung</h3>
+                                <p class="text-xs text-text-secondary">Menschenlesbarer, verifizierter Nostr-Name.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="shrink-0 w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/60 flex items-center justify-center">
+                                <i class="fa-sharp-duotone fa-solid fa-shield-halved text-purple-600 dark:text-purple-400"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-semibold text-text-primary">Lightning Watchtower</h3>
+                                <p class="text-xs text-text-secondary">Schutz für deine Lightning Channel.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="shrink-0 w-9 h-9 rounded-full bg-rose-100 dark:bg-rose-900/60 flex items-center justify-center">
+                                <i class="fa-sharp-duotone fa-solid fa-cloud-arrow-up text-rose-600 dark:text-rose-400"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm font-semibold text-text-primary">Blossom Medienserver</h3>
+                                    <flux:badge color="rose" size="sm">NEU</flux:badge>
                                 </div>
-                            @else
-                                <div class="text-xs text-text-tertiary italic">
-                                    Aktiviere deine Mitgliedschaft, um den Lightning Watchtower zu nutzen.
-                                </div>
-                            @endif
-                        </div>
+                                <p class="text-xs text-text-secondary">Eigener Speicher für Bilder &amp; Videos auf Nostr.</p>
+                            </div>
+                        </li>
+                    </ul>
 
-                    </div>
+                    <flux:button :href="route('association.benefits')" wire:navigate variant="primary" size="sm"
+                                 icon:trailing="arrow-right" class="mt-6 w-full">
+                        Alle Details &amp; Einrichtung
+                    </flux:button>
                 </div>
             </div>
         </flux:card>
