@@ -399,6 +399,10 @@ new class extends Component
                     <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                         Dein eigener Speicher für Bilder &amp; Videos auf Nostr – betrieben vom Verein.
                     </p>
+                    <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                        <flux:badge color="rose" size="sm" icon="circle-stack">5 GB Speicher</flux:badge>
+                        <flux:badge color="zinc" size="sm" icon="arrow-up-tray">max. 1 GB pro Datei</flux:badge>
+                    </div>
                 </div>
             </div>
 
@@ -434,6 +438,12 @@ new class extends Component
                                         Vereinsserver.</li>
                                 </ol>
                             </div>
+                            <p>
+                                <strong>Dein Kontingent:</strong> 5 GB Speicherplatz pro Mitglied, einzelne Dateien
+                                bis maximal 1 GB. Deine hochgeladenen Medien kannst du jederzeit auf
+                                <flux:link href="https://media.einundzwanzig.space" target="_blank">media.einundzwanzig.space</flux:link>
+                                ansehen und verwalten.
+                            </p>
                             <p>
                                 <strong>Sicher:</strong> Die Anmeldung passiert automatisch über deinen Nostr-Schlüssel –
                                 nur Vereinsmitglieder können hochladen, und deine privaten Schlüssel verlassen

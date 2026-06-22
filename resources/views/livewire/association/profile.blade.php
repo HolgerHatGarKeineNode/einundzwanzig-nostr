@@ -620,20 +620,6 @@ new class extends Component {
             ->unique('id')
             ->toArray();
     }
-
-    public function copyRelayUrl(): void
-    {
-        $relayUrl = 'wss://nostr.einundzwanzig.space';
-        $this->js("navigator.clipboard.writeText('{$relayUrl}')");
-        Flux::toast('Relay-Adresse in die Zwischenablage kopiert!');
-    }
-
-    public function copyWatchtowerUrl(): void
-    {
-        $watchtowerUrl = '03a09f56bba3d2c200cc55eda2f1f069564a97c1fb74345e1560e2868a8ab3d7d0@62.171.139.240:9911';
-        $this->js("navigator.clipboard.writeText('{$watchtowerUrl}')");
-        Flux::toast('Watchtower-Adresse in die Zwischenablage kopiert!');
-    }
 }
 ?>
 
@@ -696,6 +682,7 @@ new class extends Component {
                                     <flux:badge color="rose" size="sm">NEU</flux:badge>
                                 </div>
                                 <p class="text-xs text-text-secondary">Eigener Speicher für Bilder &amp; Videos auf Nostr.</p>
+                                <p class="text-xs text-text-tertiary mt-0.5">5 GB Speicher · max. 1 GB pro Datei</p>
                             </div>
                         </li>
                     </ul>
