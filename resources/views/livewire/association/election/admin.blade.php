@@ -149,7 +149,7 @@ new class extends Component {
             $profile = \App\Models\Profile::query()->where('pubkey', $pubkey)->first();
         }
 
-        return $profile->pubkey;
+        return $profile?->pubkey ?? $pubkey;
     }
 
     public function loadNostrEvents($kinds): array
