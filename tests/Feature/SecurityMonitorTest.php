@@ -89,45 +89,6 @@ it('never throws exceptions itself', function () {
     expect(true)->toBeTrue();
 });
 
-it('tracks attempts from same IP', function () {
-    $exception = new CannotUpdateLockedPropertyException('test');
-
-    $request = Request::create('/livewire/update', 'POST', [
-        'components' => [
-            ['snapshot' => '{}', 'updates' => []],
-        ],
-    ], server: ['REMOTE_ADDR' => '192.168.1.100']);
-
-    $request->setRouteResolver(fn () => null);
-
-    // Record multiple attempts
-    $this->monitor->recordFromException($exception, $request);
-    $this->monitor->recordFromException($exception, $request);
-    $this->monitor->recordFromException($exception, $request);
-
-    expect($this->monitor->getAttemptsFromIp('192.168.1.100'))->toBe(3);
-});
-
-it('identifies suspicious IPs', function () {
-    $exception = new CannotUpdateLockedPropertyException('test');
-
-    $request = Request::create('/livewire/update', 'POST', [
-        'components' => [
-            ['snapshot' => '{}', 'updates' => []],
-        ],
-    ], server: ['REMOTE_ADDR' => '10.0.0.1']);
-
-    $request->setRouteResolver(fn () => null);
-
-    // Record 10 attempts (threshold)
-    for ($i = 0; $i < 10; $i++) {
-        $this->monitor->recordFromException($exception, $request);
-    }
-
-    expect($this->monitor->isIpSuspicious('10.0.0.1', threshold: 10))->toBeTrue()
-        ->and($this->monitor->isIpSuspicious('10.0.0.2', threshold: 10))->toBeFalse();
-});
-
 it('truncates long values', function () {
     $exception = new CannotUpdateLockedPropertyException('test');
 

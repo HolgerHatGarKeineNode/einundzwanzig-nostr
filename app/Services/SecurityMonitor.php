@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\SecurityAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class SecurityMonitor
@@ -101,23 +102,6 @@ class SecurityMonitor
         }
 
         return false;
-    }
-
-    public function getAttemptsFromIp(string $ip, int $hours = 24): int
-    {
-        try {
-            return SecurityAttempt::query()
-                ->fromIp($ip)
-                ->recent($hours)
-                ->count();
-        } catch (Throwable) {
-            return 0;
-        }
-    }
-
-    public function isIpSuspicious(string $ip, int $threshold = 10, int $hours = 24): bool
-    {
-        return $this->getAttemptsFromIp($ip, $hours) >= $threshold;
     }
 
     private function extractComponentName(Request $request): ?string
@@ -224,14 +208,6 @@ class SecurityMonitor
 
     private function truncate(?string $value, int $length): ?string
     {
-        if ($value === null) {
-            return null;
-        }
-
-        if (strlen($value) <= $length) {
-            return $value;
-        }
-
-        return substr($value, 0, $length - 3).'...';
+        return $value === null ? null : Str::limit($value, $length - 3);
     }
 }

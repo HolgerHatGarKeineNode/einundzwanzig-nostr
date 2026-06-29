@@ -18,7 +18,6 @@
 ----------------------------------------- */
 @import "tailwindcss";
 @import "../../vendor/livewire/flux/dist/flux.css";
-@import '../../vendor/power-components/livewire-powergrid/resources/css/tailwind4.css';
 @import "./theme.css";
 @import "./base.css";
 @import "./utilities.css";
@@ -32,8 +31,6 @@
 ----------------------------------------- */
 @source "../views/**/*.blade.php";
 @source "../js/**/*.js";
-@source '../../vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php';
-@source '../../vendor/power-components/livewire-powergrid/resources/views/**/*.php';
 @source "../../vendor/livewire/flux/dist/**/*.blade.php";
 
 /* ----------------------------------------
