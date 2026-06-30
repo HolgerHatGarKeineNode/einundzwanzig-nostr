@@ -25,3 +25,4 @@ yarn-error.log
 .switch-omo-config*
 /.playwright-mcp
 /*.png
+semgrep.json
