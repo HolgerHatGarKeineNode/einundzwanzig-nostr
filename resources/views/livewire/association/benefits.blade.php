@@ -116,6 +116,13 @@ new class extends Component
         Flux::toast('Blossom-Adresse in die Zwischenablage kopiert!');
     }
 
+    public function copyGroupRelayUrl(): void
+    {
+        $groupRelayUrl = 'wss://group.einundzwanzig.space';
+        $this->js("navigator.clipboard.writeText('{$groupRelayUrl}')");
+        Flux::toast('Community-Relay-Adresse in die Zwischenablage kopiert!');
+    }
+
     public function handleNostrLoggedIn($signedEvent = null): void
     {
         NostrAuth::loginWithSignedEvent($signedEvent);
@@ -154,13 +161,14 @@ new class extends Component
     @if($isActiveMember)
         <flux:callout variant="success" icon="check-circle" class="mb-6">
             <flux:callout.heading>Mitgliedschaft aktiv</flux:callout.heading>
-            <flux:callout.text>Alle vier Dienste unten sind für dich freigeschaltet.</flux:callout.text>
+            <flux:callout.text>Alle Dienste unten sind für dich freigeschaltet.</flux:callout.text>
         </flux:callout>
     @else
         <flux:callout variant="warning" icon="lock-closed" class="mb-6">
             <flux:callout.heading>Dienste gesperrt</flux:callout.heading>
             <flux:callout.text>
-                Aktiviere deine Mitgliedschaft, um Relay, NIP-05, Watchtower und den Blossom-Medienserver zu nutzen.
+                Aktiviere deine Mitgliedschaft, um Relay, NIP-05, Watchtower, den Blossom-Medienserver und die
+                Nostr-Community-Gruppe zu nutzen.
             </flux:callout.text>
             <x-slot name="actions">
                 <flux:button :href="route('association.profile')" size="sm" variant="primary" wire:navigate>
@@ -170,12 +178,12 @@ new class extends Component
         </flux:callout>
     @endif
 
-    <!-- Benefits Grid - 2 Spalten auf Desktop für ruhigere, scanbare Übersicht -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+    <!-- Benefits Grid - 2 Spalten auf Desktop, gleiche Höhe je Zeile (flex + h-full) für ruhige Optik -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <!-- Benefit 1: Nostr Relay -->
         <flux:card
-            class="{{ $isActiveMember ? '' : 'opacity-60' }} border-amber-200 dark:border-amber-200/30">
+            class="flex flex-col h-full {{ $isActiveMember ? '' : 'opacity-60' }} border-amber-200 dark:border-amber-200/30">
             <div class="flex items-start gap-3">
                 <div
                     class="shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center">
@@ -208,7 +216,7 @@ new class extends Component
                                  aria-label="Relay-Adresse kopieren"/>
                 </div>
 
-                <flux:accordion class="mt-3">
+                <flux:accordion class="mt-auto pt-3">
                     <flux:accordion.item heading="Anleitung anzeigen">
                         <div class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                             <p>
@@ -231,7 +239,7 @@ new class extends Component
 
         <!-- Benefit 2: NIP-05 -->
         <flux:card
-            class="{{ $isActiveMember ? '' : 'opacity-60' }} border-emerald-200 dark:border-emerald-200/30">
+            class="flex flex-col h-full {{ $isActiveMember ? '' : 'opacity-60' }} border-emerald-200 dark:border-emerald-200/30">
             <div class="flex items-start gap-3">
                 <div
                     class="shrink-0 w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center">
@@ -253,54 +261,69 @@ new class extends Component
             </div>
 
             @if($isActiveMember)
-                <div class="mt-4 space-y-3">
-                    <flux:field>
-                        <flux:label>Dein NIP-05 Handle</flux:label>
-                        <flux:input.group>
-                            <flux:input wire:model.live.debounce="nip05Handle" placeholder="dein-name"/>
-                            <flux:input.group.suffix>@einundzwanzig.space</flux:input.group.suffix>
-                        </flux:input.group>
-                        <flux:error name="nip05Handle"/>
-                    </flux:field>
-
-                    <flux:button wire:click="saveNip05Handle" wire:loading.attr="disabled" size="sm" variant="primary">
-                        Speichern
-                    </flux:button>
-
+                @php($nip05DisplayHandle = $nip05VerifiedHandle ?: $nip05Handle)
+                <div class="mt-4 flex items-center gap-2">
+                    <code
+                        class="flex-1 text-xs bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded text-zinc-700 dark:text-zinc-300 font-mono break-all">
+                        @if($nip05DisplayHandle){{ $nip05DisplayHandle }}@einundzwanzig.space
+                        @else Noch kein Handle – unten einrichten
+                        @endif
+                    </code>
                     @if($nip05Verified)
-                        <flux:callout variant="success" icon="check-circle">
-                            <flux:callout.text>
-                                Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen Pubkey.
-                                @if($nip05HandleMismatch)
-                                    Die Synchronisation zu
-                                    <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong>
-                                    läuft automatisch im Hintergrund.
-                                @endif
-                            </flux:callout.text>
-                        </flux:callout>
-
-                        <div class="p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
-                            <p class="text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-2">Deine aktivierten Handles:</p>
-                            <ul class="space-y-2">
-                                @foreach($nip05VerifiedHandles as $handle)
-                                    <li class="flex items-center gap-2 text-sm" wire:key="handle-{{ $handle }}">
-                                        <span class="break-all text-zinc-800 dark:text-zinc-200 font-mono">{{ $handle }}@einundzwanzig.space</span>
-                                        <flux:badge color="green" size="sm">OK</flux:badge>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                        <flux:badge color="green" size="sm">OK</flux:badge>
                     @elseif($nip05Handle)
-                        <flux:callout variant="secondary" icon="information-circle">
-                            <flux:callout.text>
-                                Dein Handle <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong>
-                                ist gespeichert, aber noch nicht aktiv. Der Vorstand schaltet es bald frei.
-                            </flux:callout.text>
-                        </flux:callout>
+                        <flux:badge color="amber" size="sm">Wartet</flux:badge>
                     @endif
+                </div>
 
-                    <flux:accordion>
-                        <flux:accordion.item heading="Was ist NIP-05 & welche Regeln gelten?">
+                <flux:accordion class="mt-auto pt-3">
+                    <flux:accordion.item heading="NIP-05 einrichten & verwalten">
+                        <div class="space-y-3">
+                            <flux:field>
+                                <flux:label>Dein NIP-05 Handle</flux:label>
+                                <flux:input.group>
+                                    <flux:input wire:model.live.debounce="nip05Handle" placeholder="dein-name"/>
+                                    <flux:input.group.suffix>@einundzwanzig.space</flux:input.group.suffix>
+                                </flux:input.group>
+                                <flux:error name="nip05Handle"/>
+                            </flux:field>
+
+                            <flux:button wire:click="saveNip05Handle" wire:loading.attr="disabled" size="sm" variant="primary">
+                                Speichern
+                            </flux:button>
+
+                            @if($nip05Verified)
+                                <flux:callout variant="success" icon="check-circle">
+                                    <flux:callout.text>
+                                        Du hast {{ count($nip05VerifiedHandles) }} aktive Handles für deinen Pubkey.
+                                        @if($nip05HandleMismatch)
+                                            Die Synchronisation zu
+                                            <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong>
+                                            läuft automatisch im Hintergrund.
+                                        @endif
+                                    </flux:callout.text>
+                                </flux:callout>
+
+                                <div class="p-3 bg-white/50 dark:bg-zinc-800/50 rounded border border-zinc-200 dark:border-zinc-600">
+                                    <p class="text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-2">Deine aktivierten Handles:</p>
+                                    <ul class="space-y-2">
+                                        @foreach($nip05VerifiedHandles as $handle)
+                                            <li class="flex items-center gap-2 text-sm" wire:key="handle-{{ $handle }}">
+                                                <span class="break-all text-zinc-800 dark:text-zinc-200 font-mono">{{ $handle }}@einundzwanzig.space</span>
+                                                <flux:badge color="green" size="sm">OK</flux:badge>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @elseif($nip05Handle)
+                                <flux:callout variant="secondary" icon="information-circle">
+                                    <flux:callout.text>
+                                        Dein Handle <strong class="break-all">{{ $nip05Handle }}@einundzwanzig.space</strong>
+                                        ist gespeichert, aber noch nicht aktiv. Der Vorstand schaltet es bald frei.
+                                    </flux:callout.text>
+                                </flux:callout>
+                            @endif
+
                             <div class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                                 <p>
                                     <flux:link href="https://nostr.how/en/guides/get-verified#self-hosted" target="_blank">NIP-05</flux:link>
@@ -312,15 +335,15 @@ new class extends Component
                                     sowie „-" und „_". Großbuchstaben werden automatisch kleingeschrieben.
                                 </p>
                             </div>
-                        </flux:accordion.item>
-                    </flux:accordion>
-                </div>
+                        </div>
+                    </flux:accordion.item>
+                </flux:accordion>
             @endif
         </flux:card>
 
         <!-- Benefit 3: Lightning Watchtower -->
         <flux:card
-            class="{{ $isActiveMember ? '' : 'opacity-60' }} border-purple-200 dark:border-purple-200/30">
+            class="flex flex-col h-full {{ $isActiveMember ? '' : 'opacity-60' }} border-purple-200 dark:border-purple-200/30">
             <div class="flex items-start gap-3">
                 <div
                     class="shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/60 flex items-center justify-center">
@@ -353,7 +376,7 @@ new class extends Component
                                  aria-label="Watchtower-Adresse kopieren"/>
                 </div>
 
-                <flux:accordion class="mt-3">
+                <flux:accordion class="mt-auto pt-3">
                     <flux:accordion.item heading="Anleitung anzeigen">
                         <div class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                             <p>
@@ -378,7 +401,7 @@ new class extends Component
 
         <!-- Benefit 4: Blossom Medienserver (NEU) -->
         <flux:card
-            class="{{ $isActiveMember ? '' : 'opacity-60' }} border-rose-200 dark:border-rose-200/30">
+            class="flex flex-col h-full {{ $isActiveMember ? '' : 'opacity-60' }} border-rose-200 dark:border-rose-200/30">
             <div class="flex items-start gap-3">
                 <div
                     class="shrink-0 w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/60 flex items-center justify-center">
@@ -418,7 +441,7 @@ new class extends Component
                                  aria-label="Blossom-Adresse kopieren"/>
                 </div>
 
-                <flux:accordion class="mt-3">
+                <flux:accordion class="mt-auto pt-3">
                     <flux:accordion.item heading="Was ist Blossom & wie nutze ich ihn?">
                         <div class="space-y-3 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                             <p>
@@ -448,6 +471,89 @@ new class extends Component
                                 <strong>Sicher:</strong> Die Anmeldung passiert automatisch über deinen Nostr-Schlüssel –
                                 nur Vereinsmitglieder können hochladen, und deine privaten Schlüssel verlassen
                                 niemals dein Gerät.
+                            </p>
+                        </div>
+                    </flux:accordion.item>
+                </flux:accordion>
+            @endif
+        </flux:card>
+
+        <!-- Benefit 5: Nostr Community / NIP-29 Gruppe (NEU) -->
+        <flux:card
+            class="flex flex-col h-full {{ $isActiveMember ? '' : 'opacity-60' }} border-sky-200 dark:border-sky-200/30">
+            <div class="flex items-start gap-3">
+                <div
+                    class="shrink-0 w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-900/60 flex items-center justify-center">
+                    <i class="fa-sharp-duotone fa-solid fa-comments text-sky-600 dark:text-sky-400 text-lg"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">Nostr Community-Gruppe</h3>
+                        <div class="flex items-center gap-1.5">
+                            <flux:badge color="sky" size="sm">NEU</flux:badge>
+                            @if($isActiveMember)
+                                <flux:badge color="green" size="sm">Aktiv</flux:badge>
+                            @else
+                                <flux:badge color="zinc" size="sm" icon="lock-closed">Mitglieder</flux:badge>
+                            @endif
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                        Chatte und poste in der Einundzwanzig-Gruppe auf unserem Community-Relay
+                        (<flux:link href="https://github.com/nostr-protocol/nips/blob/master/29.md" target="_blank">NIP-29</flux:link>)
+                        – wie Discord, nur auf Nostr.
+                    </p>
+                </div>
+            </div>
+
+            @if($isActiveMember)
+                <div class="mt-4 flex flex-col gap-2">
+                    <flux:button
+                        href="https://app.flotilla.social/spaces/group.einundzwanzig.space"
+                        target="_blank"
+                        variant="primary"
+                        size="sm"
+                        icon:trailing="arrow-up-right"
+                        class="w-full">
+                        Gruppe in Flotilla öffnen
+                    </flux:button>
+                    <div class="flex items-center gap-2">
+                        <code
+                            class="flex-1 text-xs bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded text-zinc-700 dark:text-zinc-300 font-mono cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors break-all"
+                            wire:click="copyGroupRelayUrl"
+                            title="Klicken zum Kopieren">
+                            wss://group.einundzwanzig.space
+                        </code>
+                        <flux:button wire:click="copyGroupRelayUrl" size="sm" variant="ghost" icon="clipboard"
+                                     aria-label="Community-Relay-Adresse kopieren"/>
+                    </div>
+                </div>
+
+                <flux:accordion class="mt-auto pt-3">
+                    <flux:accordion.item heading="Was ist das & wie trete ich bei?">
+                        <div class="space-y-3 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            <p>
+                                Unser <strong>group.einundzwanzig.space</strong> ist ein Community-Relay nach dem
+                                <flux:link href="https://github.com/nostr-protocol/nips/blob/master/29.md" target="_blank">NIP-29</flux:link>-Standard
+                                (relay-basierte Gruppen): ein Relay bildet eine Community mit Chat, Threads und Events –
+                                nur für Vereinsmitglieder.
+                            </p>
+                            <div>
+                                <p class="font-medium text-zinc-700 dark:text-zinc-300 mb-1">So trittst du bei:</p>
+                                <ol class="space-y-1 list-decimal list-inside">
+                                    <li>Öffne die Gruppe mit einem NIP-29-fähigen Nostr-Client. Am einfachsten über den
+                                        Button oben (nutzt <flux:link href="https://flotilla.social" target="_blank">Flotilla</flux:link>);
+                                        es funktionieren aber auch andere Clients wie
+                                        <flux:link href="https://www.chachi.chat" target="_blank">Chachi</flux:link>.</li>
+                                    <li>Alternativ das Relay <strong>wss://group.einundzwanzig.space</strong> in deinem
+                                        Client als Gruppe hinzufügen.</li>
+                                    <li>Melde dich mit deinem Nostr-Schlüssel an (z.B. via Amber oder nsec-Bunker) –
+                                        fertig, du kannst sofort lesen und schreiben.</li>
+                                </ol>
+                            </div>
+                            <p>
+                                <strong>Automatischer Zugang:</strong> Sobald dein Mitgliedsbeitrag bezahlt ist, wirst du
+                                automatisch als Member des Relays eingetragen und erhältst Schreib-Rechte in der Gruppe.
                             </p>
                         </div>
                     </flux:accordion.item>

@@ -33,3 +33,22 @@ it('copies the blossom url for active members', function () {
         ->call('copyBlossomUrl')
         ->assertHasNoErrors();
 });
+
+it('unlocks the nostr community group for active paid members', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.benefits')
+        ->assertSee('Nostr Community-Gruppe')
+        ->assertSee('app.flotilla.social/spaces/group.einundzwanzig.space')
+        ->assertSee('wss://group.einundzwanzig.space');
+});
+
+it('copies the community relay url for active members', function () {
+    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.benefits')
+        ->call('copyGroupRelayUrl')
+        ->assertHasNoErrors();
+});

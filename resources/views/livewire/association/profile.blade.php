@@ -685,6 +685,19 @@ new class extends Component {
                                 <p class="text-xs text-text-tertiary mt-0.5">5 GB Speicher · max. 1 GB pro Datei</p>
                             </div>
                         </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="shrink-0 w-9 h-9 rounded-full bg-sky-100 dark:bg-sky-900/60 flex items-center justify-center">
+                                <i class="fa-sharp-duotone fa-solid fa-comments text-sky-600 dark:text-sky-400"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm font-semibold text-text-primary">Nostr Community-Gruppe</h3>
+                                    <flux:badge color="sky" size="sm">NEU</flux:badge>
+                                </div>
+                                <p class="text-xs text-text-secondary">Schreibe in der Einundzwanzig-Gruppe auf unserem Community-Relay (NIP-29).</p>
+                            </div>
+                        </li>
                     </ul>
 
                     <flux:button :href="route('association.benefits')" wire:navigate variant="primary" size="sm"
