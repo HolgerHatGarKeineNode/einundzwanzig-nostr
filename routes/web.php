@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BtcPayWebhookController;
 use App\Support\NostrAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,8 @@ Route::get('media/{media}', function (Media $media, Request $request) {
     ->whereNumber('media')
     ->name('media.signed')
     ->middleware('signed');
+
+Route::post('webhooks/btcpay', BtcPayWebhookController::class)->name('webhooks.btcpay');
 
 Route::post('logout', function () {
     NostrAuth::logout();

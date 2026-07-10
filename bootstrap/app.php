@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             ThrottleRequests::class.':api',
         ]);
+
+        $middleware->preventRequestForgery(except: [
+            'webhooks/btcpay',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Record Livewire tampering exceptions, then return false to stop them
