@@ -287,8 +287,10 @@ new class extends Component {
                 @endforeach
             </div>
 
+            {{-- flux:pagination statt ->links(): letzteres rendert Laravels
+                 Standard-View, die weder das Dark-Theme noch die Hausschrift kennt. --}}
             <div class="mb-8">
-                {{ $this->projects->links() }}
+                <flux:pagination :paginator="$this->projects"/>
             </div>
         @else
             <div class="rounded-xl border border-border-subtle bg-bg-surface p-8 text-center mb-8">
