@@ -107,6 +107,16 @@ new class extends Component {
     }
 
     /**
+     * Zählt die Stimme des Betrachters zur bindenden Mehrheit — oder ist sie
+     * Stimmungsbild? Beide dürfen abstimmen, nur eben mit anderem Gewicht.
+     */
+    #[Computed]
+    public function voteCountsTowardsMajority(): bool
+    {
+        return (bool) NostrAuth::user()?->getPleb()?->isBoardMember();
+    }
+
+    /**
      * Darf jetzt eine Stimme abgegeben werden? Dieselbe Prüfung, die
      * handleApprove() serverseitig macht — damit niemand einen Knopf sieht,
      * der für ihn in einer 403 endet.
@@ -361,9 +371,19 @@ new class extends Component {
                      nicht der orange Vorstands-Rahmen. --}}
                 @if($this->isVoter)
                     <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
-                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
+                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-1">
                             Deine Stimme
                         </div>
+                        {{-- Beide dürfen abstimmen, nur mit anderem Gewicht — das
+                             muss dranstehen, sonst hält ein Mitglied seine Stimme
+                             für bindend oder gibt sie gar nicht erst ab. --}}
+                        <p class="mb-3 text-sm text-text-tertiary">
+                            @if($this->voteCountsTowardsMajority)
+                                Zählt zur bindenden Mehrheit des Vorstands.
+                            @else
+                                Zählt zum Stimmungsbild der Mitglieder, nicht zur Mehrheit.
+                            @endif
+                        </p>
 
                         @if($this->ownVote)
                             {{-- Abgegebene Stimmen sind endgültig. Die Seite sagt jetzt
@@ -492,21 +512,47 @@ new class extends Component {
                     </div>
                 @endif
 
-                {{-- Abstimmung: verdichtet statt vier leerer Kaesten --}}
+                {{-- Vorstandsentscheidung: die Stimmen, die zur Mehrheit zählen --}}
                 <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
-                    <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
-                        Vorstand
+                    <div class="flex items-baseline justify-between gap-2 mb-3">
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
+                            Vorstandsentscheidung
+                        </span>
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
+                            {{ $filled }}/{{ $threshold }}
+                        </span>
                     </div>
                     <x-vote-tally label="Zustimmung" :votes="$approvals" tone="approve"/>
                     <x-vote-tally label="Ablehnung" :votes="$rejections" tone="reject"/>
+                    <p class="mt-3 text-sm text-text-tertiary">
+                        Bindend ist die absolute Mehrheit von
+                        {{ App\Models\ProjectProposal::boardSize() }} Vorstandsmitgliedern.
+                    </p>
+                </div>
+
+                {{-- Stimmungsbild: bewusst IMMER sichtbar, auch ohne Stimmen. Vorher
+                     hing der Block an otherVotes->isNotEmpty() und verschwand
+                     komplett — das las sich, als könnten Mitglieder nicht abstimmen. --}}
+                <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                    <div class="flex items-baseline justify-between gap-2 mb-1">
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
+                            Stimmungsbild der Mitglieder
+                        </span>
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
+                            {{ $this->otherVotes->count() }}
+                        </span>
+                    </div>
+                    <p class="mb-3 text-sm text-text-tertiary">
+                        Zählt nicht zur Mehrheit — es zeigt dem Vorstand, wie der Verein zum Antrag steht.
+                    </p>
 
                     @if($this->otherVotes->isNotEmpty())
-                        <hr class="my-4 border-t border-border-subtle">
-                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
-                            Übrige Mitglieder
-                        </div>
                         <x-vote-tally label="Zustimmung" :votes="$otherApprovals" tone="approve"/>
                         <x-vote-tally label="Ablehnung" :votes="$otherRejections" tone="reject"/>
+                    @else
+                        <p class="text-sm text-text-secondary">
+                            Noch keine Stimme abgegeben.
+                        </p>
                     @endif
                 </div>
 

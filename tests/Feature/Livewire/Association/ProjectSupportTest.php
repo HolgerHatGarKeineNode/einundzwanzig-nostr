@@ -457,6 +457,62 @@ it('hides voting buttons from unauthenticated users', function () {
         ->assertDontSee('Ablehnen');
 });
 
+// Stimmungsbild der Nicht-Vorstandsmitglieder
+
+it('shows the members sentiment panel even when nobody has voted yet', function () {
+    $project = ProjectProposal::factory()->create();
+
+    // Das Panel hing früher an otherVotes->isNotEmpty() und verschwand ganz —
+    // das las sich, als könnten Mitglieder nicht abstimmen.
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSee('Stimmungsbild der Mitglieder')
+        ->assertSee('Zählt nicht zur Mehrheit')
+        ->assertSee('Noch keine Stimme abgegeben.');
+});
+
+it('lets a non-board member vote without affecting the majority', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    $component = Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('voteCountsTowardsMajority', false)
+        ->assertSee('Zählt zum Stimmungsbild der Mitglieder, nicht zur Mehrheit.')
+        ->call('handleApprove')
+        ->assertHasNoErrors();
+
+    expect(Vote::where('project_proposal_id', $project->id)->count())->toBe(1);
+    // Die Stimme ist da, der Status bleibt unberührt.
+    expect($component->get('status'))->toBe(ProjectProposalStatus::InVoting);
+    expect($project->fresh()->boardApprovals())->toBe(0);
+});
+
+it('marks a board member vote as counting towards the majority', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('voteCountsTowardsMajority', true)
+        ->assertSee('Zählt zur bindenden Mehrheit des Vorstands.');
+});
+
+it('separates board votes from the members sentiment', function () {
+    $project = ProjectProposal::factory()->create();
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $member = EinundzwanzigPleb::factory()->create();
+
+    Vote::create(['project_proposal_id' => $project->id, 'einundzwanzig_pleb_id' => $board->id, 'value' => true]);
+    Vote::create(['project_proposal_id' => $project->id, 'einundzwanzig_pleb_id' => $member->id, 'value' => true]);
+
+    $component = Livewire::test('association.project-support.show', ['projectProposal' => $project]);
+
+    expect($component->get('boardVotes'))->toHaveCount(1);
+    expect($component->get('otherVotes'))->toHaveCount(1);
+});
+
 // recordPayout / revertPayout
 
 /**
