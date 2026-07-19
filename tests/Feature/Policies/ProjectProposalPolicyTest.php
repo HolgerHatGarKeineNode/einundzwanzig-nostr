@@ -132,6 +132,39 @@ it('denies non-owner non-board member from deleting a project proposal', functio
     expect(Gate::forUser($nostrUser)->allows('delete', $project))->toBeFalse();
 });
 
+// viewContact
+it('allows a board member to view the submitter contact preference', function () {
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create();
+    $project = ProjectProposal::factory()->create();
+    $nostrUser = new NostrUser($pleb->pubkey);
+
+    expect(Gate::forUser($nostrUser)->allows('viewContact', $project))->toBeTrue();
+});
+
+it('allows the submitter to view their own contact preference', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'einundzwanzig_pleb_id' => $pleb->id,
+    ]);
+    $nostrUser = new NostrUser($pleb->pubkey);
+
+    expect(Gate::forUser($nostrUser)->allows('viewContact', $project))->toBeTrue();
+});
+
+it('denies an unrelated member from viewing the contact preference', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+    $nostrUser = new NostrUser($pleb->pubkey);
+
+    expect(Gate::forUser($nostrUser)->allows('viewContact', $project))->toBeFalse();
+});
+
+it('denies a guest from viewing the contact preference', function () {
+    $project = ProjectProposal::factory()->create();
+
+    expect(Gate::forUser(null)->allows('viewContact', $project))->toBeFalse();
+});
+
 // accept
 it('allows board member to accept a project proposal', function () {
     $pleb = EinundzwanzigPleb::factory()->boardMember()->create();

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\EinundzwanzigPleb;
+use App\Models\ProjectProposal;
 use App\Support\NostrAuth;
 use Livewire\Livewire;
 
@@ -60,7 +61,12 @@ it('accepts valid project proposal data', function () {
         ->assertHasNoErrors();
 });
 
-it('validates accepted field as boolean', function () {
+it('ignores accepted and sats_paid form keys — those fields no longer exist on the create form', function () {
+    // accepted/sats_paid were removed from the create form entirely; a
+    // payout is now only ever recorded through recordPayout() on the
+    // detail page (see ProjectSupportTest). Setting these as raw
+    // form-array keys just adds throwaway entries with no effect on the
+    // saved model — save() only ever writes the fixed set of keys below.
     $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
 
     NostrAuth::login($pleb->pubkey);
@@ -70,26 +76,14 @@ it('validates accepted field as boolean', function () {
         ->set('form.support_in_sats', 21000)
         ->set('form.description', 'Valid description text')
         ->set('form.website', 'https://example.com')
-        ->set('form.accepted', false)
+        ->set('form.accepted', true)
+        ->set('form.sats_paid', 50000)
         ->call('save')
         ->assertHasNoErrors();
-});
 
-it('validates sats_paid as nullable numeric', function () {
-    $pleb = EinundzwanzigPleb::factory()->active()->withPaidCurrentYear()->create();
-
-    NostrAuth::login($pleb->pubkey);
-
-    // Test with null (should be acceptable)
-    Livewire::test('association.project-support.form.create')
-        ->set('form.name', 'Valid Project')
-        ->set('form.support_in_sats', 21000)
-        ->set('form.description', 'Valid description text')
-        ->set('form.website', 'https://example.com')
-        ->set('form.sats_paid', 0)
-        ->set('form.accepted', false)
-        ->call('save')
-        ->assertHasNoErrors();
+    $project = ProjectProposal::where('name', 'Valid Project')->firstOrFail();
+    expect($project->accepted)->toBeFalse();
+    expect($project->sats_paid)->toBe(0);
 });
 
 it('has correct default values', function () {
@@ -102,6 +96,6 @@ it('has correct default values', function () {
         ->assertSet('form.support_in_sats', '')
         ->assertSet('form.description', '')
         ->assertSet('form.website', '')
-        ->assertSet('form.accepted', false)
-        ->assertSet('form.sats_paid', 0);
+        ->assertSet('form.contact_via_nostr_dm', true)
+        ->assertSet('form.contact_alternative', '');
 });

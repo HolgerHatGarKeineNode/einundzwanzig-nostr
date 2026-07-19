@@ -79,16 +79,16 @@ class ProjectProposal extends Model implements HasMedia
      */
     public static function boardPlebIds(): array
     {
-        static $ids = null;
-
-        if ($ids === null) {
-            $ids = EinundzwanzigPleb::query()
-                ->whereIn('npub', config('einundzwanzig.config.current_board', []))
-                ->pluck('id')
-                ->all();
-        }
-
-        return $ids;
+        // Bewusst NICHT in einer static-Variablen gemerkt. Eine static überlebt
+        // bei langlebigen Workern (Octane, Queue) den Request: wird sie einmal
+        // gefüllt, bevor ein Vorstandsmitglied als Pleb-Zeile existiert, zählen
+        // dessen Stimmen bis zum Worker-Neustart als null — ausgerechnet bei der
+        // Abstimmung über Fördergelder. Die Abfrage ist eine indizierte
+        // whereIn-Suche über wenige npubs; der Preis ist die Korrektheit wert.
+        return EinundzwanzigPleb::query()
+            ->whereIn('npub', config('einundzwanzig.config.current_board', []))
+            ->pluck('id')
+            ->all();
     }
 
     /**

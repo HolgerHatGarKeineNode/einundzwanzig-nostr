@@ -25,8 +25,6 @@ class extends Component
         'website' => '',
         'contact_via_nostr_dm' => true,
         'contact_alternative' => '',
-        'accepted' => false,
-        'sats_paid' => 0,
     ];
 
     public $file = null;
@@ -34,19 +32,12 @@ class extends Component
     #[Locked]
     public bool $isAllowed = false;
 
-    #[Locked]
-    public bool $isAdmin = false;
-
     public function mount(): void
     {
         $nostrUser = NostrAuth::user();
 
         if ($nostrUser && Gate::forUser($nostrUser)->allows('create', ProjectProposal::class)) {
             $this->isAllowed = true;
-        }
-
-        if ($nostrUser && $nostrUser->isBoardMember()) {
-            $this->isAdmin = true;
         }
     }
 
@@ -96,8 +87,10 @@ class extends Component
         $projectProposal->contact_alternative = filled($this->form['contact_alternative'] ?? null)
             ? trim($this->form['contact_alternative'])
             : null;
-        $projectProposal->accepted = $this->isAdmin ? $this->form['accepted'] : false;
-        $projectProposal->sats_paid = $this->isAdmin ? $this->form['sats_paid'] : 0;
+        // Ein neuer Antrag ist nie vorab angenommen oder ausgezahlt. Beides wird
+        // ausschliesslich im Vorstands-Panel der Detailseite gesetzt.
+        $projectProposal->accepted = false;
+        $projectProposal->sats_paid = 0;
         $projectProposal->einundzwanzig_pleb_id = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id;
         $projectProposal->save();
 
@@ -173,20 +166,8 @@ class extends Component
                                     <flux:editor wire:model="form.description" label="Beschreibung" description="Projektbeschreibung..." />
                                     <flux:error name="form.description" />
 
-                                    @if($isAdmin)
-                                        <flux:separator />
-                                        <flux:heading level="3" class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Admin Felder</flux:heading>
-                                        <div class="space-y-3 mt-3">
-                                            <flux:field>
-                                                <flux:label>Akzeptiert</flux:label>
-                                                <flux:switch wire:model.live="form.accepted" />
-                                            </flux:field>
-                                            <flux:field>
-                                                <flux:label>Sats bezahlt</flux:label>
-                                                <flux:input type="number" wire:model.live="form.sats_paid" />
-                                            </flux:field>
-                                        </div>
-                                    @endif
+                                    <flux:separator />
+                                    <x-project-contact-fields :form="$form" />
 
                                     <flux:button wire:click="save" wire:loading.attr="disabled" variant="primary" class="w-full mt-4">
                                         Speichern

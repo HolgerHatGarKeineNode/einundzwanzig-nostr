@@ -28,17 +28,12 @@ class extends Component
         'website' => '',
         'contact_via_nostr_dm' => true,
         'contact_alternative' => '',
-        'accepted' => false,
-        'sats_paid' => 0,
     ];
 
     public $file = null;
 
     #[Locked]
     public bool $isAllowed = false;
-
-    #[Locked]
-    public bool $isAdmin = false;
 
     public function mount(ProjectProposal $projectProposal): void
     {
@@ -55,13 +50,7 @@ class extends Component
                 'website' => $this->project->website ?? '',
                 'contact_via_nostr_dm' => (bool) $this->project->contact_via_nostr_dm,
                 'contact_alternative' => $this->project->contact_alternative ?? '',
-                'accepted' => (bool) $this->project->accepted,
-                'sats_paid' => $this->project->sats_paid,
             ];
-        }
-
-        if ($nostrUser && Gate::forUser($nostrUser)->allows('accept', $this->project)) {
-            $this->isAdmin = true;
         }
     }
 
@@ -111,9 +100,6 @@ class extends Component
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
-        $nostrUser = NostrAuth::user();
-        $canAccept = $nostrUser && Gate::forUser($nostrUser)->allows('accept', $this->project);
-
         $this->project->update([
             'name' => $this->form['name'],
             'description' => (new RichTextMarkdownNormalizer)->normalize($this->form['description']),
@@ -124,13 +110,6 @@ class extends Component
                 ? trim($this->form['contact_alternative'])
                 : null,
         ]);
-
-        // Update admin-only fields directly if user has permission
-        if ($canAccept) {
-            $this->project->accepted = (bool) $this->form['accepted'];
-            $this->project->sats_paid = $this->form['sats_paid'];
-            $this->project->save();
-        }
 
         if ($this->file) {
             $this->project->addMedia($this->file)->toMediaCollection('main');
@@ -229,20 +208,8 @@ class extends Component
                                     <flux:error name="form.description" />
                                 </div>
 
-                                @if($isAdmin)
-                                    <flux:separator />
-                                    <flux:heading level="3" class="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Admin Felder</flux:heading>
-                                    <div class="space-y-3 mt-3">
-                                        <flux:field>
-                                            <flux:label>Akzeptiert</flux:label>
-                                            <flux:switch wire:model.live="form.accepted" />
-                                        </flux:field>
-                                        <flux:field>
-                                            <flux:label>Sats bezahlt</flux:label>
-                                            <flux:input type="number" wire:model.live="form.sats_paid" />
-                                        </flux:field>
-                                    </div>
-                                @endif
+                                <flux:separator />
+                                <x-project-contact-fields :form="$form" />
 
                                 <flux:button wire:click="update" wire:loading.attr="disabled" variant="primary" class="w-full mt-4">
                                     Speichern

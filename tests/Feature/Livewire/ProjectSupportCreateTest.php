@@ -93,6 +93,61 @@ it('creates project proposal successfully', function () {
     expect($project->description)->toBe('<p>This is a test project for unit testing purposes.</p>');
 });
 
+it('defaults to nostr dm contact and stores it that way when unchanged', function () {
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
+        ->assertSet('form.contact_via_nostr_dm', true)
+        ->set('form.name', 'Test Project')
+        ->set('form.description', 'Test description')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $project = ProjectProposal::first();
+    expect($project->contact_via_nostr_dm)->toBeTrue();
+    expect($project->contact_alternative)->toBeNull();
+});
+
+it('saves opting out of nostr dm with no alternative channel without validation errors', function () {
+    // Both fields are optional — "no DM, no alternative" means "don't
+    // contact me at all" and is a valid choice, not an incomplete form.
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Test Project')
+        ->set('form.description', 'Test description')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
+        ->set('form.contact_via_nostr_dm', false)
+        ->set('form.contact_alternative', '')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $project = ProjectProposal::first();
+    expect($project->contact_via_nostr_dm)->toBeFalse();
+    expect($project->contact_alternative)->toBeNull();
+});
+
+it('saves an alternative contact channel when dm is opted out', function () {
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.create')
+        ->set('form.name', 'Test Project')
+        ->set('form.description', 'Test description')
+        ->set('form.support_in_sats', 21000)
+        ->set('form.website', 'https://example.com')
+        ->set('form.contact_via_nostr_dm', false)
+        ->set('form.contact_alternative', 'telegram:@example')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $project = ProjectProposal::first();
+    expect($project->contact_via_nostr_dm)->toBeFalse();
+    expect($project->contact_alternative)->toBe('telegram:@example');
+});
+
 it('associates project proposal with current pleb', function () {
     NostrAuth::login($this->pleb->pubkey);
 

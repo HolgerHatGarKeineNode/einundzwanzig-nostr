@@ -108,34 +108,57 @@ it('updates project proposal successfully', function () {
     expect($this->project->description)->toBe('<p>Updated Description</p>');
 });
 
-it('saves accepted and sats_paid when admin updates', function () {
+it('ignores accepted and sats_paid form keys even for board members — those fields no longer exist on the edit form', function () {
+    // accepted/sats_paid and the $isAdmin gate were removed from this
+    // component; a payout is now only ever recorded through recordPayout()
+    // on the detail page (see ProjectSupportTest). Setting these as raw
+    // form-array keys just adds throwaway entries — update() only ever
+    // writes the fixed set of keys below, so a board member editing the
+    // form can no longer touch accepted/sats_paid this way either.
     NostrAuth::login($this->boardMember->pubkey);
 
     Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
-        ->assertSet('isAdmin', true)
         ->set('form.accepted', true)
         ->set('form.sats_paid', 50000)
-        ->call('update')
-        ->assertHasNoErrors();
-
-    $this->project->refresh();
-    expect($this->project->accepted)->toBeTrue();
-    expect($this->project->sats_paid)->toBe(50000);
-});
-
-it('does not allow non-admin to change accepted and sats_paid', function () {
-    NostrAuth::login($this->pleb->pubkey);
-
-    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
-        ->assertSet('isAdmin', false)
-        ->set('form.accepted', true)
-        ->set('form.sats_paid', 99999)
+        ->set('form.name', 'Updated by board')
+        ->set('form.description', 'Updated by board')
         ->call('update')
         ->assertHasNoErrors();
 
     $this->project->refresh();
     expect($this->project->accepted)->toBeFalse();
     expect($this->project->sats_paid)->toBe(0);
+    expect($this->project->name)->toBe('Updated by board');
+});
+
+it('saves opting out of nostr dm with no alternative channel without validation errors', function () {
+    // Both fields are optional — "no DM, no alternative" means "don't
+    // contact me at all" and is a valid choice, not an incomplete form.
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
+        ->set('form.contact_via_nostr_dm', false)
+        ->set('form.contact_alternative', '')
+        ->call('update')
+        ->assertHasNoErrors();
+
+    $this->project->refresh();
+    expect($this->project->contact_via_nostr_dm)->toBeFalse();
+    expect($this->project->contact_alternative)->toBeNull();
+});
+
+it('saves an alternative contact channel when dm is opted out', function () {
+    NostrAuth::login($this->pleb->pubkey);
+
+    Livewire::test('association.project-support.form.edit', ['projectProposal' => $this->project])
+        ->set('form.contact_via_nostr_dm', false)
+        ->set('form.contact_alternative', 'email@example.com')
+        ->call('update')
+        ->assertHasNoErrors();
+
+    $this->project->refresh();
+    expect($this->project->contact_via_nostr_dm)->toBeFalse();
+    expect($this->project->contact_alternative)->toBe('email@example.com');
 });
 
 it('disables update button during save', function () {
