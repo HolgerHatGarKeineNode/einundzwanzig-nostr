@@ -341,8 +341,54 @@ new class extends Component {
             {{-- Seitenspalte: Vorstand, Abstimmung, Kontakt --}}
             <div class="lg:w-80 xl:w-96 shrink-0 order-1 lg:order-2 space-y-4 mb-6 lg:mb-0 lg:sticky lg:top-6 lg:self-start">
 
-                {{-- Vorstands-Panel: alle Vorstandsaktionen an EINEM Ort --}}
-                @if($this->isVoter || $this->canManage)
+                {{-- Eigene Stimme: steht JEDEM stimmberechtigten Mitglied offen,
+                     nicht nur dem Vorstand — deshalb ein neutrales Panel und
+                     nicht der orange Vorstands-Rahmen. --}}
+                @if($this->isVoter)
+                    <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
+                            Deine Stimme
+                        </div>
+
+                        @if($this->ownVote)
+                            {{-- Abgegebene Stimmen sind endgültig. Die Seite sagt jetzt
+                                 WIE abgestimmt wurde, statt nur DASS abgestimmt wurde. --}}
+                            <p @class([
+                                'flex items-center gap-2 text-sm',
+                                'text-green-500' => (bool) $this->ownVote->value,
+                                'text-red-400' => ! (bool) $this->ownVote->value,
+                            ])>
+                                <flux:icon :name="$this->ownVote->value ? 'check-circle' : 'x-circle'"
+                                           variant="micro" aria-hidden="true"/>
+                                Du hast {{ $this->ownVote->value ? 'zugestimmt' : 'abgelehnt' }}.
+                            </p>
+                            <p class="mt-1 text-sm text-text-tertiary">
+                                Eine abgegebene Stimme lässt sich nicht mehr ändern.
+                            </p>
+                        @elseif($this->canVote)
+                            <div class="flex gap-2">
+                                <flux:modal.trigger name="confirm-approve">
+                                    <flux:button variant="primary" icon="hand-thumb-up" class="flex-1 min-h-11">
+                                        Zustimmen
+                                    </flux:button>
+                                </flux:modal.trigger>
+                                <flux:modal.trigger name="confirm-reject">
+                                    <flux:button variant="danger" icon="hand-thumb-down" class="flex-1 min-h-11">
+                                        Ablehnen
+                                    </flux:button>
+                                </flux:modal.trigger>
+                            </div>
+                            <p class="mt-2 text-sm text-text-tertiary">
+                                Deine Stimme ist endgültig.
+                            </p>
+                        @endif
+                    </div>
+                @endif
+
+                {{-- Vorstands-Panel: ausschliesslich fuer den Vorstand. Der orange
+                     Rahmen bedeutet "hier gilt anderes Recht" und darf deshalb nicht
+                     ueber Aktionen stehen, die jedem Mitglied offenstehen. --}}
+                @if($this->canManage)
                     <div class="rounded-xl border border-orange-700 bg-bg-surface overflow-hidden">
                         <div class="flex items-center gap-2 border-b border-orange-700 bg-orange-500/10 px-5 py-3">
                             <flux:icon name="shield-check" variant="micro" class="text-orange-500" aria-hidden="true"/>
@@ -383,48 +429,6 @@ new class extends Component {
                                     @endif
                                 </p>
                             </div>
-
-                            {{-- (2) Handeln --}}
-                            @if($this->isVoter)
-                                <div class="p-5">
-                                    <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
-                                        Deine Stimme
-                                    </div>
-
-                                    @if($this->ownVote)
-                                        {{-- Abgegebene Stimmen sind endgültig. Die Seite sagt jetzt
-                                             WIE abgestimmt wurde, statt nur DASS abgestimmt wurde. --}}
-                                        <p @class([
-                                            'flex items-center gap-2 text-sm',
-                                            'text-green-500' => (bool) $this->ownVote->value,
-                                            'text-red-400' => ! (bool) $this->ownVote->value,
-                                        ])>
-                                            <flux:icon :name="$this->ownVote->value ? 'check-circle' : 'x-circle'"
-                                                       variant="micro" aria-hidden="true"/>
-                                            Du hast {{ $this->ownVote->value ? 'zugestimmt' : 'abgelehnt' }}.
-                                        </p>
-                                        <p class="mt-1 text-sm text-text-tertiary">
-                                            Eine abgegebene Stimme lässt sich nicht mehr ändern.
-                                        </p>
-                                    @elseif($this->canVote)
-                                        <div class="flex gap-2">
-                                            <flux:modal.trigger name="confirm-approve">
-                                                <flux:button variant="primary" icon="hand-thumb-up" class="flex-1 min-h-11">
-                                                    Zustimmen
-                                                </flux:button>
-                                            </flux:modal.trigger>
-                                            <flux:modal.trigger name="confirm-reject">
-                                                <flux:button variant="danger" icon="hand-thumb-down" class="flex-1 min-h-11">
-                                                    Ablehnen
-                                                </flux:button>
-                                            </flux:modal.trigger>
-                                        </div>
-                                        <p class="mt-2 text-sm text-text-tertiary">
-                                            Deine Stimme ist endgültig.
-                                        </p>
-                                    @endif
-                                </div>
-                            @endif
 
                             {{-- (3) Abschliessen --}}
                             @if($this->canManage)

@@ -131,6 +131,19 @@ class ProjectProposal extends Model implements HasMedia
      */
     public function scopeWithStatus(Builder $query, string $status): Builder
     {
+        // 'all' und 'supported' entscheiden sich allein an sats_paid. Die
+        // Vorstands-IDs werden deshalb erst in den Zweigen aufgelöst, die sie
+        // wirklich brauchen — sonst kostet jeder Aufruf eine Abfrage umsonst.
+        if (! in_array($status, [
+            ProjectProposalStatus::Rejected->value,
+            ProjectProposalStatus::Accepted->value,
+            ProjectProposalStatus::InVoting->value,
+        ], true)) {
+            return $status === ProjectProposalStatus::Supported->value
+                ? $query->where('sats_paid', '>', 0)
+                : $query;
+        }
+
         $boardPlebIds = static::boardPlebIds();
         $threshold = static::boardVoteThreshold();
 
@@ -139,7 +152,6 @@ class ProjectProposal extends Model implements HasMedia
             ->whereIn('einundzwanzig_pleb_id', $boardPlebIds);
 
         return match ($status) {
-            ProjectProposalStatus::Supported->value => $query->where('sats_paid', '>', 0),
             ProjectProposalStatus::Rejected->value => $query
                 ->where(fn (Builder $q) => $q->whereNull('sats_paid')->orWhere('sats_paid', '<=', 0))
                 ->whereHas('votes', $boardVotes(false), '>=', $threshold),

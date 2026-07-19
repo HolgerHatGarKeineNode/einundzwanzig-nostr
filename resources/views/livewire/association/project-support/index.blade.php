@@ -100,7 +100,14 @@ new class extends Component {
 
     public function confirmDeleteProject(int|string $id): void
     {
-        $this->projectToDelete = ProjectProposal::query()->findOrFail($id);
+        $project = ProjectProposal::query()->findOrFail($id);
+
+        // Auch der reine Dialog-Öffner wird geprüft: die Methode ist als
+        // Livewire-Endpunkt direkt aufrufbar und würde sonst für beliebige IDs
+        // verraten, ob ein Antrag existiert.
+        Gate::forUser(NostrAuth::user())->authorize('delete', $project);
+
+        $this->projectToDelete = $project;
         Flux::modal('delete-project')->show();
     }
 

@@ -7,16 +7,14 @@ use App\Models\Vote;
 use Illuminate\Support\Collection;
 
 /**
- * ProjectProposal::boardPlebIds() memoizes the board's pleb ids in a
- * function-local static variable that lives for the whole PHP process (see
- * app/Models/ProjectProposal.php) — it is computed once and never
- * invalidated. By the time this file runs, an earlier test file
- * (Tests\Feature\Livewire\Association\ProjectSupportTest, which renders the
- * index page first) has already primed that cache with a full board seeded
- * in this exact npub order. Repeating the same seeding here — ids reset to
- * 1 per test via RefreshDatabase — keeps this file's board plebs aligned
- * with those cached ids. This is a workaround for a real bug reported
- * separately, not a fix for it.
+ * Der Vorstand wird je Test frisch angelegt, weil ProjectProposal::boardPlebIds()
+ * die npubs aus der Konfiguration bei jedem Aufruf gegen die Datenbank auflöst.
+ * Ohne passende Pleb-Zeilen zählt keine Stimme als Vorstandsstimme, und die
+ * Statusableitung hätte nichts zu prüfen.
+ *
+ * Bewusst KEINE Annahme über Aufrufreihenfolge oder Memoisierung: die Methode
+ * cacht absichtlich nicht (ein prozessweiter Cache überlebt bei langlebigen
+ * Workern den Request und würde Stimmen verschlucken).
  */
 beforeEach(function () {
     $this->board = collect(config('einundzwanzig.config.current_board'))

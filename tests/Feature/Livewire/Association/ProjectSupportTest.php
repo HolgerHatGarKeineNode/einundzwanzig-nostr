@@ -8,16 +8,13 @@ use App\Support\NostrAuth;
 use Livewire\Livewire;
 
 /**
- * ProjectProposal::boardPlebIds() memoizes the board's pleb ids in a
- * function-local static variable that lives for the whole PHP process (see
- * app/Models/ProjectProposal.php) — it is computed once and never
- * invalidated, in tests or in production. This file's first test is also
- * the first test in the whole suite that renders the index page, which is
- * the first thing to ever call it. Seeding the same board, in the same
- * npub order, here — ids reset to 1 per test via RefreshDatabase — keeps
- * this (and every later file that repeats the same seeding order) aligned
- * with whatever got cached first. This is a workaround for a real bug
- * reported separately, not a fix for it.
+ * Der Vorstand wird je Test frisch angelegt, weil ProjectProposal::boardPlebIds()
+ * die npubs aus der Konfiguration bei jedem Aufruf gegen die Datenbank auflöst.
+ * Ohne passende Pleb-Zeilen zählt keine Stimme als Vorstandsstimme.
+ *
+ * Bewusst KEINE Annahme über Aufrufreihenfolge oder Memoisierung: die Methode
+ * cacht absichtlich nicht (ein prozessweiter Cache überlebt bei langlebigen
+ * Workern den Request und würde Stimmen verschlucken).
  */
 beforeEach(function () {
     collect(config('einundzwanzig.config.current_board'))->each(
@@ -102,11 +99,24 @@ it('paginates beyond the first 12 projects', function () {
 });
 
 it('can confirm delete', function () {
+    $pleb = EinundzwanzigPleb::factory()->boardMember()->create();
     $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
 
     Livewire::test('association.project-support.index')
         ->call('confirmDeleteProject', $project->id)
         ->assertSet('projectToDelete.id', $project->id);
+});
+
+it('refuses to open the delete dialog for an unauthorised caller', function () {
+    $project = ProjectProposal::factory()->create();
+
+    // confirmDeleteProject ist als Livewire-Endpunkt direkt aufrufbar und darf
+    // deshalb nicht bloss über die UI verborgen sein.
+    Livewire::test('association.project-support.index')
+        ->call('confirmDeleteProject', $project->id)
+        ->assertForbidden();
 });
 
 it('can delete project', function () {
