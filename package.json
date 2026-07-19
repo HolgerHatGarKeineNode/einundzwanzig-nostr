@@ -34,9 +34,6 @@
         "shiki": "^4.0.0",
         "ws": "^8.21.0"
     },
-    "resolutions": {
-        "@nostr-dev-kit/ndk/@noble/curves": "^1.9.7"
-    },
     "overrides": {
         "@nostr-dev-kit/ndk": {
             "@noble/curves": "^1.9.7"
