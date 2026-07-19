@@ -40,7 +40,7 @@ it('unlocks the nostr community group for active paid members', function () {
 
     Livewire::test('association.benefits')
         ->assertSee('Nostr Community-Gruppe')
-        ->assertSee('app.flotilla.social/spaces/group.einundzwanzig.space')
+        ->assertSee('https://group.einundzwanzig.space')
         ->assertSee('wss://group.einundzwanzig.space');
 });
 

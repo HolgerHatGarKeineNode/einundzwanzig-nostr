@@ -509,13 +509,13 @@ new class extends Component
             @if($isActiveMember)
                 <div class="mt-4 flex flex-col gap-2">
                     <flux:button
-                        href="https://app.flotilla.social/spaces/group.einundzwanzig.space"
+                        href="https://group.einundzwanzig.space"
                         target="_blank"
                         variant="primary"
                         size="sm"
                         icon:trailing="arrow-up-right"
                         class="w-full">
-                        Gruppe in Flotilla öffnen
+                        Gruppen Web App öffnen
                     </flux:button>
                     <div class="flex items-center gap-2">
                         <code
@@ -542,7 +542,7 @@ new class extends Component
                                 <p class="font-medium text-zinc-700 dark:text-zinc-300 mb-1">So trittst du bei:</p>
                                 <ol class="space-y-1 list-decimal list-inside">
                                     <li>Öffne die Gruppe mit einem NIP-29-fähigen Nostr-Client. Am einfachsten über den
-                                        Button oben (nutzt <flux:link href="https://flotilla.social" target="_blank">Flotilla</flux:link>);
+                                        Button oben (öffnet unsere <flux:link href="https://group.einundzwanzig.space" target="_blank">Gruppen Web App</flux:link>);
                                         es funktionieren aber auch andere Clients wie
                                         <flux:link href="https://www.chachi.chat" target="_blank">Chachi</flux:link>.</li>
                                     <li>Alternativ das Relay <strong>wss://group.einundzwanzig.space</strong> in deinem
