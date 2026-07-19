@@ -129,6 +129,10 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:HolgerHatGarKeineNode/einundzwanzig-group-package.git"
         }
     ]
 }

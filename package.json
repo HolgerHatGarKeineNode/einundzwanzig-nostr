@@ -22,7 +22,7 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "@einundzwanzig/group": "github:HolgerHatGarKeineNode/einundzwanzig-group-package#5b91de2",
+        "@einundzwanzig/group": "github:HolgerHatGarKeineNode/einundzwanzig-group-package#cdfc1fa",
         "@tailwindcss/vite": "^4.1.18",
         "concurrently": "^10.0.0",
         "shiki": "^4.0.0"

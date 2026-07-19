@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "970e2b6e19e0da49eb98c1963062c06c",
+    "content-hash": "967793c8617deec4934a9687440c5081",
     "packages": [
         {
             "name": "akuechler/laravel-geoly",
@@ -935,7 +935,7 @@
             "dist": {
                 "type": "path",
                 "url": "../einundzwanzig-group/packages/einundzwanzig-group",
-                "reference": "5b91de22c489925b0aca8fef6d4593984d5ccbb0"
+                "reference": "cdfc1fa65c098eb7c28969dbf6b82f318b0baacf"
             },
             "require": {
                 "illuminate/console": "^13.0",
