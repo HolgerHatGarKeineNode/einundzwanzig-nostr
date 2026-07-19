@@ -108,6 +108,46 @@ class ProjectProposalPolicy
     }
 
     /**
+     * Determine whether the user can create the private Nostr chat room.
+     *
+     * Only board members. The room is created by signing NIP-29 moderation
+     * events in the browser, and the relay only accepts those from a pubkey
+     * with relay-wide manage rights — which the board has. Offering the action
+     * to anyone else would produce a "restricted" error from the relay rather
+     * than a useful message, so the gate belongs here, not just in the view.
+     *
+     * Deliberately not tied to the proposal's status: a room is a means of
+     * talking, and the board may need to talk about a proposal at any stage.
+     */
+    public function createChatRoom(NostrUser $user, ProjectProposal $projectProposal): bool
+    {
+        $pleb = $user->getPleb();
+
+        if (! $pleb || ! $pleb->isBoardMember()) {
+            return false;
+        }
+
+        return ! $projectProposal->hasNostrGroup();
+    }
+
+    /**
+     * Determine whether the user can see and use the chat room of a proposal.
+     *
+     * The same circle that may see the submitter's contact details: board and
+     * submitter. The relay enforces this independently — a non-member cannot
+     * read the room even with the link — but the UI must not offer what the
+     * relay will refuse.
+     */
+    public function viewChatRoom(?NostrUser $user, ProjectProposal $projectProposal): bool
+    {
+        if (! $projectProposal->hasNostrGroup()) {
+            return false;
+        }
+
+        return $this->viewContact($user, $projectProposal);
+    }
+
+    /**
      * Determine whether the user can accept/reject the project proposal.
      * Only board members can change the accepted flag and sats_paid.
      */

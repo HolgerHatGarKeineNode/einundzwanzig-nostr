@@ -64,6 +64,7 @@ class ProjectProposal extends Model implements HasMedia
         'accepted' => 'boolean',
         'sats_paid' => 'integer',
         'contact_via_nostr_dm' => 'boolean',
+        'nostr_group_created_at' => 'datetime',
     ];
 
     protected static function booted() {}
@@ -229,6 +230,88 @@ class ProjectProposal extends Model implements HasMedia
             ->where('value', $value)
             ->whereIn('einundzwanzig_pleb_id', $boardPlebIds)
             ->count();
+    }
+
+    /**
+     * Die NIP-29-Raum-ID des privaten Chatraums zu diesem Antrag.
+     *
+     * Bewusst aus der ID abgeleitet und nicht aus dem Slug: Der Slug hängt am
+     * Namen (HasSlug), und ein umbenannter Antrag bekäme sonst eine zweite
+     * Raum-ID — der bestehende Raum mitsamt Verlauf würde zum Waisen, während
+     * die Oberfläche einen leeren neuen Raum anböte.
+     *
+     * Das Präfix trennt Antragsräume von den Meetup-Räumen desselben Relays,
+     * die nach demselben Muster mit "m" gebildet werden.
+     */
+    public function nostrGroupId(): string
+    {
+        return 'p'.substr(hash('sha256', (string) $this->id), 0, 12);
+    }
+
+    /**
+     * Wurde der Chatraum bereits angelegt?
+     *
+     * Beantwortet aus der eigenen Datenbank, nicht durch eine Anfrage an den
+     * Relay: Der Gruppen-Relay verlangt NIP-42-AUTH schon zum Lesen, eine
+     * keylose Prüfung meldete also immer "nicht vorhanden" und legte bei jedem
+     * Aufruf einen weiteren Raum an.
+     */
+    public function hasNostrGroup(): bool
+    {
+        return filled($this->nostr_group_h);
+    }
+
+    /**
+     * Die hex-Pubkeys aller Personen, die in den Chatraum gehören: der aktuelle
+     * Vorstand und der Antragsteller.
+     *
+     * Hex, nicht npub — NIP-29-Events (kind 9000) tragen den rohen Pubkey.
+     * Plebs ohne hinterlegten Pubkey fallen heraus; ein leerer Eintrag würde
+     * am Relay nur einen Fehler erzeugen.
+     *
+     * @return list<string>
+     */
+    public function nostrGroupMemberPubkeys(): array
+    {
+        $boardPubkeys = EinundzwanzigPleb::query()
+            ->whereIn('npub', config('einundzwanzig.config.current_board', []))
+            ->pluck('pubkey')
+            ->all();
+
+        $submitterPubkey = $this->einundzwanzigPleb?->pubkey;
+
+        return collect($boardPubkeys)
+            ->push($submitterPubkey)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Vorstands-npubs, zu denen es keinen Pleb mit hinterlegtem Pubkey gibt.
+     *
+     * Diese Mitglieder können nicht in den Raum aufgenommen werden, weil kind
+     * 9000 einen hex-Pubkey braucht. Das darf nicht still passieren: Ein
+     * Vorstandsmitglied, das unbemerkt fehlt, bekommt die Beratung über einen
+     * Förderantrag nicht mit und hält den Raum trotzdem für vollständig.
+     * Die Oberfläche meldet das, statt die Lücke wegzufiltern.
+     *
+     * @return list<string>
+     */
+    public static function boardNpubsWithoutPubkey(): array
+    {
+        $board = config('einundzwanzig.config.current_board', []);
+
+        $resolved = EinundzwanzigPleb::query()
+            ->whereIn('npub', $board)
+            ->whereNotNull('pubkey')
+            ->pluck('npub');
+
+        return collect($board)
+            ->diff($resolved)
+            ->values()
+            ->all();
     }
 
     public function getSlugOptions(): SlugOptions

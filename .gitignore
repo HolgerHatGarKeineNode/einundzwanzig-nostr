@@ -26,3 +26,6 @@ yarn-error.log
 /.playwright-mcp
 /*.png
 semgrep.json
+
+# Feature-Pläne (lokal, nicht ins Git)
+plans/
