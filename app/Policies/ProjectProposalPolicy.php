@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Auth\NostrUser;
+use App\Enums\ProjectProposalStatus;
 use App\Models\ProjectProposal;
 
 class ProjectProposalPolicy
@@ -85,6 +86,25 @@ class ProjectProposalPolicy
 
         return $pleb->id === $projectProposal->einundzwanzig_pleb_id
             || $pleb->isBoardMember();
+    }
+
+    /**
+     * Determine whether the user can record a payout.
+     *
+     * Board membership alone is not enough: money may only follow a resolution.
+     * The proposal must carry the board's absolute majority in favour and must
+     * not already be paid out — otherwise a single board member could pay out a
+     * proposal that is still being voted on, or one the board rejected.
+     */
+    public function payout(NostrUser $user, ProjectProposal $projectProposal): bool
+    {
+        $pleb = $user->getPleb();
+
+        if (! $pleb || ! $pleb->isBoardMember()) {
+            return false;
+        }
+
+        return $projectProposal->status() === ProjectProposalStatus::Accepted;
     }
 
     /**

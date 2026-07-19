@@ -459,9 +459,27 @@ it('hides voting buttons from unauthenticated users', function () {
 
 // recordPayout / revertPayout
 
+/**
+ * Lässt den Vorstand mit der geforderten Mehrheit zustimmen bzw. ablehnen.
+ * Die Anzahl kommt aus boardVoteThreshold(), nie als feste Zahl.
+ */
+function boardDecides(ProjectProposal $project, bool $inFavour, ?int $count = null): void
+{
+    $count ??= ProjectProposal::boardVoteThreshold();
+
+    collect(ProjectProposal::boardPlebIds())->take($count)->each(
+        fn (int $plebId) => Vote::create([
+            'project_proposal_id' => $project->id,
+            'einundzwanzig_pleb_id' => $plebId,
+            'value' => $inFavour,
+        ])
+    );
+}
+
 it('lets a board member record a payout, which flips the status to supported', function () {
     $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
     $project = ProjectProposal::factory()->create(['support_in_sats' => 100000, 'sats_paid' => 0]);
+    boardDecides($project, inFavour: true);
 
     NostrAuth::login($board->pubkey);
 
@@ -502,9 +520,54 @@ it('denies recordPayout to a guest', function () {
     expect($project->fresh()->sats_paid)->toBe(0);
 });
 
+it('refuses a payout while the proposal is still being voted on', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create(['sats_paid' => 0]);
+    // Eine Stimme zu wenig für die absolute Mehrheit.
+    boardDecides($project, inFavour: true, count: ProjectProposal::boardVoteThreshold() - 1);
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->set('payoutSats', 50000)
+        ->call('recordPayout')
+        ->assertForbidden();
+
+    expect($project->fresh()->sats_paid)->toBe(0);
+});
+
+it('refuses a payout for a rejected proposal', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create(['sats_paid' => 0]);
+    boardDecides($project, inFavour: false);
+
+    NostrAuth::login($board->pubkey);
+
+    // Geld darf einem abgelehnten Antrag unter keinen Umständen folgen.
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->set('payoutSats', 50000)
+        ->call('recordPayout')
+        ->assertForbidden();
+
+    expect($project->fresh()->sats_paid)->toBe(0);
+});
+
+it('hides the payout form and names the missing approvals', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create(['sats_paid' => 0]);
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canPayout', false)
+        ->assertSee('Auszahlung erst nach Beschluss')
+        ->assertDontSee('Noch nichts ausgezahlt.');
+});
+
 it('rejects a zero payout amount', function () {
     $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
     $project = ProjectProposal::factory()->create(['sats_paid' => 0]);
+    boardDecides($project, inFavour: true);
 
     NostrAuth::login($board->pubkey);
 

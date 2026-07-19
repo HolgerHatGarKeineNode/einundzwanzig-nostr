@@ -144,13 +144,28 @@ new class extends Component {
     }
 
     /**
+     * Darf jetzt ausgezahlt werden? Dieselbe Prüfung, die recordPayout()
+     * serverseitig macht — die Oberfläche zeigt das Formular sonst für einen
+     * Antrag, den niemand auszahlen darf.
+     */
+    #[Computed]
+    public function canPayout(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('payout', $this->projectProposal);
+    }
+
+    /**
      * Trägt die Auszahlung ein. Nur Vorstand — die Berechtigung wird hier
      * serverseitig geprüft, weil jede öffentliche Livewire-Methode direkt
      * aufrufbar ist, unabhängig davon, was die View rendert.
      */
     public function recordPayout(): void
     {
-        Gate::forUser(NostrAuth::user())->authorize('accept', $this->projectProposal);
+        // 'payout' statt 'accept': verlangt zusätzlich die absolute Mehrheit des
+        // Vorstands. Geld darf nur einem Beschluss folgen — ohne diese Prüfung
+        // könnte ein einzelnes Vorstandsmitglied einen noch laufenden oder sogar
+        // abgelehnten Antrag auszahlen.
+        Gate::forUser(NostrAuth::user())->authorize('payout', $this->projectProposal);
 
         $this->validate([
             'payoutSats' => 'required|integer|min:1',
@@ -445,7 +460,7 @@ new class extends Component {
                                         <flux:button wire:click="revertPayout" variant="subtle" size="sm" class="mt-3 min-h-11">
                                             Korrigieren
                                         </flux:button>
-                                    @else
+                                    @elseif($this->canPayout)
                                         <div class="flex items-end gap-2">
                                             <flux:input type="number" wire:model="payoutSats" label="Sats" class="flex-1"/>
                                             <flux:modal.trigger name="confirm-payout">
@@ -454,6 +469,22 @@ new class extends Component {
                                         </div>
                                         <flux:error name="payoutSats"/>
                                         <p class="mt-2 text-sm text-text-secondary">Noch nichts ausgezahlt.</p>
+                                    @else
+                                        {{-- Kein Formular ohne Beschluss: Geld folgt der Mehrheit,
+                                             nicht dem Vorstandsstatus des Klickenden. --}}
+                                        <p class="flex items-start gap-2 text-sm text-text-secondary">
+                                            <flux:icon name="lock-closed" variant="micro" class="mt-0.5 shrink-0 text-text-tertiary" aria-hidden="true"/>
+                                            <span>
+                                                @if($this->status === ProjectProposalStatus::Rejected)
+                                                    Der Antrag wurde vom Vorstand abgelehnt und kann nicht ausgezahlt werden.
+                                                @else
+                                                    @php($fehlend = App\Models\ProjectProposal::boardVoteThreshold() - $this->boardVotes->where('value', true)->count())
+                                                    Auszahlung erst nach Beschluss: Es
+                                                    {{ $fehlend === 1 ? 'fehlt' : 'fehlen' }} noch {{ $fehlend }}
+                                                    {{ $fehlend === 1 ? 'Zustimmung' : 'Zustimmungen' }} zur absoluten Mehrheit.
+                                                @endif
+                                            </span>
+                                        </p>
                                     @endif
                                 </div>
                             @endif
@@ -488,21 +519,25 @@ new class extends Component {
                         @if($projectProposal->contact_via_nostr_dm)
                             <div class="flex items-start gap-2">
                                 <flux:icon name="envelope" variant="micro" class="mt-1 shrink-0 text-text-tertiary" aria-hidden="true"/>
-                                <div class="min-w-0">
+                                <div class="min-w-0 flex-1">
                                     <p class="text-sm text-text-secondary">Nostr-DM erwünscht</p>
-                                    <p class="mt-1 break-all text-[11px] font-semibold tracking-[0.08em] text-text-primary">
-                                        {{ $projectProposal->einundzwanzigPleb->npub }}
-                                    </p>
+                                    <x-copy-value
+                                        class="mt-1"
+                                        :value="$projectProposal->einundzwanzigPleb->npub"
+                                        label="npub"
+                                    />
                                 </div>
                             </div>
                         @elseif($projectProposal->contact_alternative)
                             <div class="flex items-start gap-2">
                                 <flux:icon name="envelope" variant="micro" class="mt-1 shrink-0 text-text-tertiary" aria-hidden="true"/>
-                                <div class="min-w-0">
+                                <div class="min-w-0 flex-1">
                                     <p class="text-sm text-text-secondary">Bevorzugter Kanal</p>
-                                    <p class="mt-1 break-all text-[11px] font-semibold tracking-[0.08em] text-text-primary">
-                                        {{ $projectProposal->contact_alternative }}
-                                    </p>
+                                    <x-copy-value
+                                        class="mt-1"
+                                        :value="$projectProposal->contact_alternative"
+                                        label="Kontaktangabe"
+                                    />
                                 </div>
                             </div>
                         @else
