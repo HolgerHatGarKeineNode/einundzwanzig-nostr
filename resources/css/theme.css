@@ -1,35 +1,91 @@
 /**
  * Einundzwanzig Design System - Theme Tokens
  *
- * Zentrale Farbdefinitionen und Design-Variablen für das gesamte Projekt.
+ * Bitcoin-Orange Design-DNA (geteilte Grundlage beider EINUNDZWANZIG-Portale).
+ * Basis-Orange: #F7931A (kanonisches Bitcoin-Orange). Dark-first.
+ * Grundlage: docs/design/bitcoin-orange-dna.md
+ *
  * Verwendet Tailwind CSS v4 @theme Direktive.
  */
 
 @theme {
+    /* --- Schrift (geteilte Markenstimme) --- */
     --font-sans: "Inconsolata", monospace;
 
-    /* Background colors */
+    /* =====================================================================
+       Orange / Marke  (Anker: 500 = #F7931A, oklch(0.70 0.163 47.6))
+       500 = Fill, Link, aktive Nav · 700 = Rahmen/Text auf Hell
+       800 = 3:1-Rahmen-Boden auf Dunkel
+       ===================================================================== */
+    --color-orange-50:  #FEF3E7;
+    --color-orange-100: #FDE4C8;
+    --color-orange-200: #FBCB94;
+    --color-orange-300: #F9B25F;
+    --color-orange-400: #F8A23A;   /* Hover-Aufhellung von 500 */
+    --color-orange-500: #F7931A;   /* MARKE: Fill, Link, aktive Nav */
+    --color-orange-600: #E07F0E;   /* pressed / Gradient-Tiefe */
+    --color-orange-700: #B9640A;   /* Rahmen; Textfarbe auf HELL */
+    --color-orange-800: #934E0D;   /* 3:1-Rahmen-Boden auf DUNKEL */
+    --color-orange-900: #78400F;
+    --color-orange-950: #431F05;
+
+    /* --- Neutrals (dark-first, um #0A0A0B) --- */
+    --color-neutral-50:  #FAFAFA;
+    --color-neutral-100: #E4E4E7;
+    --color-neutral-200: #D4D4D8;
+    --color-neutral-300: #ADADB0;  /* text-secondary  (8,83:1 AAA) */
+    --color-neutral-400: #8B8B90;  /* text-tertiary   (5,84:1 AA)  */
+    --color-neutral-500: #6B6B70;  /* text-disabled   (3,74:1)     */
+    --color-neutral-600: #48484E;
+    --color-neutral-700: #2A2A2E;  /* border-default */
+    --color-neutral-800: #1F1F23;  /* border-subtle  */
+    --color-neutral-900: #131316;
+    --color-neutral-950: #0A0A0B;  /* bg-page */
+
+    /* --- Semantische Flächen --- */
     --color-bg-page: #0A0A0B;
     --color-bg-surface: #111113;
     --color-bg-elevated: #1A1A1D;
 
-    /* Border colors */
+    /* --- Border colors --- */
     --color-border-default: #2A2A2E;
     --color-border-subtle: #1F1F23;
 
-    /* Text colors */
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #ADADB0;
-    --color-text-tertiary: #8B8B90;
-    --color-text-muted: #FFFFFFCC;
+    /* --- Text colors --- */
+    --color-text-primary: #FFFFFF;   /* 19,8:1 */
+    --color-text-secondary: #ADADB0; /*  8,83:1 */
+    --color-text-tertiary: #8B8B90;  /*  5,84:1 */
+    --color-text-muted: #CFCFD2;     /* deckend statt Alpha-Weiss (Doc 3.4) */
     --color-text-disabled: #6B6B70;
 
-    /* Brand colors */
-    --color-orange-primary: #FF5C00;
-    --color-orange-light: #FF8A4C;
-    --color-green-success: #22C55E;
-    --color-purple-accent: #7c3aed;
-    --color-green-nostr: #4a7c59;
+    /* =====================================================================
+       State-Farben (Warm-Kollision aufgeloest: warning=gelb, danger=rot).
+       Farbe nie alleiniger Traeger — jeder State zusaetzlich mit Icon/Text.
+       ===================================================================== */
+    --color-success: #22C55E;   /* 8,68:1 auf #0A0A0B — AAA */
+    --color-warning: #FACC15;   /* Gelb-Gold, bewusst NICHT orange */
+    --color-danger:  #F87171;   /* helles Rot, auf Dunkel legibler als #EF4444 */
+    --color-info:    #60A5FA;   /* kuehles Blau, max. Distanz zur warmen Marke */
+
+    /* =====================================================================
+       Legacy-Aliase — auf die neue Skala umgebogen, damit der Marken-
+       wechsel (#F7931A) sich ueberall auswirkt, ohne jede Datei zu edit-
+       ieren. Bestandscode nutzt orange-primary, orange-light, green-* und purple-accent.
+       ===================================================================== */
+    --color-orange-primary: var(--color-orange-500);  /* war #FF5C00 → jetzt Marke */
+    --color-orange-light:   var(--color-orange-400);  /* Hover-Aufhellung */
+    --color-green-success:  var(--color-success);
+    --color-purple-accent:  #7c3aed;                  /* Nostr-Fill/Badge (nicht Text!) */
+    --color-green-nostr:    #4a7c59;                  /* Relay/Verbindungs-Marker */
+
+    /* =====================================================================
+       NUR einundzwanzig-nostr — Feature-/Protokoll-Farben, DEMOTED unter
+       dem Marken-Orange. Nie in gleicher Hierarchie neben einem Orange-
+       Primary. Purple als TEXT nur die helle Stufe (#7c3aed = 3,47:1, kein AA).
+       ===================================================================== */
+    --color-nostr-purple:      #7c3aed;   /* Fill/Badge/grosser Text */
+    --color-nostr-purple-text: #a78bfa;   /* Purple als normaler TEXT (AA) */
+    --color-nostr-green:       #4a7c59;
 
     /* Zinc aliases for compatibility */
     --color-zinc-50: #fafafa;
@@ -44,24 +100,30 @@
     --color-zinc-900: #18181b;
     --color-zinc-950: #09090b;
 
-    /* Accent colors (orange brand) */
-    --color-accent: var(--color-orange-primary);
-    --color-accent-content: var(--color-orange-primary);
-    --color-accent-foreground: var(--color-text-primary);
+    /* =====================================================================
+       Accent-Logik (Flux)
+       accent            = Orange-Fill (500)
+       accent-content    = Orange als TEXT auf Dunkel (500 = 8,6:1 AAA)
+       accent-foreground = Vordergrund AUF Orange-Fill => NEAR-BLACK, nie Weiss
+                           (#17120A auf #F7931A = 8,3:1; Weiss waere nur 2,3:1)
+       ===================================================================== */
+    --color-accent: var(--color-orange-500);
+    --color-accent-content: var(--color-orange-500);
+    --color-accent-foreground: #17120A;
 }
 
 /**
  * Dark Mode Overrides
  *
- * Dark ist der Standard für Einundzwanzig.
- * Diese Überschreibungen stellen sicher, dass Flux UI korrekt dargestellt wird.
+ * Dark ist der Standard fuer Einundzwanzig.
+ * Diese Ueberschreibungen stellen sicher, dass Flux UI korrekt dargestellt wird.
  */
 @layer theme {
     .dark,
     :root {
-        --color-accent: var(--color-orange-primary);
-        --color-accent-content: var(--color-orange-primary);
-        --color-accent-foreground: var(--color-text-primary);
+        --color-accent: var(--color-orange-500);
+        --color-accent-content: var(--color-orange-500);
+        --color-accent-foreground: #17120A;
 
         /* Flux UI color overrides */
         --white: var(--color-text-primary);

@@ -128,7 +128,7 @@
 
     .news-category-badge--purple {
         background-color: #7c3aed33;
-        color: #7c3aed;
+        color: #a78bfa; /* Purple-Text: #7c3aed = 3,47:1 (kein AA) -> helle Stufe. Doc 5. */
         border: none;
     }
 
@@ -150,14 +150,16 @@
      * Diagonal ribbon in der oberen rechten Ecke einer Card, das
      * Vorstandsmitglieder auf ausstehende Voting-Entscheidungen hinweist.
      */
+    /* Vordergrund near-black (#17120A) auf Orange/Amber: Weiss auf #F7931A = 2,3:1
+       (FAIL), near-black = 8,3:1 (AAA). Doc 3.2. */
     .vote-ribbon {
         @apply pointer-events-none absolute top-6 -right-12 z-10 w-44 rotate-45
             bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600
-            py-1.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-white
-            shadow-[0_4px_12px_rgba(249,115,22,0.45)] ring-1 ring-white/20;
+            py-1.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#17120A]
+            shadow-[0_4px_12px_rgba(249,115,22,0.45)] ring-1 ring-black/10;
     }
 
     .vote-ribbon__label {
-        @apply drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)];
+        @apply drop-shadow-[0_1px_1px_rgba(255,255,255,0.25)];
     }
 }

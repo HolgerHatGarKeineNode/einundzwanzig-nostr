@@ -148,10 +148,10 @@ new class extends Component
 
     <!-- Header -->
     <div class="mb-6">
-        <h1 class="text-2xl md:text-3xl text-[#1B1B1B] dark:text-zinc-100 font-bold">
+        <h1 class="text-2xl md:text-3xl text-text-primary font-bold">
             Vorteile deiner Mitgliedschaft
         </h1>
-        <p class="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
+        <p class="mt-2 max-w-2xl text-sm text-text-secondary">
             Diese Dienste betreiben wir exklusiv für aktive Vereinsmitglieder. Klicke bei jedem Dienst auf
             <span class="font-medium">„Anleitung anzeigen"</span>, um die Einrichtung Schritt für Schritt zu sehen.
         </p>

@@ -16,9 +16,10 @@
         @apply bg-bg-surface border-border-subtle;
     }
 
-    /* Primary buttons (orange) */
+    /* Primary buttons (orange) — Vordergrund near-black (#17120A), nie Weiss:
+       Weiss auf #F7931A = 2,3:1 (FAIL), near-black = 8,3:1 (AAA). Doc 3.2. */
     [data-flux-button][data-variant="primary"] {
-        @apply bg-orange-primary text-text-primary hover:bg-orange-light;
+        @apply bg-orange-primary text-accent-foreground hover:bg-orange-light;
     }
 
     /* Default/ghost buttons */

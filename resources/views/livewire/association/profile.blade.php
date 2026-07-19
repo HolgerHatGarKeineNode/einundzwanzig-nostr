@@ -864,7 +864,7 @@ new class extends Component {
                                         <div
                                             class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
-                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                <h4 class="text-white text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Startseite
                                                 </h4>
                                             </div>
@@ -892,7 +892,7 @@ new class extends Component {
                                         <div
                                             class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
-                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                <h4 class="text-white text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Profileinstellungen
                                                 </h4>
                                             </div>
@@ -920,7 +920,7 @@ new class extends Component {
                                         <div
                                             class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
-                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                <h4 class="text-white text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Keyverwaltung
                                                 </h4>
                                             </div>
@@ -948,7 +948,7 @@ new class extends Component {
                                         <div
                                             class="absolute inset-0 bg-linear-to-t from-zinc-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <div class="absolute top-3 left-3 right-3">
-                                                <h4 class="text-black text-sm md:text-base font-semibold drop-shadow-lg">
+                                                <h4 class="text-white text-sm md:text-base font-semibold drop-shadow-lg">
                                                     Connect/nsec-Bunker
                                                 </h4>
                                             </div>
