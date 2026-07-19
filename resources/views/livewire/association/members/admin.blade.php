@@ -5,13 +5,30 @@ use App\Models\EinundzwanzigPleb;
 use App\Models\PaymentEvent;
 use App\Support\NostrAuth;
 use Flux\Flux;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 new class extends Component
 {
+    use WithPagination;
+
+    /**
+     * Columns the table may be sorted by, mapped to a fully-qualified
+     * database column. Whitelisting prevents arbitrary user input from
+     * `sort()` reaching `orderBy()` and keeps relation sorts explicit.
+     *
+     * @var array<string, string>
+     */
+    private const SORTABLE_COLUMNS = [
+        'name' => 'profiles.name',
+        'association_status' => 'einundzwanzig_plebs.association_status',
+    ];
+
     /**
      * Pubkeys permitted to manage members. Authorization is re-checked
      * server-side on every sensitive action — gating the view on $isAllowed
@@ -55,13 +72,11 @@ new class extends Component
 
     public bool $showPaidOnly = false;
 
-    public $plebs = [];
-
     public function updatedSearch(): void
     {
         $this->ensureAuthorized();
 
-        $this->plebs = $this->loadPlebs();
+        $this->resetPage();
     }
 
     protected $listeners = [
@@ -92,7 +107,7 @@ new class extends Component
         $this->currentPubkey = null;
         $this->currentPleb = null;
         $this->isAllowed = false;
-        $this->plebs = [];
+        unset($this->plebs);
     }
 
     private function isAuthorized(): bool
@@ -109,13 +124,14 @@ new class extends Component
     private function refreshAccess(): void
     {
         $this->isAllowed = $this->isAuthorized();
-
-        if ($this->isAllowed) {
-            $this->plebs = $this->loadPlebs();
-        }
     }
 
-    private function loadPlebs()
+    /**
+     * Base query for the member listing. Search matches the unencrypted
+     * `profile.name` and `npub` columns only — never the CipherSweet-encrypted
+     * `email` column, which cannot be searched with a SQL LIKE.
+     */
+    private function plebsQuery(): Builder
     {
         $query = EinundzwanzigPleb::query()
             ->with([
@@ -140,13 +156,39 @@ new class extends Component
             );
         }
 
-        return $query->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-            ->get();
+        return $this->applySorting($query);
+    }
+
+    private function applySorting(Builder $query): Builder
+    {
+        $column = self::SORTABLE_COLUMNS[$this->sortBy] ?? self::SORTABLE_COLUMNS['association_status'];
+        $direction = $this->sortDirection === 'asc' ? 'asc' : 'desc';
+
+        if ($this->sortBy === 'name') {
+            return $query
+                ->select('einundzwanzig_plebs.*')
+                ->leftJoin('profiles', 'profiles.pubkey', '=', 'einundzwanzig_plebs.pubkey')
+                ->orderBy('profiles.name', $direction);
+        }
+
+        return $query->orderBy($column, $direction);
+    }
+
+    #[Computed]
+    public function plebs(): LengthAwarePaginator
+    {
+        $this->ensureAuthorized();
+
+        return $this->plebsQuery()->paginate(25);
     }
 
     public function sort(string $column): void
     {
         $this->ensureAuthorized();
+
+        if (! array_key_exists($column, self::SORTABLE_COLUMNS)) {
+            return;
+        }
 
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -155,7 +197,7 @@ new class extends Component
             $this->sortDirection = 'asc';
         }
 
-        $this->plebs = $this->loadPlebs();
+        $this->resetPage();
     }
 
     public function togglePaidFilter(): void
@@ -163,7 +205,7 @@ new class extends Component
         $this->ensureAuthorized();
 
         $this->showPaidOnly = !$this->showPaidOnly;
-        $this->plebs = $this->loadPlebs();
+        $this->resetPage();
     }
 
     public function openPaymentModal(int $plebId): void
@@ -303,32 +345,37 @@ new class extends Component
 
 <div>
     @if($isAllowed)
-        <div class="mb-4 flex gap-2">
-            <flux:input
-                    wire:model.live.debounce.300ms="search"
-                placeholder="Suche nach Name oder Npub..."
-                icon="magnifying-glass"
-                class="flex-1"
-            />
-            <flux:button
-                wire:click="togglePaidFilter"
-                :variant="$showPaidOnly ? 'primary' : 'ghost'"
-                icon="check"
-            >
-                {{ $showPaidOnly ? 'Alle anzeigen' : 'Nur Bezahlt' }}
-            </flux:button>
-            <flux:button
-                wire:click="exportCsv"
-                variant="ghost"
-                icon="arrow-down-tray"
-            >
-                CSV Export
-            </flux:button>
-        </div>
+        <div class="overflow-hidden rounded-xl border border-border-subtle bg-bg-surface">
+            <div class="flex gap-2 border-b border-border-subtle p-4 sm:px-6">
+                <flux:input
+                        wire:model.live.debounce.300ms="search"
+                    placeholder="Suche nach Name oder Npub..."
+                    icon="magnifying-glass"
+                    class="flex-1"
+                />
+                <flux:button
+                    wire:click="togglePaidFilter"
+                    :variant="$showPaidOnly ? 'primary' : 'ghost'"
+                    icon="check"
+                >
+                    {{ $showPaidOnly ? 'Alle anzeigen' : 'Nur Bezahlt' }}
+                </flux:button>
+                <flux:button
+                    wire:click="exportCsv"
+                    variant="ghost"
+                    icon="arrow-down-tray"
+                >
+                    CSV Export
+                </flux:button>
+            </div>
 
-        <flux:table id="einundzwanzig-pleb-table">
+            <flux:table
+                id="einundzwanzig-pleb-table"
+                :paginate="$this->plebs"
+                container:class="px-4 pt-2 pb-4 sm:px-6"
+            >
             <flux:table.columns>
-                <flux:table.column>Avatar</flux:table.column>
+                <flux:table.column class="w-16">Avatar</flux:table.column>
                 <flux:table.column
                     sortable
                     :sorted="$sortBy === 'name'"
@@ -354,10 +401,10 @@ new class extends Component
                     <flux:table.row :key="$pleb->id">
                         <flux:table.cell>
                             <flux:avatar
-                                size="xl"
+                                size="md"
+                                circle
                                 :src="$pleb->profile?->picture ?? asset('einundzwanzig-alpha.jpg')"
                                 :name="$pleb->profile?->name ?? ''"
-                                rounded
                             />
                         </flux:table.cell>
 
@@ -433,7 +480,8 @@ new class extends Component
                     </flux:table.row>
                 @endforeach
             </flux:table.rows>
-        </flux:table>
+            </flux:table>
+        </div>
     @else
         <div class="px-4 sm:px-6 lg:px-8 py-8 w-full mx-auto">
             <flux:callout variant="warning" icon="exclamation-circle">

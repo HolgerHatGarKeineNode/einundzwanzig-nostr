@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\EinundzwanzigPleb;
+use App\Models\Profile;
 use App\Support\NostrAuth;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Livewire;
 
 const ALLOWED_ADMIN_PUBKEY = '0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033';
@@ -81,7 +83,7 @@ it('does not load the member list for unauthorized visitors', function () {
 
     Livewire::test('association.members.admin')
         ->assertSet('isAllowed', false)
-        ->assertSet('plebs', []);
+        ->assertDontSee('einundzwanzig-pleb-table');
 });
 
 it('forbids guests from exporting the member CSV', function () {
@@ -131,4 +133,94 @@ it('lets an authorized member pass the authorization guard', function () {
         ->call('acceptPleb')
         ->assertStatus(200)
         ->assertHasNoErrors();
+});
+
+it('paginates the member list instead of loading everything', function () {
+    EinundzwanzigPleb::factory()->create(['pubkey' => ALLOWED_ADMIN_PUBKEY]);
+    EinundzwanzigPleb::factory()->count(30)->create();
+
+    NostrAuth::login(ALLOWED_ADMIN_PUBKEY);
+
+    $component = Livewire::test('association.members.admin')
+        ->assertSet('isAllowed', true);
+
+    expect($component->instance()->plebs)
+        ->toBeInstanceOf(LengthAwarePaginator::class);
+
+    expect($component->instance()->plebs->perPage())->toBe(25);
+    expect($component->instance()->plebs->total())->toBe(31);
+    expect($component->instance()->plebs->count())->toBe(25);
+});
+
+it('resets to the first page when searching', function () {
+    EinundzwanzigPleb::factory()->create(['pubkey' => ALLOWED_ADMIN_PUBKEY]);
+    EinundzwanzigPleb::factory()->count(30)->create();
+
+    NostrAuth::login(ALLOWED_ADMIN_PUBKEY);
+
+    $component = Livewire::test('association.members.admin')
+        ->call('gotoPage', 2);
+
+    expect($component->instance()->plebs->currentPage())->toBe(2);
+
+    $component->set('search', 'anything');
+
+    expect($component->instance()->plebs->currentPage())->toBe(1);
+});
+
+it('filters the member list by npub via search', function () {
+    EinundzwanzigPleb::factory()->create(['pubkey' => ALLOWED_ADMIN_PUBKEY]);
+    $needle = EinundzwanzigPleb::factory()->create(['npub' => 'npubneedle123']);
+    EinundzwanzigPleb::factory()->count(3)->create();
+
+    NostrAuth::login(ALLOWED_ADMIN_PUBKEY);
+
+    $component = Livewire::test('association.members.admin')
+        ->set('search', 'npubneedle');
+
+    expect($component->instance()->plebs->total())->toBe(1);
+    expect($component->instance()->plebs->first()->id)->toBe($needle->id);
+});
+
+it('sorts by the profile name relation without breaking', function () {
+    EinundzwanzigPleb::factory()->create(['pubkey' => ALLOWED_ADMIN_PUBKEY]);
+
+    $plebA = EinundzwanzigPleb::factory()->create();
+    Profile::factory()->create(['pubkey' => $plebA->pubkey, 'name' => 'Alice']);
+
+    $plebZ = EinundzwanzigPleb::factory()->create();
+    Profile::factory()->create(['pubkey' => $plebZ->pubkey, 'name' => 'Zoe']);
+
+    NostrAuth::login(ALLOWED_ADMIN_PUBKEY);
+
+    $component = Livewire::test('association.members.admin')
+        ->call('sort', 'name')
+        ->assertSet('sortBy', 'name')
+        ->assertSet('sortDirection', 'asc')
+        ->assertHasNoErrors();
+
+    $names = $component->instance()->plebs->pluck('profile.name')->filter()->values()->all();
+
+    expect($names)->toBe(['Alice', 'Zoe']);
+});
+
+it('ignores sort requests for non-whitelisted columns', function () {
+    EinundzwanzigPleb::factory()->create(['pubkey' => ALLOWED_ADMIN_PUBKEY]);
+
+    NostrAuth::login(ALLOWED_ADMIN_PUBKEY);
+
+    Livewire::test('association.members.admin')
+        ->call('sort', 'email')
+        ->assertSet('sortBy', 'association_status')
+        ->assertHasNoErrors();
+});
+
+it('forbids unauthorized members from reading the paginated list', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.members.admin')
+        ->call('sort', 'name')
+        ->assertForbidden();
 });
