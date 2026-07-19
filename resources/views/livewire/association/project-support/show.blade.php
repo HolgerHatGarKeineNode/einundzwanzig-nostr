@@ -165,6 +165,71 @@ new class extends Component {
     }
 
     /**
+     * Darf der Betrachter den privaten Chatraum anlegen? Nur Vorstand, und nur
+     * solange es keinen gibt.
+     */
+    #[Computed]
+    public function canCreateChatRoom(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('createChatRoom', $this->projectProposal);
+    }
+
+    /**
+     * Darf der Betrachter den Chatraum sehen und nutzen? Vorstand und Einreicher.
+     */
+    #[Computed]
+    public function canSeeChatRoom(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('viewChatRoom', $this->projectProposal);
+    }
+
+    /**
+     * Die Pubkeys, die in den Raum gehören — für die Insel, die daraus die
+     * kind-9000-Events baut.
+     *
+     * @return list<string>
+     */
+    #[Computed]
+    public function chatRoomMemberPubkeys(): array
+    {
+        return $this->projectProposal->nostrGroupMemberPubkeys();
+    }
+
+    /**
+     * Vermerkt den angelegten Chatraum am Antrag.
+     *
+     * Wird von der Insel gerufen, nachdem die NIP-29-Events durch sind. Die
+     * Raum-ID kommt NICHT aus dem Aufruf, sondern wird hier neu berechnet: Eine
+     * öffentliche Livewire-Methode ist direkt aufrufbar, und ein gefälschter
+     * Wert würde den Antrag dauerhaft auf einen fremden Raum zeigen lassen.
+     * Der übergebene Wert dient nur als Abgleich.
+     */
+    public function storeChatRoom(string $roomId): void
+    {
+        Gate::forUser(NostrAuth::user())->authorize('createChatRoom', $this->projectProposal);
+
+        $expected = $this->projectProposal->nostrGroupId();
+
+        if ($roomId !== $expected) {
+            Flux::toast(
+                text: 'Der gemeldete Raum passt nicht zu diesem Antrag. Es wurde nichts gespeichert.',
+                variant: 'danger',
+            );
+
+            return;
+        }
+
+        // Direkte Zuweisung: nostr_group_h ist bewusst nicht in $fillable.
+        $this->projectProposal->nostr_group_h = $expected;
+        $this->projectProposal->nostr_group_created_at = now();
+        $this->projectProposal->save();
+
+        unset($this->canCreateChatRoom, $this->canSeeChatRoom);
+
+        Flux::toast('Chatraum angelegt.');
+    }
+
+    /**
      * Trägt die Auszahlung ein. Nur Vorstand — die Berechtigung wird hier
      * serverseitig geprüft, weil jede öffentliche Livewire-Methode direkt
      * aufrufbar ist, unabhängig davon, was die View rendert.
@@ -599,6 +664,79 @@ new class extends Component {
                         @endif
                     </div>
                 @endif
+
+                {{-- Privater Chatraum: derselbe Kreis wie die Kontaktangabe,
+                     Vorstand und Einreicher. Der Relay setzt das unabhaengig
+                     durch — ein Aussenstehender saehe den Raum auch mit Link
+                     nicht --, aber die Oberflaeche darf nichts anbieten, was
+                     der Relay ohnehin verweigert. --}}
+                @if($this->canSeeChatRoom || $this->canCreateChatRoom)
+                    <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                        <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
+                            Chat zum Antrag
+                        </div>
+
+                        @if($projectProposal->hasNostrGroup())
+                            <div class="flex items-start gap-2">
+                                <flux:icon name="chat-bubble-left-right" variant="micro"
+                                           class="mt-1 shrink-0 text-text-tertiary" aria-hidden="true"/>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm text-text-secondary">
+                                        Privater Raum mit dem Vorstand
+                                    </p>
+                                    {{-- Harter Full-Load statt wire:navigate: Die Chat-Seite
+                                         ist eine eigenstaendige Nostr-Insel; ein SPA-Wechsel
+                                         liefert dort einen toten JS-Kontext. --}}
+                                    <flux:button
+                                        class="mt-2 w-full"
+                                        size="sm"
+                                        variant="filled"
+                                        icon-trailing="arrow-top-right-on-square"
+                                        href="{{ rtrim(str_replace(['ws://', 'wss://'], 'https://', config('group.space_url', '')), '/') }}/rooms/{{ $projectProposal->nostr_group_h }}"
+                                        target="_blank"
+                                    >
+                                        Chat öffnen
+                                    </flux:button>
+                                </div>
+                            </div>
+                        @elseif($this->canCreateChatRoom)
+                            <div x-data="projectChatRoom({
+                                spaceUrl: @js(config('group.space_url')),
+                                roomId: @js($projectProposal->nostrGroupId()),
+                                roomName: @js($projectProposal->slug),
+                                roomAbout: @js('Antragsraum'),
+                                memberPubkeys: @js($this->chatRoomMemberPubkeys),
+                                currentPubkey: @js($currentPubkey),
+                            })">
+                                <p class="text-sm text-text-secondary">
+                                    Ein privater Raum für die Rückfragen des Vorstands an den
+                                    Einreicher. Vorstand und Einreicher werden automatisch
+                                    aufgenommen, sonst sieht ihn niemand.
+                                </p>
+
+                                <flux:button
+                                    class="mt-3 w-full"
+                                    size="sm"
+                                    variant="primary"
+                                    icon="chat-bubble-left-right"
+                                    x-on:click="create()"
+                                    x-bind:disabled="busy"
+                                >
+                                    <span x-show="! busy">Chatraum anlegen</span>
+                                    <span x-show="busy" x-text="progress" x-cloak></span>
+                                </flux:button>
+
+                                <p x-show="error" x-cloak
+                                   class="mt-2 text-sm text-red-400"
+                                   x-text="error"></p>
+                            </div>
+                        @else
+                            <p class="text-sm text-text-secondary">
+                                Für diesen Antrag wurde noch kein Chatraum angelegt.
+                            </p>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -670,4 +808,12 @@ new class extends Component {
             </flux:modal>
         @endif
     </div>
+
+    {{-- Die Chat-Insel NUR hier laden, nicht in app.js: Der Import von
+         @einundzwanzig/group hat Seiteneffekte (welshman-Singletons, eine
+         AUTH-Policy fuer Relays, localStorage und IndexedDB) und zieht einen
+         eigenen ~950-KB-Chunk. Beides gehoert nicht auf jede Vereinsseite. --}}
+    @if($this->canSeeChatRoom || $this->canCreateChatRoom)
+        @vite('resources/js/group-chat.js')
+    @endif
 </div>

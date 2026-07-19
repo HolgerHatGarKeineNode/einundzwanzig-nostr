@@ -61,6 +61,8 @@ export default defineConfig({
             // einundzwanzig-group bleibt dadurch unberuehrt.
             '@einundzwanzig/group/session': packageEntry('js/session.ts'),
             '@einundzwanzig/group/auth-gate': packageEntry('js/auth-gate.ts'),
+            // createRoom() und addRoomMember() fuer die Anlage des Antragsraums.
+            '@einundzwanzig/group/groups': packageEntry('js/groups.ts'),
             '@einundzwanzig/group': packageEntry('js/index.ts'),
         },
     },
