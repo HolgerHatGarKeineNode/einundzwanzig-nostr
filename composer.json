@@ -11,6 +11,7 @@
         "php": "^8.3",
         "akuechler/laravel-geoly": "^1.0",
         "archtechx/enums": "^1.1",
+        "einundzwanzig/group": "dev-master",
         "laravel/framework": "^13.0",
         "laravel/nightwatch": "^1.22",
         "laravel/reverb": "^1.0",
@@ -100,7 +101,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "einundzwanzig/group"
+            ]
         }
     },
     "config": {
@@ -119,6 +122,13 @@
             "name": "flux-pro",
             "type": "composer",
             "url": "https://composer.fluxui.dev"
+        },
+        {
+            "type": "path",
+            "url": "../einundzwanzig-group/packages/einundzwanzig-group",
+            "options": {
+                "symlink": true
+            }
         }
     ]
 }

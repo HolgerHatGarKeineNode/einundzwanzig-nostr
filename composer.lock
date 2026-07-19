@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c17c932d5926ab29b7fc71839f5b066b",
+    "content-hash": "970e2b6e19e0da49eb98c1963062c06c",
     "packages": [
         {
             "name": "akuechler/laravel-geoly",
@@ -928,6 +928,44 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "einundzwanzig/group",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../einundzwanzig-group/packages/einundzwanzig-group",
+                "reference": "5b91de22c489925b0aca8fef6d4593984d5ccbb0"
+            },
+            "require": {
+                "illuminate/console": "^13.0",
+                "illuminate/http": "^13.0",
+                "illuminate/support": "^13.0",
+                "livewire/livewire": "^4.1",
+                "php": "^8.3",
+                "swentel/nostr-php": "^1.9"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Einundzwanzig\\Group\\GroupServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Einundzwanzig\\Group\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Nostr-Community-Chat (Spaces/Räume/Directory/Login) für EINUNDZWANZIG — als wiederverwendbares Laravel-Package.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "evenement/evenement",
@@ -14449,7 +14487,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "einundzwanzig/group": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
