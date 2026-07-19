@@ -40,11 +40,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                // Chat-Insel: bewusst ein eigener Entry. Der Import von
-                // @einundzwanzig/group hat Seiteneffekte (welshman-Singletons,
-                // localStorage, IndexedDB) und darf nicht auf jeder Vereinsseite
-                // laufen — nur dort, wo ein Antragsraum gerendert wird.
-                'resources/js/group-chat.js',
             ],
             refresh: true,
         }),

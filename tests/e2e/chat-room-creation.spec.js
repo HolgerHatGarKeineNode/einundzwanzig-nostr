@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { connectBunker, installBunkerNip07 } from './support/bunker-nip07.js'
+import { resetRoom } from './support/reset-room.js'
 
 /**
  * Legt ein Vorstandsmitglied den privaten Chatraum eines Antrags an?
@@ -30,6 +31,12 @@ test('Vorstand legt den privaten Chatraum an', async ({ page }) => {
     page.on('console', (m) => console_.push(`[${m.type()}] ${m.text().slice(0, 200)}`))
     page.on('requestfailed', (r) => console_.push(`[requestfailed] ${r.url().slice(0, 120)}`))
     const dumpLogs = () => console.log('--- Browser ---\n' + console_.slice(-20).join('\n'))
+
+    // Vermerk zuruecksetzen, damit der Lauf wiederholbar ist. Der Raum auf dem
+    // Relay bleibt — so prueft jeder weitere Lauf zugleich die Idempotenz.
+    if (process.env.E2E_DATABASE) {
+        resetRoom(PROPOSAL_SLUG, process.env.E2E_DATABASE)
+    }
 
     const { signer, pubkey } = await connectBunker()
     console.log('Signiere als:', pubkey)

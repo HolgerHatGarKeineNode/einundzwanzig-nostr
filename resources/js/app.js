@@ -5,6 +5,7 @@ import nostrApp from "./nostrApp.js";
 import nostrLogin from "./nostrLogin.js";
 import nostrZap from "./nostrZap.js";
 import electionAdminCharts from "./electionAdminCharts.js";
+import projectChatRoom from "./projectChatRoom.js";
 
 import './bootstrap';
 
@@ -24,5 +25,10 @@ Alpine.data('nostrApp', nostrApp);
 Alpine.data('nostrLogin', nostrLogin);
 Alpine.data('nostrZap', nostrZap);
 Alpine.data('electionAdminCharts', electionAdminCharts);
+// Registrierung hier, nicht in einem seitenspezifischen Entry: Alpine startet
+// unten mit Livewire.start(); wer eine Komponente bereitstellt, muss vorher
+// registriert sein. Das Chat-SDK laedt projectChatRoom selbst per dynamischem
+// Import erst beim Klick — hier faellt nichts Schweres an.
+Alpine.data('projectChatRoom', projectChatRoom);
 
 Livewire.start();
