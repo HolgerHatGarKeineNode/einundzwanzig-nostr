@@ -86,6 +86,14 @@ export default defineConfig({
                     if (id.includes('/node_modules/nostr-tools/')) {
                         return 'nostr-tools';
                     }
+                    // Krypto-Basis (@noble/*, @scure/*) ebenfalls eigenstaendig:
+                    // Sie wird von beiden Seiten gebraucht — vom Zap-Code des
+                    // Vereins ueber NDK und von welshman. Ohne eigene Regel legt
+                    // Rollup sie in den welshman-Chunk, und app.js importiert
+                    // wegen eines einzigen `schnorr` das ganze Chat-SDK.
+                    if (id.includes('/@noble/') || id.includes('/@scure/')) {
+                        return 'crypto';
+                    }
                     if (id.includes('/@welshman/')) {
                         return 'welshman';
                     }

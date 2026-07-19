@@ -22,10 +22,17 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "@capacitor/core": "^7.6.7",
         "@einundzwanzig/group": "github:HolgerHatGarKeineNode/einundzwanzig-group-package#cdfc1fa",
+        "@frostr/bifrost": "^1.0.7",
+        "@pomade/core": "^0.2.5",
         "@tailwindcss/vite": "^4.1.18",
+        "@welshman/feeds": "^0.8.16",
         "concurrently": "^10.0.0",
-        "shiki": "^4.0.0"
+        "emojibase": "^17.0.0",
+        "nostr-signer-capacitor-plugin": "^0.0.5",
+        "shiki": "^4.0.0",
+        "ws": "^8.21.0"
     },
     "resolutions": {
         "@nostr-dev-kit/ndk/@noble/curves": "^1.9.7"
