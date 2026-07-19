@@ -26,5 +26,13 @@
         "@tailwindcss/vite": "^4.1.18",
         "concurrently": "^10.0.0",
         "shiki": "^4.0.0"
+    },
+    "resolutions": {
+        "@nostr-dev-kit/ndk/@noble/curves": "^1.9.7"
+    },
+    "overrides": {
+        "@nostr-dev-kit/ndk": {
+            "@noble/curves": "^1.9.7"
+        }
     }
 }
