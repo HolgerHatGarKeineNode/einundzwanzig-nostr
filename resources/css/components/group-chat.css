@@ -1,0 +1,126 @@
+/**
+ * Chat-Insel (Package einundzwanzig/group) — nur das, was die Raum-Partials brauchen.
+ *
+ * Bewusst NICHT `@import` der Package-eigenen theme.css: Die definiert
+ * `--color-accent`, `--color-accent-content`, `--color-accent-foreground` und die
+ * komplette `--color-zinc-*`-Rampe neu. Nach unserem Theme importiert, gewinnt sie —
+ * und verschoebe die Akzentfarben und Graustufen der GANZEN App, nicht nur des Chats.
+ *
+ * Stattdessen hier gezielt die Tokens und die drei globalen Klassen, die
+ * `group::partials.chat-row` und `group::partials.chat-composer` tatsaechlich
+ * benutzen (nachgemessen, nicht geraten). Alle Namen sind im Verein bisher
+ * ungenutzt — die Ergaenzung ist rein additiv.
+ */
+
+@theme {
+    /* Die Brand-Rampe des Packages. Der 500er ist zeichengleich mit unserem
+       --color-orange-500 (#F7931A) — dieselbe Bitcoin-Orange. 400/500/600 zeigen
+       deshalb auf unsere Tokens, damit der Chat bei einer Anpassung der
+       Vereinsfarbe mitgeht statt auseinanderzulaufen. Die uebrigen Stufen
+       stammen aus der Package-Rampe. */
+    --color-brand-50: #fff8ed;
+    --color-brand-100: #ffefd4;
+    --color-brand-200: #ffdba8;
+    --color-brand-300: #ffc170;
+    --color-brand-400: var(--color-orange-400);
+    --color-brand-500: var(--color-orange-500);
+    --color-brand-600: var(--color-orange-600);
+    --color-brand-700: #c05c08;
+    --color-brand-800: #98480f;
+    --color-brand-900: #7b3d10;
+    --color-brand-950: #421d06;
+
+    /* Motion-Tokens der Package-Interaktionen. Im Verein bisher nicht vergeben. */
+    --duration-tap: 120ms;
+    --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    --shadow-card-pressed: 0 1px 2px rgb(24 24 27 / 0.06);
+}
+
+/* Tappbare Nicht-Flux-Flaechen im Chat (Reaktionen, Zitat-/Toggle-Buttons). */
+.pressable {
+    transition:
+        transform var(--duration-tap) var(--ease-spring),
+        box-shadow var(--duration-tap) var(--ease-spring),
+        background-color var(--duration-tap) var(--ease-spring);
+}
+
+.pressable:active {
+    transform: scale(0.97);
+    box-shadow: var(--shadow-card-pressed);
+}
+
+.pressable:focus-visible {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-zinc-950;
+}
+
+/* Gerenderter Nachrichteninhalt (welshman/content): Links und @-Mentions. */
+.chat-content a {
+    color: var(--color-brand-500);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+}
+
+.chat-content .mention {
+    color: var(--color-brand-500);
+    font-weight: 600;
+}
+
+/* Inline-Bilder: Box-Masse stehen per aspect-ratio VOR dem Bild-Load fest,
+   damit beim Dekodieren nichts springt. */
+.chat-image-box {
+    display: block;
+    width: min(20rem, 100%);
+    aspect-ratio: 4 / 3;
+    margin-block: 0.375rem;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background-color: color-mix(in oklab, var(--color-zinc-500) 12%, transparent);
+    cursor: zoom-in;
+}
+
+.chat-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Custom-Emoji (NIP-30): zeilenhohes Inline-Bild. */
+.chat-emoji {
+    display: inline-block;
+    height: 1.4em;
+    width: auto;
+    vertical-align: -0.28em;
+    margin-inline: 0.05em;
+    object-fit: contain;
+}
+
+/* Nachzuegler-Nachrichten fahren sanft ein. */
+@keyframes chip-in {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.chip-in {
+    animation: chip-in var(--duration-tap) var(--ease-spring) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pressable,
+    .chip-in {
+        transition: none;
+        animation: none;
+    }
+
+    .pressable:active {
+        transform: none;
+    }
+}

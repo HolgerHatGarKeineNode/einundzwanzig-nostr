@@ -24,6 +24,7 @@
 @import "./vendors/leaflet.css";
 @import "./components/flux-overrides.css";
 @import "./components/custom.css";
+@import "./components/group-chat.css";
 
 /* ----------------------------------------
    Content Scanning (Tailwind v4 CSS-first)
@@ -32,6 +33,10 @@
 @source "../views/**/*.blade.php";
 @source "../js/**/*.js";
 @source "../../vendor/livewire/flux/dist/**/*.blade.php";
+/* Chat-Partials des Packages: Tailwind scannt vendor/ nicht von allein, sonst
+   fehlen die Utilities der Raum-Ansicht im gebauten CSS. Bewusst nur die
+   partials/ — nicht die ganzen Package-Views, von denen wir nichts rendern. */
+@source "../../vendor/einundzwanzig/group/resources/views/partials/*.blade.php";
 
 /* ----------------------------------------
    Custom Variants
