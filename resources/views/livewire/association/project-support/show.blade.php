@@ -700,7 +700,11 @@ new class extends Component {
                                 </div>
                             </div>
                         @elseif($this->canCreateChatRoom)
-                            <div x-data="projectChatRoom({
+                            {{-- data-chat-island: Marker fuer die Nach-Initialisierung.
+                                 Alpine startet ueber app.js, dieser Entry laedt separat —
+                                 kommt er zu spaet, muss group-chat.js die Insel selbst
+                                 initialisieren. --}}
+                            <div data-chat-island x-data="projectChatRoom({
                                 spaceUrl: @js(config('group.space_url')),
                                 roomId: @js($projectProposal->nostrGroupId()),
                                 roomName: @js($projectProposal->slug),
@@ -714,6 +718,10 @@ new class extends Component {
                                     aufgenommen, sonst sieht ihn niemand.
                                 </p>
 
+                                {{-- Die Beschriftung steht fest im Markup und haengt
+                                     NICHT an Alpine: Steckte sie in einem x-show-Span,
+                                     waere der Knopf unbeschriftet, sobald die Insel
+                                     nicht laedt — fuer Screenreader wie fuer Augen. --}}
                                 <flux:button
                                     class="mt-3 w-full"
                                     size="sm"
@@ -722,9 +730,12 @@ new class extends Component {
                                     x-on:click="create()"
                                     x-bind:disabled="busy"
                                 >
-                                    <span x-show="! busy">Chatraum anlegen</span>
-                                    <span x-show="busy" x-text="progress" x-cloak></span>
+                                    Chatraum anlegen
                                 </flux:button>
+
+                                <p x-show="progress" x-cloak
+                                   class="mt-2 text-sm text-text-secondary"
+                                   x-text="progress"></p>
 
                                 <p x-show="error" x-cloak
                                    class="mt-2 text-sm text-red-400"
@@ -813,7 +824,17 @@ new class extends Component {
          @einundzwanzig/group hat Seiteneffekte (welshman-Singletons, eine
          AUTH-Policy fuer Relays, localStorage und IndexedDB) und zieht einen
          eigenen ~950-KB-Chunk. Beides gehoert nicht auf jede Vereinsseite. --}}
+    {{-- In den head-Stack, nicht hierhin: Der Entry registriert eine
+         Alpine-Komponente und muss deshalb VOR app.js laufen, das Alpine
+         startet. Im Body geladen kaeme er zu spaet — Alpine haette das
+         x-data-Element dann schon erfolglos verarbeitet. --}}
     @if($this->canSeeChatRoom || $this->canCreateChatRoom)
-        @vite('resources/js/group-chat.js')
+        @push('head')
+            {{-- Das Package liest window.__nostrSpace beim Laden und faellt
+                 sonst auf ws://localhost:3334 zurueck. Es setzt das sonst in
+                 seinem eigenen head-Partial, das wir nicht einbinden. --}}
+            <script>window.__nostrSpace = @js(config('group.space_url'))</script>
+            @vite('resources/js/group-chat.js')
+        @endpush
     @endif
 </div>

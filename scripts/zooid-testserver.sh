@@ -31,8 +31,9 @@ HTTP="http://localhost:$PORT"
 OWNER_SEC=6595bf88719dd46d6a06d3220c1b492398351906850dd024d2f54ac65a3592c5
 OWNER_PUB=c43fd9f4e31a3969b7b2d5dc72a4360a4a8a3ed140a84acb1046210a1954b260
 # "Vorstandsmitglied": hat can_manage und legt damit Raeume an (kind 9007/9000).
-BOARD_SEC=41aeab5945f7ad83fe8c6d438eb80a328f4893c9afa6898b23cda0146efac1a4
-BOARD_PUB=b4799375e2c83dc3f5f57f0c50197a603d8fa8368037096aaa1f7ae1cfd6c350
+# Der ECHTE Vorstands-Pubkey; signiert wird per NIP-46 (Amber) aus der .env,
+# ein Secret liegt hier bewusst nicht.
+BOARD_PUB=0adf67475ccc5ca456fd3022e46f5d526eb0af6284bf85494c0dd7847f3e5033
 # "Antragsteller": normales Mitglied, per allowpubkey zugelassen.
 SUBMITTER_SEC=b7550c0b4c20e479e317ce4fb9bb5c144577f772fce12e48815fb5d71c637781
 SUBMITTER_PUB=424f10e956aee6f5c3a92206f59077d576e7e5f628c1b06e8da1b229018c47f6

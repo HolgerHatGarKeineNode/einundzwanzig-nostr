@@ -17,6 +17,11 @@
     <title>{{ $title ?? 'Page Title' }}</title>
     <script src="https://kit.fontawesome.com/866fd3d0ab.js" crossorigin="anonymous"></script>
     @googlefonts
+    {{-- Seiteneigene Skripte, die VOR app.js laufen muessen. app.js startet
+         Alpine; wer eine Alpine-Komponente bereitstellt, muss sie vorher
+         registriert haben, sonst verarbeitet Alpine das x-data-Element
+         erfolglos und die Komponente greift nie. --}}
+    @stack('head')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
 </head>

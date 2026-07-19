@@ -129,9 +129,35 @@ function projectChatRoom(config) {
     }
 }
 
-document.addEventListener('alpine:init', () => {
-    registerNostrComponents(window.Alpine)
-    window.Alpine.data('projectChatRoom', projectChatRoom)
-})
+function registerComponents(Alpine) {
+    registerNostrComponents(Alpine)
+    Alpine.data('projectChatRoom', projectChatRoom)
+}
+
+/**
+ * Registrierung in BEIDE Richtungen absichern.
+ *
+ * Dieser Entry wird nur auf der Detailseite geladen, Alpine dagegen startet
+ * ueber app.js im Layout. Welches Modul zuerst fertig ist, ist nicht garantiert:
+ * Kommt app.js zuerst, ist `alpine:init` bereits gefeuert, wenn wir uns
+ * registrieren wollen — die Komponente existiert dann nie, und `x-data` bleibt
+ * ein Element ohne Verhalten (ein Knopf ohne Beschriftung, weil dessen Text in
+ * einem x-show-Span steckt).
+ *
+ * Also: Laeuft Alpine schon, registrieren wir sofort und initialisieren die
+ * bereits gerenderte Insel nach.
+ */
+if (window.Alpine) {
+    registerComponents(window.Alpine)
+
+    document.querySelectorAll('[data-chat-island]').forEach((el) => {
+        // Alpine haengt initialisierten Elementen einen Datenstapel an.
+        if (! el._x_dataStack) {
+            window.Alpine.initTree(el)
+        }
+    })
+} else {
+    document.addEventListener('alpine:init', () => registerComponents(window.Alpine))
+}
 
 window.bridgeVereinsLogin = bridgeVereinsLogin
