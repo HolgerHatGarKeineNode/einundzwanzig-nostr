@@ -26,6 +26,8 @@ class extends Component
         'description' => '',
         'support_in_sats' => '',
         'website' => '',
+        'contact_via_nostr_dm' => true,
+        'contact_alternative' => '',
         'accepted' => false,
         'sats_paid' => 0,
     ];
@@ -51,6 +53,8 @@ class extends Component
                 'description' => $this->project->description,
                 'support_in_sats' => (string) $this->project->support_in_sats,
                 'website' => $this->project->website ?? '',
+                'contact_via_nostr_dm' => (bool) $this->project->contact_via_nostr_dm,
+                'contact_alternative' => $this->project->contact_alternative ?? '',
                 'accepted' => (bool) $this->project->accepted,
                 'sats_paid' => $this->project->sats_paid,
             ];
@@ -102,6 +106,8 @@ class extends Component
             'form.description' => 'required|string',
             'form.support_in_sats' => 'required|integer|min:0',
             'form.website' => 'required|url|max:255',
+            'form.contact_via_nostr_dm' => 'boolean',
+            'form.contact_alternative' => 'nullable|string|max:255',
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
@@ -113,6 +119,10 @@ class extends Component
             'description' => (new RichTextMarkdownNormalizer)->normalize($this->form['description']),
             'support_in_sats' => (int) $this->form['support_in_sats'],
             'website' => $this->form['website'],
+            'contact_via_nostr_dm' => (bool) ($this->form['contact_via_nostr_dm'] ?? true),
+            'contact_alternative' => filled($this->form['contact_alternative'] ?? null)
+                ? trim($this->form['contact_alternative'])
+                : null,
         ]);
 
         // Update admin-only fields directly if user has permission

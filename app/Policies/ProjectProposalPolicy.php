@@ -71,6 +71,23 @@ class ProjectProposalPolicy
     }
 
     /**
+     * Determine whether the user can see the submitter's contact preference.
+     * Contact details are personal data on an otherwise public page, so they are
+     * limited to board members and the submitter.
+     */
+    public function viewContact(?NostrUser $user, ProjectProposal $projectProposal): bool
+    {
+        $pleb = $user?->getPleb();
+
+        if (! $pleb) {
+            return false;
+        }
+
+        return $pleb->id === $projectProposal->einundzwanzig_pleb_id
+            || $pleb->isBoardMember();
+    }
+
+    /**
      * Determine whether the user can accept/reject the project proposal.
      * Only board members can change the accepted flag and sats_paid.
      */

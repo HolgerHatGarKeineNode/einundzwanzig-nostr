@@ -23,6 +23,8 @@ class extends Component
         'description' => '',
         'support_in_sats' => '',
         'website' => '',
+        'contact_via_nostr_dm' => true,
+        'contact_alternative' => '',
         'accepted' => false,
         'sats_paid' => 0,
     ];
@@ -80,6 +82,8 @@ class extends Component
             'form.description' => 'required|string',
             'form.support_in_sats' => 'required|integer|min:0',
             'form.website' => 'required|url|max:255',
+            'form.contact_via_nostr_dm' => 'boolean',
+            'form.contact_alternative' => 'nullable|string|max:255',
             'file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
         ]);
 
@@ -88,6 +92,10 @@ class extends Component
         $projectProposal->description = (new RichTextMarkdownNormalizer)->normalize($this->form['description']);
         $projectProposal->support_in_sats = (int) $this->form['support_in_sats'];
         $projectProposal->website = $this->form['website'];
+        $projectProposal->contact_via_nostr_dm = (bool) ($this->form['contact_via_nostr_dm'] ?? true);
+        $projectProposal->contact_alternative = filled($this->form['contact_alternative'] ?? null)
+            ? trim($this->form['contact_alternative'])
+            : null;
         $projectProposal->accepted = $this->isAdmin ? $this->form['accepted'] : false;
         $projectProposal->sats_paid = $this->isAdmin ? $this->form['sats_paid'] : 0;
         $projectProposal->einundzwanzig_pleb_id = \App\Models\EinundzwanzigPleb::query()->where('pubkey', NostrAuth::pubkey())->first()->id;

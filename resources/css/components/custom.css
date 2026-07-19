@@ -145,21 +145,44 @@
     }
 
     /**
-     * Board Vote Ribbon
+     * Status-Chip einer Projektunterstützung
      *
-     * Diagonal ribbon in der oberen rechten Ecke einer Card, das
-     * Vorstandsmitglieder auf ausstehende Voting-Entscheidungen hinweist.
+     * Bewusst KEIN flux:badge: der Override in flux-overrides.css setzt eine
+     * Basisregel fuer jedes Badge und zieht nur "green" und "orange" nach.
+     * "blue", "red" und "zinc" fallen dort still auf Grau zurueck — genau die
+     * Farben, die ein Status-System braucht.
+     *
+     * Die Grundtoene sind die ausgerechneten Kompositwerte von Farbe/20 ueber
+     * der Kartenflaeche #111113, als deckende Hex notiert. Deckend statt Alpha,
+     * damit der Kontrast pruefbar bleibt und sich nicht still verschiebt, wenn
+     * der Chip einmal auf einer anderen Flaeche landet.
      */
-    /* Vordergrund near-black (#17120A) auf Orange/Amber: Weiss auf #F7931A = 2,3:1
-       (FAIL), near-black = 8,3:1 (AAA). Doc 3.2. */
-    .vote-ribbon {
-        @apply pointer-events-none absolute top-6 -right-12 z-10 w-44 rotate-45
-            bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600
-            py-1.5 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#17120A]
-            shadow-[0_4px_12px_rgba(249,115,22,0.45)] ring-1 ring-black/10;
+    .status-chip {
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+            text-[11px] font-semibold uppercase tracking-[0.14em];
     }
 
-    .vote-ribbon__label {
-        @apply drop-shadow-[0_1px_1px_rgba(255,255,255,0.25)];
+    /* #ADADB0 auf #1A1A1D = 7,76:1 */
+    .status-chip--new {
+        background-color: #1A1A1D;
+        color: #ADADB0;
+    }
+
+    /* #60A5FA auf #212F41 = 5,40:1 */
+    .status-chip--accepted {
+        background-color: #212F41;
+        color: #60A5FA;
+    }
+
+    /* #22C55E auf #143522 = 6,00:1 */
+    .status-chip--supported {
+        background-color: #143522;
+        color: #22C55E;
+    }
+
+    /* #F87171 auf #3F2426 = 5,09:1 */
+    .status-chip--rejected {
+        background-color: #3F2426;
+        color: #F87171;
     }
 }

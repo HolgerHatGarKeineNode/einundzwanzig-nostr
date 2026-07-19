@@ -1,11 +1,15 @@
 <?php
 
+use App\Enums\ProjectProposalStatus;
 use App\Livewire\Traits\WithNostrAuth;
 use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
+use Flux\Flux;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -13,23 +17,17 @@ new class extends Component {
     use WithNostrAuth;
 
     #[Locked]
-    public $projectProposal;
-
-    #[Locked]
-    public bool $isAllowed = false;
-
-    #[Locked]
-    public ?string $currentPubkey = null;
-
-    #[Locked]
-    public ?object $currentPleb = null;
+    public ProjectProposal $projectProposal;
 
     #[Locked]
     public bool $ownVoteExists = false;
 
+    public ?int $payoutSats = null;
+
     public function mount(ProjectProposal $projectProposal): void
     {
         $this->projectProposal = $projectProposal;
+        $this->payoutSats = $projectProposal->sats_paid ?: $projectProposal->support_in_sats;
         if (NostrAuth::check()) {
             $this->currentPubkey = NostrAuth::pubkey();
             $this->isAllowed = true;
@@ -41,23 +39,110 @@ new class extends Component {
         }
     }
 
-    public function getBoardVotesProperty()
+    /**
+     * Alle Stimmen zum Antrag in EINER Abfrage, inklusive Profil des Stimmenden.
+     * Vorher liefen dafür zwei Abfragen mit whereHas/whereDoesntHave auf dieselbe
+     * Tabelle, und die Namen fehlten trotzdem.
+     */
+    #[Computed]
+    public function votes(): Collection
     {
+        $boardPlebIds = ProjectProposal::boardPlebIds();
+
         return Vote::query()
             ->where('project_proposal_id', $this->projectProposal->id)
-            ->whereHas('einundzwanzigPleb', fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board', [])))
-            ->get();
+            ->with('einundzwanzigPleb.profile')
+            ->get()
+            ->each(fn (Vote $vote) => $vote->setAttribute(
+                'is_board_vote',
+                in_array($vote->einundzwanzig_pleb_id, $boardPlebIds, true)
+            ));
     }
 
-    public function getOtherVotesProperty()
+    #[Computed]
+    public function boardVotes(): Collection
     {
-        return Vote::query()
-            ->where('project_proposal_id', $this->projectProposal->id)
-            ->whereDoesntHave(
-                'einundzwanzigPleb',
-                fn($q) => $q->whereIn('npub', config('einundzwanzig.config.current_board', []))
-            )
-            ->get();
+        return $this->votes->where('is_board_vote', true);
+    }
+
+    #[Computed]
+    public function otherVotes(): Collection
+    {
+        return $this->votes->where('is_board_vote', false);
+    }
+
+    /**
+     * Der abgeleitete Status des Antrags — dieselbe Regel wie in der Übersicht.
+     */
+    #[Computed]
+    public function status(): ProjectProposalStatus
+    {
+        $this->projectProposal->setAttribute('board_approvals_count', $this->boardVotes->where('value', true)->count());
+        $this->projectProposal->setAttribute('board_rejections_count', $this->boardVotes->where('value', false)->count());
+
+        return $this->projectProposal->status();
+    }
+
+    /**
+     * Darf der Betrachter die Kontaktangabe des Einreichers sehen?
+     * Kontaktdaten sind personenbezogen und stehen auf einer öffentlich
+     * erreichbaren Seite — deshalb nur Vorstand und Einreicher.
+     */
+    #[Computed]
+    public function canSeeContact(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('viewContact', $this->projectProposal);
+    }
+
+    #[Computed]
+    public function canManage(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('accept', $this->projectProposal);
+    }
+
+    /**
+     * Trägt die Auszahlung ein. Nur Vorstand — die Berechtigung wird hier
+     * serverseitig geprüft, weil jede öffentliche Livewire-Methode direkt
+     * aufrufbar ist, unabhängig davon, was die View rendert.
+     */
+    public function recordPayout(): void
+    {
+        Gate::forUser(NostrAuth::user())->authorize('accept', $this->projectProposal);
+
+        $this->validate([
+            'payoutSats' => 'required|integer|min:1',
+        ], [
+            'payoutSats.min' => 'Der ausgezahlte Betrag muss größer als 0 sein.',
+        ]);
+
+        // Direkte Zuweisung statt update(): sats_paid ist bewusst NICHT in $fillable,
+        // damit eine Auszahlung nie über Mass Assignment gesetzt werden kann.
+        $this->projectProposal->sats_paid = (int) $this->payoutSats;
+        $this->projectProposal->save();
+
+        $this->forgetVoteCache();
+        Flux::modals()->close();
+        Flux::toast('Auszahlung eingetragen.');
+    }
+
+    /**
+     * Nimmt eine eingetragene Auszahlung zurück (Korrektur einer Fehleingabe).
+     */
+    public function revertPayout(): void
+    {
+        Gate::forUser(NostrAuth::user())->authorize('accept', $this->projectProposal);
+
+        $this->projectProposal->sats_paid = 0;
+        $this->projectProposal->save();
+        $this->payoutSats = $this->projectProposal->support_in_sats;
+
+        $this->forgetVoteCache();
+        Flux::toast('Auszahlung zurückgenommen.');
+    }
+
+    private function forgetVoteCache(): void
+    {
+        unset($this->votes, $this->boardVotes, $this->otherVotes, $this->status);
     }
 
     public function handleApprove(): void
@@ -87,6 +172,7 @@ new class extends Component {
             'value' => true,
         ]);
         $this->ownVoteExists = true;
+        $this->forgetVoteCache();
     }
 
     public function handleNotApprove(): void
@@ -116,6 +202,7 @@ new class extends Component {
             'value' => false,
         ]);
         $this->ownVoteExists = true;
+        $this->forgetVoteCache();
     }
 }
 ?>
