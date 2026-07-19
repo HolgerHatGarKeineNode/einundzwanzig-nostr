@@ -1,6 +1,37 @@
 import {defineConfig} from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
+import {existsSync} from 'node:fs';
+import {resolve} from 'node:path';
+
+/**
+ * Liegt das Package-Repo als Nachbarverzeichnis daneben, arbeiten wir direkt
+ * dagegen — sonst gegen die in package.json gepinnte GitHub-Version.
+ *
+ * Damit braucht eine Aenderung am Package lokal KEINEN Zyklus aus commit, push
+ * und npm update: Vite folgt dem Pfad und laedt das Roh-TS live (inkl. HMR).
+ * Auf dem Server existiert das Nachbarverzeichnis nicht, dort greift
+ * automatisch der Pin. Dieselbe Mechanik wie beim Composer-path-Repo, das
+ * ebenfalls uebersprungen wird, wenn der Pfad fehlt.
+ *
+ * Die Abhaengigkeiten des Packages (@welshman/* usw.) loest Vite dabei vom
+ * realen Pfad aus auf und findet sie in den node_modules des Nachbar-Repos.
+ */
+const localPackage = resolve(import.meta.dirname, '../einundzwanzig-group/packages/einundzwanzig-group');
+const useLocalPackage = process.env.GROUP_PACKAGE_LOCAL !== '0'
+    && existsSync(resolve(localPackage, 'package.json'));
+
+if (useLocalPackage) {
+    console.log('\x1b[33m→ @einundzwanzig/group: lokales Nachbar-Repo (nicht der Pin aus package.json)\x1b[0m');
+}
+
+/**
+ * Pfad zu einer Datei des Packages — lokal aus dem Nachbar-Repo, sonst aus den
+ * installierten node_modules.
+ */
+const packageEntry = (file) => useLocalPackage
+    ? resolve(localPackage, file)
+    : resolve(import.meta.dirname, 'node_modules/@einundzwanzig/group', file);
 
 export default defineConfig({
     plugins: [
@@ -20,17 +51,17 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            // Die Session-API des Packages liegt nicht in dessen exports-Map und
-            // waere per Deep-Import blockiert. Wir brauchen genau eine Funktion
-            // daraus (loginWithExtension), um die welshman-Session mit dem
-            // bereits per NIP-07 eingeloggten Vereinsnutzer zu fuellen — ohne den
-            // NIP-98-Handoff und den Redirect, die die nostrAuth-Komponente des
-            // Packages zwingend mitbringt.
+            // `session` liegt nicht in der exports-Map des Packages und waere per
+            // Deep-Import blockiert. Wir brauchen genau eine Funktion daraus
+            // (loginWithExtension), um die welshman-Session mit dem bereits per
+            // NIP-07 eingeloggten Vereinsnutzer zu fuellen — ohne den
+            // NIP-98-Handoff und Redirect der nostrAuth-Komponente.
             //
-            // Bewusst als Alias hier statt als Aenderung an der exports-Map des
-            // Packages: einundzwanzig-group bleibt dadurch unberuehrt. Beim
-            // Bundling greift der Alias vor der exports-Aufloesung.
-            '@einundzwanzig/group/session': '/node_modules/@einundzwanzig/group/js/session.ts',
+            // Bewusst als Alias hier statt als Aenderung an der exports-Map:
+            // einundzwanzig-group bleibt dadurch unberuehrt.
+            '@einundzwanzig/group/session': packageEntry('js/session.ts'),
+            '@einundzwanzig/group/auth-gate': packageEntry('js/auth-gate.ts'),
+            '@einundzwanzig/group': packageEntry('js/index.ts'),
         },
     },
     build: {

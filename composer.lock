@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "967793c8617deec4934a9687440c5081",
+    "content-hash": "fbc03a816d566e9c28c8e4a294ef4c5c",
     "packages": [
         {
             "name": "akuechler/laravel-geoly",
@@ -932,10 +932,16 @@
         {
             "name": "einundzwanzig/group",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../einundzwanzig-group/packages/einundzwanzig-group",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package.git",
                 "reference": "cdfc1fa65c098eb7c28969dbf6b82f318b0baacf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HolgerHatGarKeineNode/einundzwanzig-group-package/zipball/cdfc1fa65c098eb7c28969dbf6b82f318b0baacf",
+                "reference": "cdfc1fa65c098eb7c28969dbf6b82f318b0baacf",
+                "shasum": ""
             },
             "require": {
                 "illuminate/console": "^13.0",
@@ -945,6 +951,7 @@
                 "php": "^8.3",
                 "swentel/nostr-php": "^1.9"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -962,10 +969,11 @@
                 "MIT"
             ],
             "description": "Nostr-Community-Chat (Spaces/Räume/Directory/Login) für EINUNDZWANZIG — als wiederverwendbares Laravel-Package.",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package/tree/master",
+                "issues": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package/issues"
+            },
+            "time": "2026-07-19T21:46:08+00:00"
         },
         {
             "name": "evenement/evenement",
