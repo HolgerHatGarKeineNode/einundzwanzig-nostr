@@ -21,108 +21,70 @@
     @fluxAppearance
 </head>
 <body class="min-h-screen bg-bg-page antialiased">
-<flux:header sticky class="bg-bg-surface h-18">
-    <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left"/>
+<flux:sidebar sticky stashable
+              aria-label="Hauptnavigation"
+              class="w-72 border-e border-border-default bg-bg-surface">
+    <flux:sidebar.toggle class="lg:hidden" icon="x-mark" aria-label="Menü schließen"/>
 
-    <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden dark:hidden">
-        <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
-    </flux:brand>
-    <flux:brand href="/" name="EINUNDZWANZIG" class="max-lg:hidden! hidden dark:flex">
-        <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
-    </flux:brand>
+    <flux:sidebar.header>
+        <flux:sidebar.brand href="/" name="EINUNDZWANZIG">
+            <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
+        </flux:sidebar.brand>
+    </flux:sidebar.header>
 
-    <flux:navbar class="-mb-px max-lg:hidden">
-        @if(\App\Support\NostrAuth::check())
-            <flux:navbar.item icon="rss" :href="route('association.news')"
-                              :current="request()->routeIs('association.news')">
-                News
-            </flux:navbar.item>
-            <flux:navbar.item icon="identification" :href="route('association.profile')"
-                              :current="request()->routeIs('association.profile')">
-                Mitgliederstatus
-            </flux:navbar.item>
-            <flux:navbar.item icon="gift" :href="route('association.benefits')"
-                              :current="request()->routeIs('association.benefits')">
-                Vorteile
-            </flux:navbar.item>
-            <flux:navbar.item icon="heart" :href="route('association.projectSupport')"
-                              :current="request()->routeIs('association.projectSupport')">
-                Projekt-Unterstützungen
-            </flux:navbar.item>
+    @if(\App\Support\NostrAuth::check())
+        <flux:navlist variant="outline">
+            <flux:navlist.group heading="Mitgliedsbereich" class="grid">
+                <flux:navlist.item icon="identification" :href="route('association.profile')"
+                                   :current="request()->routeIs('association.profile')"
+                                   wire:navigate>Meine Mitgliedschaft</flux:navlist.item>
+                <flux:navlist.item icon="rss" :href="route('association.news')"
+                                   :current="request()->routeIs('association.news')"
+                                   wire:navigate>News</flux:navlist.item>
+                <flux:navlist.item icon="gift" :href="route('association.benefits')"
+                                   :current="request()->routeIs('association.benefits')"
+                                   wire:navigate>Vorteile</flux:navlist.item>
+                {{-- Wahlen: vorübergehend DEAKTIVIERT — Nav-Eintrag auskommentiert, Feature vorerst nicht verlinkt. Zum Reaktivieren einkommentieren. --}}
+                {{-- <flux:navlist.item icon="hand-raised" :href="route('association.elections')"
+                                   :current="request()->routeIs('association.election*')"
+                                   wire:navigate>Wahlen</flux:navlist.item> --}}
+                <flux:navlist.item icon="heart" :href="route('association.projectSupport')"
+                                   :current="request()->routeIs('association.projectSupport*')"
+                                   wire:navigate>Projekt-Unterstützungen</flux:navlist.item>
+            </flux:navlist.group>
 
-            <flux:dropdown position="bottom">
-                <flux:navbar.item icon:trailing="chevron-down">Admin</flux:navbar.item>
-
-                <flux:navmenu>
-                    <flux:navmenu.item :href="route('association.members.admin')"
-                                       :current="request()->routeIs('association.members.admin')">Mitglieder
-                    </flux:navmenu.item>
-                </flux:navmenu>
-            </flux:dropdown>
-        @endif
-    </flux:navbar>
+            <flux:navlist.group heading="Admin" class="grid">
+                <flux:navlist.item icon="users" :href="route('association.members.admin')"
+                                   :current="request()->routeIs('association.members.admin')"
+                                   wire:navigate>Mitglieder</flux:navlist.item>
+            </flux:navlist.group>
+        </flux:navlist>
+    @endif
 
     <flux:spacer/>
 
-    <flux:navbar class="me-4">
-        <flux:dropdown position="bottom" align="end" class="max-lg:hidden">
-            <flux:navbar.item icon:trailing="information-circle">Info</flux:navbar.item>
+    <flux:navlist variant="outline">
+        <flux:navlist.group heading="Info" class="grid">
+            <flux:navlist.item icon="information-circle"
+                               href="https://einundzwanzig.space/kontakt/"
+                               target="_blank">Impressum</flux:navlist.item>
+        </flux:navlist.group>
+    </flux:navlist>
 
-            <flux:menu>
-                <flux:menu.item href="https://einundzwanzig.space/kontakt/" target="_blank">Impressum</flux:menu.item>
-            </flux:menu>
-        </flux:dropdown>
-
-        <livewire:auth-button location="navbar"/>
-    </flux:navbar>
-</flux:header>
-
-<flux:sidebar sticky collapsible="mobile"
-              class="lg:hidden bg-bg-surface border-r border-border-default">
-    <flux:sidebar.header>
-        <flux:sidebar.brand
-            href="/"
-            name="EINUNDZWANZIG"
-        >
-            <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
-        </flux:sidebar.brand>
-
-        <flux:sidebar.collapse
-            class="in-data-flux-sidebar-on-desktop:not(in-data-flux-sidebar-collapsed-desktop):-mr-2"/>
-    </flux:sidebar.header>
-
-    <flux:sidebar.nav>
-        <flux:sidebar.group>
-            <livewire:auth-button location="sidebar"/>
-        </flux:sidebar.group>
-
-        <flux:sidebar.group heading="Mitgliedsbereich" class="grid">
-            <flux:sidebar.item icon="rss" :href="route('association.news')"
-                               :current="request()->routeIs('association.news')">News
-            </flux:sidebar.item>
-            <flux:sidebar.item icon="identification" :href="route('association.profile')"
-                               :current="request()->routeIs('association.profile')">Meine Mitgliedschaft
-            </flux:sidebar.item>
-            <flux:sidebar.item icon="gift" :href="route('association.benefits')"
-                               :current="request()->routeIs('association.benefits')">Vorteile
-            </flux:sidebar.item>
-            <flux:sidebar.item icon="heart" :href="route('association.projectSupport')"
-                               :current="request()->routeIs('association.projectSupport')">Projekt-Unterstützungen
-            </flux:sidebar.item>
-
-            <flux:sidebar.group heading="Admin" class="grid">
-                <flux:sidebar.item icon="users" :href="route('association.members.admin')"
-                                   :current="request()->routeIs('association.members.admin')">Mitglieder
-                </flux:sidebar.item>
-            </flux:sidebar.group>
-
-            <flux:sidebar.group heading="Info" class="grid">
-                <flux:sidebar.item href="https://einundzwanzig.space/kontakt/" target="_blank">Impressum
-                </flux:sidebar.item>
-            </flux:sidebar.group>
-        </flux:sidebar.group>
-    </flux:sidebar.nav>
+    <div class="px-1.5 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <livewire:auth-button location="sidebar"/>
+    </div>
 </flux:sidebar>
+
+<flux:header class="lg:hidden bg-bg-surface">
+    <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" aria-label="Menü öffnen"/>
+
+    <flux:spacer/>
+
+    <flux:brand href="/" name="EINUNDZWANZIG">
+        <img src="{{ asset('einundzwanzig-alpha.jpg') }}" alt="Logo" class="h-6 w-6">
+    </flux:brand>
+</flux:header>
 
 <flux:main>
     {{ $slot }}
