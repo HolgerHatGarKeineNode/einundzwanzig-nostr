@@ -15,6 +15,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
+use swentel\nostr\Key\Key;
 
 class ProjectProposal extends Model implements HasMedia
 {
@@ -262,26 +263,33 @@ class ProjectProposal extends Model implements HasMedia
     }
 
     /**
-     * Die hex-Pubkeys aller Personen, die in den Chatraum gehören: der aktuelle
-     * Vorstand und der Antragsteller.
+     * Die hex-Pubkeys des aktuellen Vorstands.
      *
-     * Hex, nicht npub — NIP-29-Events (kind 9000) tragen den rohen Pubkey.
-     * Plebs ohne hinterlegten Pubkey fallen heraus; ein leerer Eintrag würde
-     * am Relay nur einen Fehler erzeugen.
+     * Quelle ist ausschliesslich das Config-Array — dieselbe Wahrheitsquelle,
+     * aus der sich auch boardSize() und die Stimm-Mehrheit ableiten. Der
+     * hex-Pubkey wird aus dem npub gerechnet (bech32) und NICHT aus der
+     * Pleb-Tabelle gelesen: Ein Vorstandsmitglied, das noch keinen
+     * Pleb-Datensatz hat, gehört trotzdem in jeden Antragsraum. Ein Lookup
+     * würde es still auslassen — es bekäme die Beratung über einen
+     * Förderantrag nicht mit und niemand würde die Lücke bemerken.
      *
      * @return list<string>
      */
-    public function nostrGroupMemberPubkeys(): array
+    public static function boardPubkeys(): array
     {
-        $boardPubkeys = EinundzwanzigPleb::query()
-            ->whereIn('npub', config('einundzwanzig.config.current_board', []))
-            ->pluck('pubkey')
-            ->all();
+        $key = new Key;
 
-        $submitterPubkey = $this->einundzwanzigPleb?->pubkey;
-
-        return collect($boardPubkeys)
-            ->push($submitterPubkey)
+        return collect(config('einundzwanzig.config.current_board', []))
+            ->map(function (string $npub) use ($key): ?string {
+                try {
+                    return $key->convertToHex($npub);
+                } catch (\Throwable) {
+                    // Ein npub, der sich nicht dekodieren laesst, ist ein
+                    // Konfigurationsfehler. Er darf die Raumanlage fuer die
+                    // uebrigen Mitglieder nicht verhindern.
+                    return null;
+                }
+            })
             ->filter()
             ->unique()
             ->values()
@@ -289,27 +297,44 @@ class ProjectProposal extends Model implements HasMedia
     }
 
     /**
-     * Vorstands-npubs, zu denen es keinen Pleb mit hinterlegtem Pubkey gibt.
+     * Die hex-Pubkeys aller Personen, die in den Chatraum gehören: der aktuelle
+     * Vorstand und der Antragsteller.
      *
-     * Diese Mitglieder können nicht in den Raum aufgenommen werden, weil kind
-     * 9000 einen hex-Pubkey braucht. Das darf nicht still passieren: Ein
-     * Vorstandsmitglied, das unbemerkt fehlt, bekommt die Beratung über einen
-     * Förderantrag nicht mit und hält den Raum trotzdem für vollständig.
-     * Die Oberfläche meldet das, statt die Lücke wegzufiltern.
+     * Hex, nicht npub — NIP-29-Events (kind 9000) tragen den rohen Pubkey.
      *
      * @return list<string>
      */
-    public static function boardNpubsWithoutPubkey(): array
+    public function nostrGroupMemberPubkeys(): array
     {
-        $board = config('einundzwanzig.config.current_board', []);
+        return collect(static::boardPubkeys())
+            ->push($this->einundzwanzigPleb?->pubkey)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
 
-        $resolved = EinundzwanzigPleb::query()
-            ->whereIn('npub', $board)
-            ->whereNotNull('pubkey')
-            ->pluck('npub');
+    /**
+     * npubs aus der Vorstands-Konfiguration, die sich nicht dekodieren lassen.
+     *
+     * Erwartungswert ist eine leere Liste. Ist sie es nicht, stimmt die
+     * Konfiguration nicht — und der betroffene Vorstand fehlt in jedem Raum.
+     * Die Oberfläche meldet das, statt es zu verschlucken.
+     *
+     * @return list<string>
+     */
+    public static function boardNpubsUndecodable(): array
+    {
+        $key = new Key;
 
-        return collect($board)
-            ->diff($resolved)
+        return collect(config('einundzwanzig.config.current_board', []))
+            ->reject(function (string $npub) use ($key): bool {
+                try {
+                    return (bool) $key->convertToHex($npub);
+                } catch (\Throwable) {
+                    return false;
+                }
+            })
             ->values()
             ->all();
     }
