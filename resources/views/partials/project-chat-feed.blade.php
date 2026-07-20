@@ -26,7 +26,7 @@
          verlangt eine Signatur, und ein Signier-Dialog beim blossen Seitenaufruf
          waere uebergriffig. --}}
     <div x-show="needsSigner" x-cloak>
-        <flux:button size="sm" variant="filled" icon="chat-bubble-left-right" class="w-full"
+        <flux:button size="sm" variant="filled" icon="chat-bubble-left-right" class="w-full min-h-11"
                      x-on:click="boot()" x-bind:disabled="booting">
             Chat hier laden
         </flux:button>
@@ -38,9 +38,26 @@
          — der Raum ist dann immer noch erreichbar. --}}
     <p x-show="bootError" x-cloak class="mt-2 text-sm text-red-400" x-text="bootError"></p>
 
+    {{-- Feste Hoehe des geladenen Verlaufs — h-80 (320px), ab xl h-96 (384px).
+
+         Vorher h-[28rem] (448px). Der Chat sass da als Band ueber die volle
+         Seitenbreite; seit er in der 320px-Spalte steht (xl: 384px), waere die
+         Kachel hochkant fast quadratisch-plus und schoebe „Deine Stimme" um
+         einen halben Bildschirm nach unten — genau die Beschwerde.
+
+         320px ist die kleinste Hoehe, bei der der Verlauf noch ein Verlauf ist:
+         abzueglich Composer-Zeile (~48px) und Abstand bleiben ~260px Log, also
+         vier bis fuenf Nachrichtenzeilen bei dieser Breite. Weniger waere ein
+         Guckloch, in dem man beim Tippen die Antwort verliert, auf die man
+         antwortet. Ab xl wachsen Spalte (384px) UND ueblicherweise die
+         Bildschirmhoehe, deshalb dort 384px.
+
+         Wem das zu wenig ist, der hat den Knopf „Chat öffnen" auf den vollen
+         Client direkt darueber — die Kachel ist die Mitlese-Ansicht, nicht der
+         Arbeitsplatz. --}}
     <template x-if="ready">
         <div x-data="projectChatRoomFeed(@js($roomId), @js($roomName))"
-             class="flex h-[28rem] flex-col">
+             class="flex h-80 flex-col xl:h-96">
 
             {{-- Relay nicht erreichbar oder AUTH abgelehnt. --}}
             <template x-if="error">

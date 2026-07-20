@@ -493,7 +493,7 @@ test.describe('Aenderung B: mobile Reihenfolge', () => {
 
 test.describe('Desktop unveraendert (Zweispalter, Kartenreihenfolge, Sticky)', () => {
     for (const [label, viewport] of Object.entries({ '1280px': DESKTOP, '1440px': DESKTOP_WIDE })) {
-        test(`Kartenreihenfolge Deine-Stimme -> Vorstand -> Entscheidung -> Stimmungsbild -> Kontakt, Seitenspalte sticky (${label})`, async ({ page }) => {
+        test(`Chat zuerst, dann Deine-Stimme -> Vorstand -> Entscheidung -> Stimmungsbild -> Kontakt; Spalte klebt bewusst nicht (${label})`, async ({ page }) => {
             await page.setViewportSize(viewport)
             // BOARD_SEC: nur so sind alle 5 Karten gleichzeitig sichtbar
             // (Vorstands-Panel + Kontakt verlangen Vorstandsmitgliedschaft).
@@ -507,7 +507,7 @@ test.describe('Desktop unveraendert (Zweispalter, Kartenreihenfolge, Sticky)', (
             const sideBox = await page.getByText('Deine Stimme', { exact: true }).boundingBox()
             expect(sideBox.x, 'Seitenspalte steht nicht rechts von der Hauptspalte').toBeGreaterThan(mainBox.x + 200)
 
-            const cardTitles = ['Deine Stimme', 'Vorstand', 'Vorstandsentscheidung', 'Stimmungsbild der Mitglieder', 'Kontakt zum Einreicher']
+            const cardTitles = ['Chat zum Antrag', 'Deine Stimme', 'Vorstand', 'Vorstandsentscheidung', 'Stimmungsbild der Mitglieder', 'Kontakt zum Einreicher']
             const ys = await Promise.all(cardTitles.map(async (t) => {
                 const box = await page.getByText(t, { exact: true }).first().boundingBox()
                 return box?.y ?? null
@@ -516,39 +516,32 @@ test.describe('Desktop unveraendert (Zweispalter, Kartenreihenfolge, Sticky)', (
             const sorted = [...ys].sort((a, b) => a - b)
             expect(ys, `Kartenreihenfolge auf Desktop (${label}) weicht ab: ${JSON.stringify(ys)}`).toEqual(sorted)
 
-            // Sticky: Hauptspalte und Seitenspalte stehen NEBENEINANDER (flex-row),
-            // die Seitenspalte startet also schon nahe am Seitenanfang, nicht erst
-            // nach der langen Hauptspalte. Ein kleiner Scroll ueber ihre natuerliche
-            // Position hinaus (top-6 = 24px) reicht, um den Sticky-Punkt zu
-            // erreichen — zu viel Puffer scrollt ueber das Ende des Flex-Containers
-            // hinaus (Hauptspalte laenger) und die Karte verlaesst den Viewport nach
-            // oben. Deshalb ein kleiner, gemessener Puffer statt eines festen Werts,
-            // UND eine UNTERGRENZE in der Assertion — sonst waere ein Test, der die
-            // Karte einfach aus dem Bild scrollen laesst, faelschlich gruen.
-            const sideColumn = page.locator('div.lg\\:sticky.lg\\:top-6')
-            await expect(sideColumn).toHaveCSS('position', 'sticky')
-            const beforeScrollBox = await sideColumn.boundingBox()
-            const maxScroll = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight)
-            const wantedScroll = Math.max(0, beforeScrollBox.y - 24 + 10)
-            console.log(`maxScroll=${maxScroll}, gewuenscht=${wantedScroll}`)
+            // Die Seitenspalte klebt bewusst NICHT mehr (`lg:sticky lg:top-6` ist
+            // entfernt): Mit dem Chat als erster Karte ist sie fuer jede Rolle, die
+            // ihn ueberhaupt sieht, hoeher als ein Laptop-Viewport. Eine Sticky-Box,
+            // die hoeher ist als der Viewport, klebt mit dem KOPF oben fest — ihr
+            // unteres Ende ist durch Scrollen nie erreichbar, Stimmungsbild und
+            // Kontakt waeren dauerhaft abgeschnitten. Das ist schlechter als kein
+            // Sticky. Der Test haelt die Entscheidung fest, damit sie nicht
+            // versehentlich zurueckgedreht wird.
+            const chatCard = page.getByText('Chat zum Antrag').first()
+            const columnIsSticky = await page.locator('div.lg\\:sticky.lg\\:top-6').count()
+            expect(columnIsSticky, 'Seitenspalte klebt wieder — siehe Kommentar: hoeher als der Viewport, unteres Ende unerreichbar').toBe(0)
 
-            if (maxScroll < wantedScroll) {
-                // Bei diesem Viewport ist die Seite kuerzer als noetig, um den
-                // Sticky-Punkt ueberhaupt zu erreichen (z. B. breiterer Viewport
-                // -> weniger Zeilenumbrueche -> kuerzere Hauptspalte). Dann gibt es
-                // schlicht nichts zu "kleben" zu testen — kein Fund, keine Assertion
-                // ueber ein Verhalten, das hier gar nicht eintreten kann.
-                console.log(`Seite bei ${label} zu kurz zum Scrollen (max ${maxScroll}px) — Sticky-Pruefung uebersprungen.`)
-            } else {
-                await page.evaluate((y) => window.scrollTo(0, y), wantedScroll)
-                await page.waitForTimeout(300)
-                const afterScrollBox = await sideColumn.boundingBox()
-                console.log(`Seitenspalte y vor Scroll: ${beforeScrollBox.y}px, nach Scroll: ${afterScrollBox.y}px`)
-                expect(afterScrollBox.y, `Seitenspalte nach dem Scrollen bei ${afterScrollBox.y}px — sollte bei ~24px kleben, nicht aus dem Bild gescrollt sein`)
-                    .toBeGreaterThan(-20)
-                expect(afterScrollBox.y, `Seitenspalte nach dem Scrollen bei ${afterScrollBox.y}px — sollte bei ~24px kleben`)
-                    .toBeLessThan(40)
-            }
+            // Der Chat ist die ERSTE Karte der Spalte, ueber "Deine Stimme".
+            const chatY = (await chatCard.boundingBox()).y
+            const voteY = (await page.getByText('Deine Stimme', { exact: true }).boundingBox()).y
+            console.log(`Chat y=${Math.round(chatY)}px, Deine Stimme y=${Math.round(voteY)}px`)
+            expect(chatY, 'Chat steht nicht ueber "Deine Stimme"').toBeLessThan(voteY)
+
+            // Und er steht in der SEITENSPALTE, nicht wieder ueber der vollen
+            // Breite: linke Kante buendig mit "Deine Stimme", nicht mit der
+            // Hauptspalte. Ohne diese Pruefung waere ein Rueckfall auf das alte
+            // Vollbreiten-Band still gruen — der stand ja auch ueber dem Voting.
+            const chatX = (await chatCard.boundingBox()).x
+            console.log(`Chat x=${Math.round(chatX)}px, Seitenspalte x=${Math.round(sideBox.x)}px, Hauptspalte x=${Math.round(mainBox.x)}px`)
+            expect(Math.abs(chatX - sideBox.x), `Chat sitzt bei x=${Math.round(chatX)}, Seitenspalte bei ${Math.round(sideBox.x)}`)
+                .toBeLessThan(40)
 
             await page.screenshot({
                 path: `/tmp/claude-1000/-home-user-Code-einundzwanzig-nostr/576545e5-100b-4a8e-a905-9e6c6ed70562/scratchpad/screenshots/desktop-${label}-sticky.png`,
@@ -571,11 +564,11 @@ test.describe('Regressionen laut Auftrag (Punkt 4)', () => {
         await expect(chatButton).toBeVisible()
         const buttonBox = await chatButton.boundingBox()
 
-        // Rechts, nicht links, nicht volle Breite.
-        expect(buttonBox.x + buttonBox.width, 'Knopf sitzt nicht am rechten Rand des Bands')
-            .toBeGreaterThan(panelBox.x + panelBox.width - 40)
-        expect(buttonBox.width, 'Knopf ist auf Desktop ueber die volle Breite gezogen')
-            .toBeLessThan(panelBox.width - 100)
+        // Volle Kartenbreite — anders als frueher im Band. Seit der Chat in der
+        // Seitenspalte sitzt (320px, ab xl 384px), stuende ein schmaler Knopf
+        // entweder gequetscht neben dem Datum oder verwaist auf eigener Zeile.
+        expect(buttonBox.width, 'Knopf fuellt die Kartenbreite nicht aus')
+            .toBeGreaterThan(panelBox.width - 60)
         // min-h-11 = 44px; die Beschriftung braucht die volle Hoehe fuer die
         // Zentrierung, nicht mehr Hoehe als noetig (sonst haengt Text oben).
         expect(buttonBox.height, `Knopf ist ${buttonBox.height}px hoch, min-h-11 verlangt >=44px`)
@@ -636,12 +629,22 @@ test.describe('Regressionen laut Auftrag (Punkt 4)', () => {
         // Bewusst NICHT ueber `.max-w-[68ch]` gesucht: Diese Klasse gibt es an
         // der Insel nicht mehr, `.first()` traf danach die Ueberschrift und der
         // Test war still gruen, ohne noch irgendetwas am Chat zu pruefen.
+        // Gemessen wird die Composer-ZEILE gegen die Karte, nicht das Textfeld:
+        // In der Zeile sitzen neben dem Feld noch Anhang- und Senden-Knopf mit je
+        // ~44px. Im fruegeren Vollbreiten-Band fielen die neben 1568px nicht ins
+        // Gewicht (Textfeld 97%), in einer 382px-Karte fressen sie ein Viertel.
+        // Ein Schwellwert auf dem Textfeld misst dort die Knopfgroesse, nicht das
+        // Layout — gemessen: Zeile 342/382px, Textfeld 246px, kein Ueberlauf.
         const panelBox = await page.locator('#chat-band-panel').boundingBox()
+        const rowBox = await composer.locator('xpath=ancestor::*[3]').boundingBox()
         const composerBox = await composer.boundingBox()
-        const ratio = composerBox.width / panelBox.width
-        console.log(`Composer ${Math.round(composerBox.width)}px / Band ${Math.round(panelBox.width)}px = ${(ratio * 100).toFixed(0)}%`)
-        expect(ratio, `Composer nutzt nur ${(ratio * 100).toFixed(0)}% der Bandbreite`)
-            .toBeGreaterThan(0.7)
+        const ratio = rowBox.width / panelBox.width
+        console.log(`Composer-Zeile ${Math.round(rowBox.width)}px / Karte ${Math.round(panelBox.width)}px = ${(ratio * 100).toFixed(0)}%, Textfeld ${Math.round(composerBox.width)}px`)
+        expect(ratio, `Composer-Zeile nutzt nur ${(ratio * 100).toFixed(0)}% der Kartenbreite`)
+            .toBeGreaterThan(0.8)
+        // Untergrenze fuers Textfeld selbst: darunter wird das Schreiben zur Qual.
+        expect(composerBox.width, `Textfeld nur ${Math.round(composerBox.width)}px breit`)
+            .toBeGreaterThan(180)
 
         const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
         const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
