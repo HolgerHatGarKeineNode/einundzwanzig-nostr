@@ -33,6 +33,13 @@ new class extends Component {
 
     private const PER_PAGE = 12;
 
+    /**
+     * Pseudo-Filter neben den abgeleiteten Status: „mir fehlt hier noch die
+     * Stimme". Kein Enum-Fall, weil er nicht am Antrag hängt, sondern am
+     * Betrachter — und nur für den Vorstand überhaupt existiert.
+     */
+    private const FILTER_AWAITING_OWN_VOTE = 'awaiting_my_vote';
+
     #[Url(as: 'q', except: '')]
     public string $search = '';
 
@@ -52,6 +59,21 @@ new class extends Component {
     public function mount(): void
     {
         $this->mountWithNostrAuth();
+
+        // Der Filter kommt auch aus der URL. Wer nicht im Vorstand ist, wird
+        // hier zurückgesetzt — sonst genügte ein Link, um die Query zu fahren.
+        if ($this->activeFilter === self::FILTER_AWAITING_OWN_VOTE && ! $this->isBoardMember) {
+            $this->activeFilter = 'all';
+        }
+    }
+
+    /**
+     * Nur Vorstandsmitglieder haben eine Stimme, die fehlen kann.
+     */
+    #[Computed]
+    public function isBoardMember(): bool
+    {
+        return (bool) $this->currentPleb?->isBoardMember();
     }
 
     public function updatedSearch(): void
@@ -69,8 +91,7 @@ new class extends Component {
     {
         [$column, $direction] = self::SORT_OPTIONS[$this->sortBy] ?? self::SORT_OPTIONS['newest'];
 
-        return $this->searchedQuery()
-            ->withStatus($this->activeFilter)
+        return $this->filteredQuery()
             ->withVoteAggregates()
             ->withOwnVote($this->currentPleb?->id)
             ->with(['einundzwanzigPleb.profile', 'media'])
@@ -95,6 +116,12 @@ new class extends Component {
                 ->count();
         }
 
+        if ($this->isBoardMember) {
+            $counts[self::FILTER_AWAITING_OWN_VOTE] = $this->searchedQuery()
+                ->awaitingVoteFrom($this->currentPleb->id)
+                ->count();
+        }
+
         return $counts;
     }
 
@@ -114,6 +141,10 @@ new class extends Component {
     public function setFilter(string $filter): void
     {
         $allowed = array_merge(['all'], ProjectProposalStatus::values());
+
+        if ($this->isBoardMember) {
+            $allowed[] = self::FILTER_AWAITING_OWN_VOTE;
+        }
 
         if (! in_array($filter, $allowed, true)) {
             return;
@@ -155,12 +186,43 @@ new class extends Component {
     }
 
     /**
+     * Der mobile Select schreibt activeFilter direkt — also gilt dieselbe
+     * Prüfung wie in setFilter(), nur eben am Property-Hook.
+     */
+    public function updatedActiveFilter(string $value): void
+    {
+        if ($value === self::FILTER_AWAITING_OWN_VOTE && ! $this->isBoardMember) {
+            $this->activeFilter = 'all';
+        }
+
+        $this->resetPage();
+    }
+
+    /**
      * Nur die Suche angewandt — Ausgangspunkt sowohl für die Liste als auch für
      * die Filter-Zähler, die bewusst NICHT vom aktiven Filter eingeschränkt sind.
      */
     private function searchedQuery(): Builder
     {
         return ProjectProposal::query()->search($this->search);
+    }
+
+    /**
+     * Suche plus aktiver Filter. Der Vorstands-Filter wird hier nochmals gegen
+     * die Mitgliedschaft geprüft, damit er auf keinem Weg — URL, Mobile-Select,
+     * direkter Livewire-Aufruf — an der Autorisierung vorbeikommt.
+     */
+    private function filteredQuery(): Builder
+    {
+        if ($this->activeFilter !== self::FILTER_AWAITING_OWN_VOTE) {
+            return $this->searchedQuery()->withStatus($this->activeFilter);
+        }
+
+        if (! $this->isBoardMember) {
+            return $this->searchedQuery();
+        }
+
+        return $this->searchedQuery()->awaitingVoteFrom($this->currentPleb->id);
     }
 };
 ?>
@@ -214,6 +276,11 @@ new class extends Component {
                                 {{ $status->label() }} ({{ $this->statusCounts[$status->value] }})
                             </flux:select.option>
                         @endforeach
+                        @if($this->isBoardMember)
+                            <flux:select.option value="awaiting_my_vote">
+                                Fehlende Stimme ({{ $this->statusCounts['awaiting_my_vote'] }})
+                            </flux:select.option>
+                        @endif
                     </flux:select>
                 </div>
 
@@ -248,6 +315,27 @@ new class extends Component {
                         </button>
                     @endforeach
 
+                    {{-- Arbeitsliste des Vorstands: hier fehlt MEINE Stimme.
+                         Bewusst als eigener Chip am Ende der Reihe — er filtert
+                         nicht nach Status, sondern nach dem Betrachter. --}}
+                    @if($this->isBoardMember)
+                        @php($isActive = $activeFilter === 'awaiting_my_vote')
+                        <button type="button"
+                                wire:click="setFilter('awaiting_my_vote')"
+                                aria-pressed="{{ $isActive ? 'true' : 'false' }}"
+                                @class([
+                                    'inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500',
+                                    'border-orange-500 bg-orange-500 text-[#17120A]' => $isActive,
+                                    'border-orange-500/40 bg-bg-elevated text-orange-300 hover:border-orange-400 hover:text-orange-200' => ! $isActive,
+                                ])>
+                            <flux:icon name="hand-raised" variant="micro" aria-hidden="true"/>
+                            <span>Fehlende Stimme</span>
+                            <span @class(['text-text-disabled' => $this->statusCounts['awaiting_my_vote'] === 0 && ! $isActive])>
+                                {{ $this->statusCounts['awaiting_my_vote'] }}
+                            </span>
+                        </button>
+                    @endif
+
                     @if($activeFilter !== 'all' || $search !== '' || $sortBy !== 'newest')
                         <flux:spacer/>
                         <flux:button wire:click="resetFilters" variant="subtle" icon="x-mark" size="sm">
@@ -265,7 +353,9 @@ new class extends Component {
             @else
                 {{ $this->projects->total() }} von {{ $this->statusCounts['all'] }}
                 {{ $this->statusCounts['all'] === 1 ? 'Projekt' : 'Projekten' }}
-                @if($activeFilter !== 'all')
+                @if($activeFilter === 'awaiting_my_vote')
+                    · Fehlende Stimme
+                @elseif($activeFilter !== 'all')
                     · {{ \App\Enums\ProjectProposalStatus::from($activeFilter)->label() }}
                 @endif
                 @if($search !== '')
@@ -301,6 +391,15 @@ new class extends Component {
                         Die Suche prüft Projektname, Beschreibung und Einreicher.
                     </p>
                     <flux:button wire:click="resetFilters" variant="subtle" class="mt-4">Suche löschen</flux:button>
+                @elseif($activeFilter === 'awaiting_my_vote')
+                    <flux:icon name="check-circle" class="mx-auto size-12 text-text-disabled" aria-hidden="true"/>
+                    <p class="mt-4 text-base font-semibold text-text-primary">
+                        Du hast überall abgestimmt.
+                    </p>
+                    <p class="mt-1 text-sm text-text-secondary">
+                        Kein Antrag in Abstimmung wartet noch auf deine Stimme.
+                    </p>
+                    <flux:button wire:click="resetFilters" variant="subtle" class="mt-4">Alle Projekte anzeigen</flux:button>
                 @elseif($activeFilter !== 'all')
                     <flux:icon :name="\App\Enums\ProjectProposalStatus::from($activeFilter)->icon()"
                                class="mx-auto size-12 text-text-disabled" aria-hidden="true"/>

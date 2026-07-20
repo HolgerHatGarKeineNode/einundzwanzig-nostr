@@ -1186,7 +1186,9 @@ it('keeps voters anonymous and shows only the tally', function () {
         'einundzwanzig_pleb_id' => $board->id,
     ]);
 
-    $member = EinundzwanzigPleb::factory()->create();
+    // npub explizit: die Factory setzt sonst ein Lorem-Wort, das im Markup
+    // zufaellig vorkommt und die Anonymitaets-Pruefung wertlos macht.
+    $member = EinundzwanzigPleb::factory()->create(['npub' => 'npub1geheimesmitglied']);
     Profile::factory()->create([
         'pubkey' => $member->pubkey,
         'name' => 'GeheimesMitglied',
@@ -1212,4 +1214,89 @@ it('keeps voters anonymous and shows only the tally', function () {
         // Die Zahlen bleiben sichtbar.
         ->assertSee('Zustimmung')
         ->assertSee('Ablehnung');
+});
+
+// Filter "Fehlende Stimme" — die Arbeitsliste des Vorstands
+it('offers the missing-vote filter only to board members', function () {
+    ProjectProposal::factory()->create();
+
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.index')
+        ->assertSee('Fehlende Stimme');
+
+    $member = EinundzwanzigPleb::factory()->create();
+    NostrAuth::login($member->pubkey);
+
+    Livewire::test('association.project-support.index')
+        ->assertDontSee('Fehlende Stimme');
+
+    NostrAuth::logout();
+
+    Livewire::test('association.project-support.index')
+        ->assertDontSee('Fehlende Stimme');
+});
+
+it('lists only proposals still in voting where the board member has not voted yet', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+
+    $offen = ProjectProposal::factory()->create(['name' => 'Antrag ohne meine Stimme']);
+
+    $schonGestimmt = ProjectProposal::factory()->create(['name' => 'Antrag mit meiner Stimme']);
+    Vote::factory()->approve()->create([
+        'project_proposal_id' => $schonGestimmt->id,
+        'einundzwanzig_pleb_id' => $board->id,
+    ]);
+
+    // Beschlossen: die absolute Mehrheit steht, eine weitere Stimme aendert nichts.
+    $beschlossen = ProjectProposal::factory()->create(['name' => 'Antrag bereits beschlossen']);
+    EinundzwanzigPleb::query()
+        ->whereIn('npub', config('einundzwanzig.config.current_board'))
+        ->where('id', '!=', $board->id)
+        ->take(ProjectProposal::boardVoteThreshold())
+        ->get()
+        ->each(fn ($pleb) => Vote::factory()->approve()->create([
+            'project_proposal_id' => $beschlossen->id,
+            'einundzwanzig_pleb_id' => $pleb->id,
+        ]));
+
+    // Ausgezahlt: ebenfalls erledigt.
+    $ausgezahlt = ProjectProposal::factory()->create(['name' => 'Antrag ausgezahlt', 'sats_paid' => 21000]);
+
+    NostrAuth::login($board->pubkey);
+
+    $component = Livewire::test('association.project-support.index')
+        ->call('setFilter', 'awaiting_my_vote')
+        ->assertSet('activeFilter', 'awaiting_my_vote');
+
+    $namen = $component->get('projects')->pluck('name');
+
+    expect($namen)->toContain('Antrag ohne meine Stimme')
+        ->and($namen)->not->toContain('Antrag mit meiner Stimme')
+        ->and($namen)->not->toContain('Antrag bereits beschlossen')
+        ->and($namen)->not->toContain('Antrag ausgezahlt');
+});
+
+it('refuses the missing-vote filter for a non board member on every path', function () {
+    ProjectProposal::factory()->create(['name' => 'Sichtbarer Antrag']);
+
+    $member = EinundzwanzigPleb::factory()->create();
+    NostrAuth::login($member->pubkey);
+
+    // Direkter Livewire-Aufruf: der Filter bleibt, wo er war.
+    Livewire::test('association.project-support.index')
+        ->call('setFilter', 'awaiting_my_vote')
+        ->assertSet('activeFilter', 'all');
+
+    // Ueber die URL vorbelegt: faellt beim Mount auf 'all' zurueck.
+    Livewire::withQueryParams(['status' => 'awaiting_my_vote'])
+        ->test('association.project-support.index')
+        ->assertSet('activeFilter', 'all')
+        ->assertSee('Sichtbarer Antrag');
+
+    // Ueber den mobilen Select direkt gesetzt.
+    Livewire::test('association.project-support.index')
+        ->set('activeFilter', 'awaiting_my_vote')
+        ->assertSet('activeFilter', 'all');
 });

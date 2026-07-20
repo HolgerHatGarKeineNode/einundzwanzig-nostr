@@ -170,6 +170,19 @@ class ProjectProposal extends Model implements HasMedia
     }
 
     /**
+     * Anträge, die noch in Abstimmung sind und bei denen der angegebene Pleb
+     * seine Stimme noch nicht abgegeben hat — die Arbeitsliste eines
+     * Vorstandsmitglieds. Beschlossene oder ausgezahlte Anträge fallen raus:
+     * dort ändert eine weitere Stimme nichts mehr.
+     */
+    public function scopeAwaitingVoteFrom(Builder $query, int $plebId): Builder
+    {
+        return $query
+            ->withStatus(ProjectProposalStatus::InVoting->value)
+            ->whereDoesntHave('votes', fn (Builder $q) => $q->where('einundzwanzig_pleb_id', $plebId));
+    }
+
+    /**
      * Volltextsuche über Name, Beschreibung und den Namen des Einreichers.
      */
     public function scopeSearch(Builder $query, ?string $term): Builder
