@@ -707,3 +707,293 @@ it('shows "no contact channel" instead of an error when both dm and alternative 
     Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertSee('Kein Kontaktweg hinterlegt.');
 });
+
+// Privater Chatraum: canCreateChatRoom / canSeeChatRoom / storeChatRoom
+//
+// Modell-Ebene (nostrGroupId(), nostrGroupMemberPubkeys()) und reine
+// Policy-Aufrufe leben in tests/Feature/Models/ProjectProposalNostrGroupTest.php
+// und tests/Feature/Policies/ProjectProposalChatRoomPolicyTest.php. Hier geht es
+// um den Livewire-Endpunkt selbst: storeChatRoom() ist eine öffentliche Methode
+// und direkt aufrufbar, unabhängig davon, was die View anzeigt — der Schutz
+// muss also am Aufruf greifen, nicht nur am sichtbaren Knopf.
+
+it('allows a board member to see the create-chat-room action when no room exists', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canCreateChatRoom', true)
+        ->assertSee('Chatraum anlegen');
+});
+
+it('hides the create-chat-room action from the submitter', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canCreateChatRoom', false)
+        ->assertDontSee('Chatraum anlegen');
+});
+
+it('hides the create-chat-room action from an unrelated member', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canCreateChatRoom', false);
+});
+
+it('hides the create-chat-room action from a guest', function () {
+    $project = ProjectProposal::factory()->create();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canCreateChatRoom', false);
+});
+
+it('lets a board member create the chat room and persists the computed room id', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', $project->nostrGroupId())
+        ->assertHasNoErrors();
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBe($project->nostrGroupId());
+    expect($fresh->nostr_group_created_at)->not->toBeNull();
+});
+
+it('rejects storeChatRoom for the submitter, even with the correctly computed room id — the endpoint itself must refuse, not just the button', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', $project->nostrGroupId())
+        ->assertForbidden();
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBeNull();
+    expect($fresh->nostr_group_created_at)->toBeNull();
+});
+
+it('rejects storeChatRoom for an unrelated member', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', $project->nostrGroupId())
+        ->assertForbidden();
+
+    expect($project->fresh()->nostr_group_h)->toBeNull();
+});
+
+it('rejects storeChatRoom for a guest', function () {
+    $project = ProjectProposal::factory()->create();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', $project->nostrGroupId())
+        ->assertForbidden();
+
+    expect($project->fresh()->nostr_group_h)->toBeNull();
+});
+
+it('refuses a second storeChatRoom call once the room already exists, without changing the stored value', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    $component = Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', $project->nostrGroupId())
+        ->assertHasNoErrors();
+
+    $storedAfterFirstCall = $project->fresh()->nostr_group_h;
+    $createdAtAfterFirstCall = $project->fresh()->nostr_group_created_at;
+
+    // Der zweite Aufruf trifft auf eine bereits vorhandene Raum-ID: die
+    // createChatRoom-Policy verlangt ! hasNostrGroup() und verweigert daher —
+    // das ist die Idempotenz-Grenze, nicht ein stiller no-op im Handler selbst.
+    $component->call('storeChatRoom', $project->nostrGroupId())
+        ->assertForbidden();
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBe($storedAfterFirstCall);
+    expect($fresh->nostr_group_created_at->equalTo($createdAtAfterFirstCall))->toBeTrue();
+});
+
+it('rejects storeChatRoom when the reported room id does not match the server-computed one, and writes nothing', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    // Der Aufrufer ist berechtigt (Vorstand, kein Raum vorhanden) — die
+    // Ablehnung muss also aus dem Abgleich im Handler kommen, nicht aus der
+    // Policy.
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('storeChatRoom', 'p'.str_repeat('f', 12))
+        ->assertHasNoErrors();
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBeNull();
+    expect($fresh->nostr_group_created_at)->toBeNull();
+    expect($fresh->hasNostrGroup())->toBeFalse();
+});
+
+it('hides the chat room panel entirely before it exists for a non-board, non-submitter viewer', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', false)
+        ->assertSet('canCreateChatRoom', false)
+        ->assertDontSee('Chat zum Antrag');
+});
+
+it('shows the existing chat room to a board member', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create(['nostr_group_h' => 'p'.str_repeat('a', 12)]);
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', true)
+        ->assertSee('Chat öffnen');
+});
+
+it('shows the existing chat room to the submitter', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'einundzwanzig_pleb_id' => $submitter->id,
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+    ]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', true)
+        ->assertSee('Chat öffnen');
+});
+
+it('hides an existing chat room from an unrelated member', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['nostr_group_h' => 'p'.str_repeat('a', 12)]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', false)
+        ->assertDontSee('Chat zum Antrag');
+});
+
+it('hides an existing chat room from a guest', function () {
+    $project = ProjectProposal::factory()->create(['nostr_group_h' => 'p'.str_repeat('a', 12)]);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', false)
+        ->assertDontSee('Chat zum Antrag');
+});
+
+it('delegates chatRoomMemberPubkeys to the model, including submitter and board', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);
+
+    NostrAuth::login($board->pubkey);
+
+    $component = Livewire::test('association.project-support.show', ['projectProposal' => $project]);
+
+    expect($component->get('chatRoomMemberPubkeys'))->toBe($project->nostrGroupMemberPubkeys());
+    expect($component->get('chatRoomMemberPubkeys'))->toContain($submitter->pubkey);
+});
+
+// Eingebettete Chat-Insel auf der Detailseite.
+//
+// Entscheidend ist die SERVER-Seite: Wer den Raum nicht sehen darf, bekommt das
+// Insel-Markup gar nicht erst ausgeliefert. Ein rein visuelles Verstecken waere
+// wertlos — der Raumname und die Mitglieder-Pubkeys staenden trotzdem im HTML.
+
+it('embeds the chat island for a board member once the room exists', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+    $project->nostr_group_h = $project->nostrGroupId();
+    $project->nostr_group_created_at = now();
+    $project->save();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', true)
+        ->assertSee('projectChatFeed(', false)
+        ->assertSee('projectChatRoomFeed(', false);
+});
+
+it('embeds the chat island for the submitter once the room exists', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);
+    $project->nostr_group_h = $project->nostrGroupId();
+    $project->nostr_group_created_at = now();
+    $project->save();
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', true)
+        ->assertSee('projectChatFeed(', false);
+});
+
+it('leaves no trace of the chat island for an unrelated member', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+    $project->nostr_group_h = $project->nostrGroupId();
+    $project->nostr_group_created_at = now();
+    $project->save();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', false)
+        ->assertDontSee('projectChatFeed(', false)
+        ->assertDontSee('projectChatRoomFeed(', false)
+        ->assertDontSee($project->nostrGroupId());
+});
+
+it('leaves no trace of the chat island for a guest', function () {
+    $project = ProjectProposal::factory()->create();
+    $project->nostr_group_h = $project->nostrGroupId();
+    $project->nostr_group_created_at = now();
+    $project->save();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatRoom', false)
+        ->assertDontSee('projectChatFeed(', false)
+        ->assertDontSee($project->nostrGroupId());
+});
+
+it('keeps the fallback link to the full chat client next to the island', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+    $project->nostr_group_h = $project->nostrGroupId();
+    $project->nostr_group_created_at = now();
+    $project->save();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSee('Chat öffnen')
+        ->assertSee('/rooms/'.$project->nostrGroupId(), false);
+});

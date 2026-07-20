@@ -677,6 +677,15 @@ new class extends Component {
                         </div>
 
                         @if($projectProposal->hasNostrGroup())
+                            {{-- Die Chat-Vollbildseite liegt auf dem Space-Host, nicht
+                                 im Verein: ws(s):// -> https://.
+                                 Bewusst die einzeilige Form der php-Direktive: Weiter
+                                 oben steht bereits eine einzeilige ohne Abschluss.
+                                 Blades Raw-Block-Regex paart die erste Oeffnung mit dem
+                                 NAECHSTEN Abschluss — ein Block hier verschluckte alles
+                                 dazwischen, und die Datei liesse sich nicht mehr
+                                 uebersetzen. --}}
+                            @php($chatClientUrl = rtrim(str_replace(['ws://', 'wss://'], 'https://', config('group.space_url', '')), '/'))
                             <div class="flex items-start gap-2">
                                 <flux:icon name="chat-bubble-left-right" variant="micro"
                                            class="mt-1 shrink-0 text-text-tertiary" aria-hidden="true"/>
@@ -686,19 +695,34 @@ new class extends Component {
                                     </p>
                                     {{-- Harter Full-Load statt wire:navigate: Die Chat-Seite
                                          ist eine eigenstaendige Nostr-Insel; ein SPA-Wechsel
-                                         liefert dort einen toten JS-Kontext. --}}
+                                         liefert dort einen toten JS-Kontext. Der Link bleibt
+                                         auch neben der eingebetteten Ansicht stehen: Die Insel
+                                         kann scheitern (SDK, Signer, Relay), und ein toter Chat
+                                         ohne Ausweichweg waere schlechter als einer mit. --}}
                                     <flux:button
                                         class="mt-2 w-full"
                                         size="sm"
                                         variant="filled"
                                         icon-trailing="arrow-top-right-on-square"
-                                        href="{{ rtrim(str_replace(['ws://', 'wss://'], 'https://', config('group.space_url', '')), '/') }}/rooms/{{ $projectProposal->nostr_group_h }}"
+                                        href="{{ $chatClientUrl }}/rooms/{{ $projectProposal->nostr_group_h }}"
                                         target="_blank"
                                     >
                                         Chat öffnen
                                     </flux:button>
                                 </div>
                             </div>
+
+                            {{-- Eingebettete Raum-Ansicht — hinter demselben Gate wie
+                                 die Kontaktangabe. canCreateChatRoom allein reicht
+                                 NICHT: Es geht ums Mitlesen, nicht ums Anlegen. --}}
+                            @if($this->canSeeChatRoom)
+                                @include('partials.project-chat-feed', [
+                                    'roomId' => $projectProposal->nostr_group_h,
+                                    'roomName' => $projectProposal->name,
+                                    'currentPubkey' => $currentPubkey,
+                                    'clientUrl' => $chatClientUrl,
+                                ])
+                            @endif
                         @elseif($this->canCreateChatRoom)
                             {{-- projectChatRoom ist in app.js registriert, laeuft also
                                  vor Alpines Start. Das Chat-SDK laedt die Komponente

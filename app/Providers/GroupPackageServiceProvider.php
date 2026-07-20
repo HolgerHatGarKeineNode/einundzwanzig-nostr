@@ -41,9 +41,15 @@ class GroupPackageServiceProvider extends ServiceProvider
         // group::partials.chat-row, group::partials.chat-composer, …
         $this->loadViewsFrom($views, 'group');
 
-        // Die Package-Views nutzen __('Deutscher Text') als Key. Additiv — die
-        // lang/*.json der App bleiben unberührt und haben Vorrang.
-        $this->loadJsonTranslationsFrom($this->packagePath('/lang'));
+        // Die Übersetzungen des Packages werden BEWUSST NICHT geladen.
+        //
+        // Seine Views nutzen den deutschen Text selbst als Key — `lang/en.json`
+        // übersetzt ihn also ins Englische. Der Verein läuft mit APP_LOCALE=en
+        // (seine eigenen Texte stehen fest im Markup, deutsch). Mit geladenen
+        // Package-Übersetzungen erschien der eingebettete Chat deshalb auf
+        // Englisch mitten in einer deutschen Seite („Write a message…" unter
+        // „Chat zum Antrag"). Ohne sie liefert __() den Key zurück — Deutsch,
+        // unabhängig von der eingestellten Locale.
 
         // <x-group::nostr-avatar>, <x-group::profile-card>, …
         Blade::anonymousComponentPath($views.'/components', 'group');

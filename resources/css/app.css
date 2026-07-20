@@ -37,6 +37,13 @@
    fehlen die Utilities der Raum-Ansicht im gebauten CSS. Bewusst nur die
    partials/ — nicht die ganzen Package-Views, von denen wir nichts rendern. */
 @source "../../vendor/einundzwanzig/group/resources/views/partials/*.blade.php";
+/* Dieselbe Begruendung fuer die Blade-Komponenten, die die Chat-Partials
+   einbinden — bewusst einzeln aufgezaehlt statt components/*, damit nicht die
+   Klassen der Vollbildseiten (Header, Shell, Wallet) mitwandern. */
+@source "../../vendor/einundzwanzig/group/resources/views/components/nostr-avatar.blade.php";
+@source "../../vendor/einundzwanzig/group/resources/views/components/nostr-nip05.blade.php";
+@source "../../vendor/einundzwanzig/group/resources/views/components/emoji-picker.blade.php";
+@source "../../vendor/einundzwanzig/group/resources/views/components/profile-card.blade.php";
 
 /* ----------------------------------------
    Custom Variants

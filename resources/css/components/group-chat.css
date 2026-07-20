@@ -34,7 +34,76 @@
     --duration-tap: 120ms;
     --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
     --shadow-card-pressed: 0 1px 2px rgb(24 24 27 / 0.06);
+
+    /* Radius-Skala des Packages: `rounded-tile`/`rounded-card` stehen in den
+       Chat-Partials (Anhang-Vorschau, Mention-Liste, Poll-Optionen, Zeile).
+       Ohne sie faellt Tailwind auf 0 zurueck — der Chat saehe eckig aus. */
+    --radius-tile: 0.875rem;
+    --radius-card: 1rem;
+    --radius-pill: 9999px;
+
+    /* Traegt `surface-card` (unten). Im Dark tragen Border und Grund die
+       Abgrenzung, deshalb dort keine Elevation. */
+    --shadow-card: 0 1px 2px rgb(24 24 27 / 0.04), 0 6px 16px -8px rgb(24 24 27 / 0.10);
+
+    /* Skeleton-Puls waehrend des ersten Ladens. */
+    --animate-shimmer: shimmer 1.4s ease-in-out infinite;
 }
+
+@keyframes shimmer {
+    0% { opacity: 0.45; }
+    50% { opacity: 0.85; }
+    100% { opacity: 0.45; }
+}
+
+/* Karten-Oberflaeche der Chat-Bausteine (Composer-Vorschau, Mention-Liste,
+   Aktions-Leiste, Emoji-Panel). Bewusst gegen die Vereins-Tokens gesetzt statt
+   gegen die zinc-Rampe des Packages — die Insel sitzt in einer Vereinsseite und
+   soll sich nach ihr richten, nicht nach dem Chat-Client. */
+@utility surface-card {
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-surface);
+}
+
+/* Sekundaertext im Chat. Zeigt auf das Vereins-Token, damit Kontrast und
+   Farbstimmung mit dem Rest der Seite uebereinstimmen. */
+@utility text-muted {
+    color: var(--color-text-secondary);
+}
+
+/* Touch-Ziel >= 44px (WCAG 2.5.5) nur auf grobem Pointer — die Maus bleibt
+   kompakt. Greift auf die dichten Chat-Aktionsknoepfe. */
+@media (pointer: coarse) {
+    .icon-btn-touch {
+        min-height: 2.75rem;
+        min-width: 2.75rem;
+    }
+}
+
+/* Ladeplatzhalter des ersten Verlaufs-Renderings. */
+.skeleton {
+    background-color: var(--color-zinc-800);
+    border-radius: var(--radius-tile);
+    animation: var(--animate-shimmer);
+}
+
+/* Leerer Raum: gestaffelte Entrance (Icon → Text). */
+@keyframes fade-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.empty-state > * { animation: fade-rise 0.45s var(--ease-spring) backwards; }
+.empty-state > :nth-child(2) { animation-delay: 0.07s; }
+.empty-state > :nth-child(n + 3) { animation-delay: 0.14s; }
 
 /* Tappbare Nicht-Flux-Flaechen im Chat (Reaktionen, Zitat-/Toggle-Buttons). */
 .pressable {
@@ -115,7 +184,9 @@
 
 @media (prefers-reduced-motion: reduce) {
     .pressable,
-    .chip-in {
+    .chip-in,
+    .skeleton,
+    .empty-state > * {
         transition: none;
         animation: none;
     }

@@ -58,6 +58,15 @@ export default defineConfig({
             '@einundzwanzig/group/auth-gate': packageEntry('js/auth-gate.ts'),
             // createRoom() und addRoomMember() fuer die Anlage des Antragsraums.
             '@einundzwanzig/group/groups': packageEntry('js/groups.ts'),
+            // toast(): Die eingebettete Raum-Ansicht sagt damit, wo eine im
+            // Ausschnitt fehlende Funktion weitergeht (Bild anhaengen). Bewusst
+            // die Package-Funktion statt eines nachgebauten Event-Dispatch —
+            // Flux' <flux:toast> erwartet eine exakte Detail-Form.
+            '@einundzwanzig/group/toast': packageEntry('js/toast.ts'),
+            // clearCache(): Beim Abmelden muss der Klartext-Cache des Raums aus
+            // der IndexedDB. Solange die Insel laeuft, haelt sie die Verbindung
+            // offen — nur clearCache() schliesst sie erst und loescht dann.
+            '@einundzwanzig/group/storage': packageEntry('js/storage.ts'),
             '@einundzwanzig/group': packageEntry('js/index.ts'),
         },
     },

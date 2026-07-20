@@ -24,6 +24,8 @@ yarn-error.log
 /.opencode
 .switch-omo-config*
 /.playwright-mcp
+# Artefakte der Playwright-Laeufe (Traces, Fehler-Snapshots)
+/test-results
 /*.png
 semgrep.json
 

@@ -2,8 +2,12 @@
 
 {{--
     Kontaktwunsch des Einreichers. Bewusst vollstaendig optional: wer weder eine
-    Nostr-DM noch einen anderen Kanal angibt, moechte schlicht nicht kontaktiert
-    werden — das ist ein legitimer Wunsch und kein unvollstaendiges Formular.
+    Nostr-DM noch einen anderen Kanal angibt, waehlt damit den Weg ueber den
+    privaten Chatraum des Antrags — kein unvollstaendiges Formular.
+
+    Der Text sagt seit der Einfuehrung dieser Raeume NICHT mehr "dann wirst du
+    nicht kontaktiert": Der Einreicher wird dem Raum immer beigefuegt, und eine
+    Zusage im Formular, die die Software bricht, waere schlimmer als keine.
 
     Das x-show haengt an einem rohen <div>, nicht am <flux:field>: Flux-Komponenten
     und rohes HTML haben unterschiedliche Bind-Konventionen, und ein x-show direkt
@@ -27,7 +31,8 @@
                 <flux:input wire:model="form.contact_alternative"
                             placeholder="z. B. E-Mail, Telegram, Matrix" />
                 <flux:description>
-                    Lässt du das Feld leer, möchtest du zu diesem Antrag nicht kontaktiert werden.
+                    Lässt du das Feld leer, meldet sich der Vorstand nur im privaten
+                    Chatraum zu deinem Antrag, zu dem du automatisch Zugang hast.
                 </flux:description>
                 <flux:error name="form.contact_alternative" />
             </flux:field>

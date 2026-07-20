@@ -27,6 +27,17 @@ export default function projectChatRoom(config) {
             this.progress = 'Chat wird geladen …'
 
             try {
+                // Die Anlage meldet sich BEWUSST erst nach dem Import an (der
+                // Signer wird erst zum Publizieren gebraucht) — fuer sie ist das
+                // folgenlos, sie haengt an keinem Cache. Fuer die Insel auf
+                // derselben Seite ist es das nicht: Der Import initialisiert den
+                // Event-Speicher des Packages EINMALIG, ohne Session also als
+                // Gast (siehe projectChatFeed.js, signInThenReload). Deshalb hier
+                // nur der Vermerk — die Insel baut die Seite danach einmal neu
+                // auf. Ein Neuaufbau an dieser Stelle verbietet sich: Er schnitte
+                // die laufende Anlage mitten im Publizieren ab.
+                window.__ezChatBootedWithoutSession = ! localStorage.getItem('pubkey')
+
                 // Erst hier faellt das SDK an — nicht beim Seitenaufbau.
                 const [{ createRoom, addRoomMember }, { loginWithExtension }, { isAuthed }] = await Promise.all([
                     import('@einundzwanzig/group/groups'),

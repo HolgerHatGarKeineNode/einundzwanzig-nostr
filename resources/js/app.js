@@ -6,6 +6,8 @@ import nostrLogin from "./nostrLogin.js";
 import nostrZap from "./nostrZap.js";
 import electionAdminCharts from "./electionAdminCharts.js";
 import projectChatRoom from "./projectChatRoom.js";
+import projectChatFeed from "./projectChatFeed.js";
+import nostrLogout from "./nostrLogout.js";
 
 import './bootstrap';
 
@@ -30,5 +32,12 @@ Alpine.data('electionAdminCharts', electionAdminCharts);
 // registriert sein. Das Chat-SDK laedt projectChatRoom selbst per dynamischem
 // Import erst beim Klick — hier faellt nichts Schweres an.
 Alpine.data('projectChatRoom', projectChatRoom);
+// Dasselbe Prinzip fuer die eingebettete Raum-Ansicht: Die Huelle ist leicht,
+// das SDK und die Package-Komponenten kommen per dynamischem Import — und damit
+// erst NACH Alpines Start (siehe Kopf von projectChatFeed.js).
+Alpine.data('projectChatFeed', projectChatFeed);
+// Abmelden raeumt den Klartext-Cache des Chats vom Geraet. Leicht und ohne
+// Import des SDK — der Knopf steht auf jeder Seite (siehe nostrLogout.js).
+Alpine.data('nostrLogout', nostrLogout);
 
 Livewire.start();

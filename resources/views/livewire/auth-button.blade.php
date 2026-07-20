@@ -59,7 +59,12 @@ new class extends Component
 
 <div x-data="nostrLogin" data-nostr-challenge="{{ $nostrChallenge ?? '' }}">
     @if($isLoggedIn)
-        <form method="post" action="{{ route('logout') }}">
+        {{-- Vor dem Absenden den Klartext-Cache des Chats vom Geraet raeumen.
+             Der Handler laedt dafuer NICHTS nach; ohne Chat auf der Seite ist es
+             ein Aufruf der IndexedDB-API. Siehe resources/js/nostrLogout.js. --}}
+        <form method="post" action="{{ route('logout') }}"
+              x-data="nostrLogout"
+              x-on:submit.prevent="submitAfterWipe($event.target)">
             @csrf
             <flux:button variant="ghost" icon="arrow-right-start-on-rectangle" type="submit" wire:click="$dispatch('nostrLoggedOut')">Logout</flux:button>
         </form>
