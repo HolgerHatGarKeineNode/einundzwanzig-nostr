@@ -184,6 +184,25 @@ new class extends Component {
     }
 
     /**
+     * Darf der Betrachter den Chat-Abschnitt überhaupt sehen?
+     *
+     * Weiter gefasst als die beiden Rechte darunter, und zwar mit Absicht: Ein
+     * Einreicher, dessen Raum noch nicht angelegt ist, hat weder `viewChatRoom`
+     * (das verlangt einen existierenden Raum) noch `createChatRoom` (nur
+     * Vorstand). Er fiel damit durch beide Gates und sah vom Chat gar nichts —
+     * auch nicht den Hinweis, der für genau diesen Fall im Markup steht.
+     *
+     * `viewContact` ist der richtige Zuschnitt: Der Antragsraum ist der private
+     * Kanal zwischen Vorstand und Einreicher, also derselbe Personenkreis, dem
+     * auch die Kontaktangaben gehören.
+     */
+    #[Computed]
+    public function canSeeChatSection(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('viewContact', $this->projectProposal);
+    }
+
+    /**
      * Die Pubkeys, die in den Raum gehören — für die Insel, die daraus die
      * kind-9000-Events baut.
      *
@@ -381,7 +400,7 @@ new class extends Component {
 
              Das Gate bleibt serverseitig: Wer den Raum nicht sehen darf,
              bekommt dieses Markup gar nicht erst. --}}
-        @if($this->canSeeChatRoom || $this->canCreateChatRoom)
+        @if($this->canSeeChatSection)
             {{-- Die Chat-Vollbildseite liegt auf dem Space-Host, nicht im
                  Verein: ws(s):// -> https://.
                  Bewusst die einzeilige Form der php-Direktive: Weiter oben
@@ -477,8 +496,9 @@ new class extends Component {
                              innerhalb von <template x-if="ready"> — sie entsteht also
                              erst beim tatsaechlichen Laden.
 
-                             Der Verlauf selbst bleibt auf 68ch begrenzt: ueber die volle
-                             Bandbreite waere die Zeilenlaenge nicht mehr lesbar. --}}
+                             Der Verlauf nutzt die volle Bandbreite (siehe Kommentar
+                             unten) — 68ch bleibt dem Fliesstext und der Ueberschrift
+                             vorbehalten, wo eine Lesebreite hingehoert. --}}
                         <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-4">
                             <dl class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
                                 <div class="flex items-center gap-2">
@@ -524,7 +544,14 @@ new class extends Component {
                              die Kontaktangabe. canCreateChatRoom allein reicht
                              NICHT: Es geht ums Mitlesen, nicht ums Anlegen. --}}
                         @if($this->canSeeChatRoom)
-                            <div class="min-w-0 max-w-[68ch]">
+                            {{-- Volle Bandbreite, bewusst ohne Lesebreiten-Deckel:
+                                 Zeilen und Eingabefeld des Packages bringen selbst
+                                 keine Begrenzung mit, sie sind fuer die volle Breite
+                                 gebaut — genau so sieht der Raum auch im vollen
+                                 Chat-Client aus. Ein Deckel hier liess auf breiten
+                                 Schirmen die halbe Bandflaeche leer und quetschte
+                                 den Composer nach links. --}}
+                            <div class="min-w-0">
                                 @include('partials.project-chat-feed', [
                                     'roomId' => $projectProposal->nostr_group_h,
                                     'roomName' => $projectProposal->name,
@@ -577,8 +604,7 @@ new class extends Component {
                         </div>
                     @else
                         <p class="max-w-[68ch] pt-4 text-sm text-text-secondary">
-                            Der Vorstand legt den Raum an, sobald es Rückfragen zu deinem
-                            Antrag gibt. Danach steht er hier.
+                            Der Vorstand legt den Raum bei Nachfragen an. Danach steht er hier.
                         </p>
                     @endif
                 </div>

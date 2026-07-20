@@ -864,6 +864,38 @@ it('hides the chat room panel entirely before it exists for a non-board, non-sub
         ->assertDontSee('Chat zum Antrag');
 });
 
+/**
+ * Der Einreicher faellt durch beide Einzelrechte, solange kein Raum existiert:
+ * `viewChatRoom` verlangt einen Raum, `createChatRoom` den Vorstand. Vor der
+ * Einfuehrung von `canSeeChatSection` war der Hinweis fuer genau diesen Fall
+ * damit toter Code — der Einreicher erfuhr nichts von dem privaten Kanal.
+ */
+it('tells the submitter about the coming chat room before it exists', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatSection', true)
+        ->assertSet('canSeeChatRoom', false)
+        ->assertSet('canCreateChatRoom', false)
+        ->assertSee('Chat zum Antrag')
+        ->assertSee('Der Vorstand legt den Raum bei Nachfragen an');
+});
+
+it('keeps the chat section closed for a non-board, non-submitter viewer', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canSeeChatSection', false)
+        ->assertDontSee('Chat zum Antrag')
+        ->assertDontSee('Der Vorstand legt den Raum bei Nachfragen an');
+});
+
 it('shows the existing chat room to a board member', function () {
     $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
     $project = ProjectProposal::factory()->create(['nostr_group_h' => 'p'.str_repeat('a', 12)]);

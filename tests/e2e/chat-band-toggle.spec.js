@@ -31,7 +31,16 @@ const BOARD_SEC = process.env.E2E_BOARD_SEC ?? 'a08bacac006cbee5ad0d8cc685e8f0cf
 const MOBILE = { width: 390, height: 844 }
 const DESKTOP = { width: 1280, height: 800 }
 const DESKTOP_WIDE = { width: 1440, height: 900 }
+const DESKTOP_HD = { width: 1920, height: 1080 }
 const REFLOW = { width: 320, height: 700 }
+
+/**
+ * Frischer, fest verdrahteter Schluessel ohne EinundzwanzigPleb-Zeile in der
+ * Fixtur — weder Vorstand noch Einreicher. `getPleb()` liefert fuer ihn null,
+ * `viewContact` also false (siehe ProjectProposalPolicy). Bewusst deterministisch
+ * statt bei jedem Lauf neu generiert.
+ */
+const STRANGER_SEC = '7922dc52b2bea10d63dbd135550335758e02b02c794971d355c8b32b99b8634c'
 
 /** Fester Raum-Stand der Fixtur — fuer die Zustaende OHNE Raum zwischenzeitlich
  *  genullt (resetRoom) und danach hierauf zurueckgesetzt. */
@@ -287,6 +296,81 @@ test.describe('Aenderung A: Band nimmt seine Hoehe aus dem Inhalt', () => {
     })
 })
 
+/**
+ * ── Nachtrag: max-w-[68ch] am Insel-Container entfernt (show.blade.php,
+ * uncommitted). Beschwerde: Auf einem ~1630px-Schirm klebte der geladene
+ * Verlauf in einer 68-Zeichen-Spalte links, rechts blieb die halbe
+ * Bandflaeche leer. Miss Verlauf und Composer GEGEN die Bandbreite — die
+ * korrekte Grosse haengt am Band (das seinerseits an max-w-[1600px] des
+ * Seiteninhalts haengt), nicht an einer festen Pixelzahl.
+ */
+test.describe('Nachtrag: Chat nutzt die Bandbreite (68ch-Deckel entfernt)', () => {
+    for (const [label, viewport] of Object.entries({ '1920x1080': DESKTOP_HD, '1440x900': DESKTOP_WIDE })) {
+        test(`Verlauf und Composer fast so breit wie das Band, kein Leerraum rechts (${label})`, async ({ page }) => {
+            await page.setViewportSize(viewport)
+            await installLocalNip07(page)
+            await page.goto(`/association/project-support/${PROPOSAL_SLUG}`)
+            await page.getByRole('button', { name: /Mit Nostr verbinden/i }).first().click()
+            await expect(page.getByText('Chat zum Antrag')).toBeVisible({ timeout: 60000 })
+
+            const panel = page.locator('#chat-band-panel')
+            const band = panel.locator('xpath=..')
+            const bandBox = await band.boundingBox()
+
+            const loadButton = page.getByRole('button', { name: /Chat hier laden/i })
+            await expect(loadButton).toBeVisible()
+            await loadButton.click()
+            const composer = page.getByLabel('Nachricht schreiben')
+            await expect(composer).toBeVisible({ timeout: 60000 })
+
+            const logBox = await page.locator('[role="log"]').boundingBox()
+            // Die ganze Composer-ZEILE (Anhang-Knopf, Textfeld, Senden-Knopf), nicht
+            // nur das Eingabefeld — sonst verdeckten die Icon-Knoepfe eine schmalere
+            // tatsaechliche Breite.
+            const composerRowBox = await composer.locator('xpath=..').boundingBox()
+
+            const logRatio = logBox.width / bandBox.width
+            const composerRatio = composerRowBox.width / bandBox.width
+            console.log(`${label}: Band ${bandBox.width}px, Verlauf ${logBox.width}px (${(logRatio * 100).toFixed(1)}%), Composer ${composerRowBox.width}px (${(composerRatio * 100).toFixed(1)}%)`)
+
+            // Gemessen: 97.3% (1920) / 96.0% (1440) — der Rest ist die Innenpolsterung
+            // des Bands (px-4/px-5). 0.85 als Schwelle liegt klar darueber, aber weit
+            // unter dem alten 68ch-Deckel (~750px bei 1920 waeren nur ~48%) — ein
+            // Rueckfall auf den Deckel faellt hier zuverlaessig durch.
+            expect(logRatio, `Verlauf nur ${(logRatio * 100).toFixed(1)}% der Bandbreite (${label}) — 68ch-Deckel zurueck?`)
+                .toBeGreaterThan(0.85)
+            expect(composerRatio, `Composer nur ${(composerRatio * 100).toFixed(1)}% der Bandbreite (${label}) — 68ch-Deckel zurueck?`)
+                .toBeGreaterThan(0.85)
+
+            // ── Nicht ins Gegenteil gekippt ──────────────────────────────────────
+            const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+            const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
+            expect(scrollWidth, `Horizontale Scrollleiste (${label}): scrollWidth ${scrollWidth} > clientWidth ${clientWidth}`)
+                .toBeLessThanOrEqual(clientWidth)
+
+            expect(composerRowBox.x + composerRowBox.width, `Composer laeuft ueber den rechten Bandrand hinaus (${label})`)
+                .toBeLessThanOrEqual(bandBox.x + bandBox.width + 1)
+
+            // Keine echte Leer-Raum-Fixtur verfuegbar (die einzige Raum-Fixtur traegt
+            // 36 Nachrichten) — als naechstbester Beleg gegen "zerrissen": Eine
+            // tatsaechlich gerenderte Nachrichtenzeile bleibt INNERHALB des
+            // Verlauf-Containers, nichts ragt bei voller Breite heraus.
+            const firstRow = page.locator('[id^="msg-"]').first()
+            await expect(firstRow).toBeVisible()
+            const rowBox = await firstRow.boundingBox()
+            expect(rowBox.x, `Nachrichtenzeile ragt links aus dem Verlauf (${label})`).toBeGreaterThanOrEqual(logBox.x - 1)
+            expect(rowBox.x + rowBox.width, `Nachrichtenzeile ragt rechts aus dem Verlauf (${label})`)
+                .toBeLessThanOrEqual(logBox.x + logBox.width + 1)
+
+            if (label === '1920x1080') {
+                await page.screenshot({
+                    path: '/tmp/claude-1000/-home-user-Code-einundzwanzig-nostr/576545e5-100b-4a8e-a905-9e6c6ed70562/scratchpad/screenshots/nachtrag-1920-loaded.png',
+                })
+            }
+        })
+    }
+})
+
 test.describe('Aenderung A: Zustaende ohne Raum', () => {
     test.beforeAll(() => resetRoom(PROPOSAL_SLUG, DB_PATH))
     test.afterAll(() => restoreRoom())
@@ -307,39 +391,61 @@ test.describe('Aenderung A: Zustaende ohne Raum', () => {
     })
 
     /**
-     * FUND, kein Fix (siehe Bericht): Fuer einen Einreicher ohne Raum bleibt
-     * das Band komplett unsichtbar, obwohl das Blade eine "Der Vorstand legt
-     * den Raum an..."-Zeile fuer genau diesen Fall vorsieht (show.blade.php,
-     * @else-Zweig bei "Der Vorstand legt den Raum an").
+     * War FUND, jetzt Regressionstest (siehe Bericht): Fuer einen Einreicher
+     * ohne Raum blieb das Band komplett unsichtbar, obwohl das Blade eine
+     * "Der Vorstand legt den Raum bei Nachfragen an."-Zeile fuer genau diesen Fall vorsieht.
      *
-     * Ursache: Das aeussere Gate ist `canSeeChatRoom || canCreateChatRoom`.
-     * `canSeeChatRoom` (ProjectProposalPolicy::viewChatRoom) verlangt
-     * `hasNostrGroup()`, `canCreateChatRoom` (::createChatRoom) verlangt
-     * Vorstandsmitgliedschaft. Ohne Raum ist canSeeChatRoom immer false; ein
-     * Einreicher ohne Vorstandsstatus erfuellt auch canCreateChatRoom nicht —
-     * das aeussere @if ist fuer diese Kombination nie wahr, und der innere
-     * @else-Zweig (Zeile ~578) ist toter Code. Vorbestehend seit 5488039, NICHT
-     * durch die Aenderungen A/B eingefuehrt (siehe `git diff` auf die Gate-Zeile
-     * — unveraendert). Nicht gepatcht (Boundary: kein Produktivcode-Fix).
-     *
-     * test.fail(): dokumentiert den Bug als bekannt-rot, ohne die Suite als
-     * gruen zu melden — kippt der Test unerwartet auf gruen, meldet Playwright
-     * das als Fehler und zeigt an, dass hier jemand den Gate-Fehler behoben hat.
+     * Ursache war das aeussere Gate `canSeeChatRoom || canCreateChatRoom`:
+     * `canSeeChatRoom` verlangt `hasNostrGroup()`, `canCreateChatRoom`
+     * Vorstandsmitgliedschaft — ein Einreicher ohne Raum und ohne
+     * Vorstandsstatus erfuellte keines von beiden, das @if war fuer diese
+     * Kombination nie wahr. Fix (uncommitted): neues, weiter gefasstes Gate
+     * `canSeeChatSection` (= `viewContact` = Einreicher ODER Vorstand) ersetzt
+     * die Oder-Verknuepfung der beiden engeren Rechte. War `test.fail()`, jetzt
+     * eine echte Assertion — kippt sie zurueck auf rot, ist die Regression
+     * zurueck.
      */
-    test.fail('Einreicher ohne Raum: Band bleibt unsichtbar (Gate-Luecke, siehe Kommentar)', async ({ page }) => {
+    test('Einreicher ohne Raum sieht jetzt das Band mit dem Anlege-Hinweis', async ({ page }) => {
         await page.setViewportSize(DESKTOP)
         await installLocalNip07(page, SUBMITTER_SEC)
+        await page.goto(`/association/project-support/${PROPOSAL_SLUG}`)
+        await page.getByRole('button', { name: /Mit Nostr verbinden/i }).first().click()
+
+        const header = page.getByRole('button', { name: 'Chat zum Antrag' })
+        await expect(header).toBeVisible({ timeout: 60000 })
+        await expect(header).toHaveAttribute('aria-expanded', 'true')
+        await expect(page.getByText('Der Vorstand legt den Raum bei Nachfragen an')).toBeVisible()
+
+        await page.screenshot({
+            path: '/tmp/claude-1000/-home-user-Code-einundzwanzig-nostr/576545e5-100b-4a8e-a905-9e6c6ed70562/scratchpad/screenshots/band-no-room-submitter-fixed.png',
+            fullPage: true,
+        })
+    })
+
+    /**
+     * Gegenprobe zum obigen Fix: `viewContact` ist bewusst WEITER als die
+     * beiden Einzelrechte, aber nicht grenzenlos offen. Ein Fremder — weder
+     * Einreicher noch Vorstand — muss weiterhin nichts vom Chat-Abschnitt im
+     * HTML bekommen. `toHaveCount(0)` statt `toBeHidden()`: das Gate steht
+     * serverseitig um das gesamte Markup (siehe Blade-Kommentar "Das Gate
+     * bleibt serverseitig"), es darf nicht bloss versteckt im DOM liegen.
+     */
+    test('Fremder (weder Vorstand noch Einreicher) sieht weiterhin nichts vom Chat-Abschnitt', async ({ page }) => {
+        await page.setViewportSize(DESKTOP)
+        await installLocalNip07(page, STRANGER_SEC)
         await page.goto(`/association/project-support/${PROPOSAL_SLUG}`)
         await page.getByRole('button', { name: /Mit Nostr verbinden/i }).first().click()
         await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: 60000 })
         await page.waitForLoadState('networkidle')
 
+        await expect(page.getByRole('button', { name: 'Chat zum Antrag' })).toHaveCount(0)
+        await expect(page.getByText('Der Vorstand legt den Raum bei Nachfragen an')).toHaveCount(0)
+        await expect(page.locator('#chat-band-panel')).toHaveCount(0)
+
         await page.screenshot({
-            path: '/tmp/claude-1000/-home-user-Code-einundzwanzig-nostr/576545e5-100b-4a8e-a905-9e6c6ed70562/scratchpad/screenshots/band-no-room-submitter-BUG.png',
+            path: '/tmp/claude-1000/-home-user-Code-einundzwanzig-nostr/576545e5-100b-4a8e-a905-9e6c6ed70562/scratchpad/screenshots/band-no-room-stranger.png',
             fullPage: true,
         })
-        // Das ist die vom Auftrag erwartete Zeile — sie erscheint nicht.
-        await expect(page.getByText('Der Vorstand legt den Raum an')).toBeVisible({ timeout: 5000 })
     })
 })
 
@@ -508,7 +614,7 @@ test.describe('Regressionen laut Auftrag (Punkt 4)', () => {
         })
     })
 
-    test('4b) Verlauf und Composer bleiben innerhalb 68ch, keine horizontale Scrollleiste', async ({ page }) => {
+    test('4b) Verlauf und Composer nutzen die Bandbreite, keine horizontale Scrollleiste', async ({ page }) => {
         await page.setViewportSize(DESKTOP_WIDE)
         await installLocalNip07(page)
         await page.goto(`/association/project-support/${PROPOSAL_SLUG}`)
@@ -521,12 +627,21 @@ test.describe('Regressionen laut Auftrag (Punkt 4)', () => {
         const composer = page.getByLabel('Nachricht schreiben')
         await expect(composer).toBeVisible({ timeout: 60000 })
 
-        // 68ch bei der hier geladenen Schrift/Groesse: grosszuegig 750px als
-        // harte Obergrenze (deutlich unter der 1440px-Viewportbreite, die den
-        // alten, ungebremsten Fall aufgedeckt haette).
-        const feedWrapBox = await page.locator('.max-w-\\[68ch\\]').first().boundingBox()
-        expect(feedWrapBox.width, `Chat-Wrapper ist ${feedWrapBox.width}px breit — 68ch-Deckel greift nicht?`)
-            .toBeLessThan(750)
+        // Frueher stand hier eine Obergrenze von 750px (der 68ch-Deckel). Die
+        // ist gefallen: Zeilen und Eingabefeld des Packages bringen selbst keine
+        // Begrenzung mit, ein Deckel liess auf breiten Schirmen die halbe
+        // Bandflaeche leer. Jetzt gilt die Gegenrichtung — der Composer muss den
+        // Grossteil des Bands ausfuellen.
+        //
+        // Bewusst NICHT ueber `.max-w-[68ch]` gesucht: Diese Klasse gibt es an
+        // der Insel nicht mehr, `.first()` traf danach die Ueberschrift und der
+        // Test war still gruen, ohne noch irgendetwas am Chat zu pruefen.
+        const panelBox = await page.locator('#chat-band-panel').boundingBox()
+        const composerBox = await composer.boundingBox()
+        const ratio = composerBox.width / panelBox.width
+        console.log(`Composer ${Math.round(composerBox.width)}px / Band ${Math.round(panelBox.width)}px = ${(ratio * 100).toFixed(0)}%`)
+        expect(ratio, `Composer nutzt nur ${(ratio * 100).toFixed(0)}% der Bandbreite`)
+            .toBeGreaterThan(0.7)
 
         const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
         const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
