@@ -1044,3 +1044,123 @@ it('keeps the fallback link to the full chat client next to the island', functio
         ->assertSee('Chat öffnen')
         ->assertSee('/rooms/'.$project->nostrGroupId(), false);
 });
+
+// Raumverweis zuruecksetzen: canResetChatRoom / resetChatRoom
+//
+// Der Zweck ist die Entsperrung: Ein auf dem Relay geloeschter Raum bleibt am
+// Antrag stehen, „Chat oeffnen" zeigt ins Leere und „Chatraum anlegen" ist
+// gesperrt. Reine Policy-Aufrufe liegen in
+// tests/Feature/Policies/ProjectProposalChatRoomPolicyTest.php — hier geht es um
+// den Livewire-Endpunkt, der oeffentlich und damit direkt aufrufbar ist.
+
+it('lets a board member reset the chat room reference and unlocks the create action again', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create([
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+        'nostr_group_created_at' => now()->subDay(),
+    ]);
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canResetChatRoom', true)
+        ->assertSet('canCreateChatRoom', false)
+        ->call('resetChatRoom')
+        ->assertHasNoErrors()
+        // Das ist der eigentliche Zweck: der Antrag ist wieder frei.
+        ->assertSet('canCreateChatRoom', true)
+        ->assertSet('canResetChatRoom', false)
+        ->assertSee('Chatraum anlegen');
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBeNull();
+    expect($fresh->nostr_group_created_at)->toBeNull();
+    expect($fresh->hasNostrGroup())->toBeFalse();
+});
+
+it('rejects resetChatRoom when no room is on file, even for a board member', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create();
+
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSet('canResetChatRoom', false)
+        ->call('resetChatRoom')
+        ->assertForbidden();
+});
+
+it('rejects resetChatRoom for the submitter — the endpoint itself must refuse, not just the hidden button', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'einundzwanzig_pleb_id' => $submitter->id,
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+        'nostr_group_created_at' => now()->subDay(),
+    ]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('resetChatRoom')
+        ->assertForbidden();
+
+    $fresh = $project->fresh();
+    expect($fresh->nostr_group_h)->toBe('p'.str_repeat('a', 12));
+    expect($fresh->nostr_group_created_at)->not->toBeNull();
+});
+
+it('rejects resetChatRoom for an unrelated member', function () {
+    $pleb = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+    ]);
+
+    NostrAuth::login($pleb->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('resetChatRoom')
+        ->assertForbidden();
+
+    expect($project->fresh()->nostr_group_h)->toBe('p'.str_repeat('a', 12));
+});
+
+it('rejects resetChatRoom for a guest', function () {
+    $project = ProjectProposal::factory()->create([
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+    ]);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->call('resetChatRoom')
+        ->assertForbidden();
+
+    expect($project->fresh()->nostr_group_h)->toBe('p'.str_repeat('a', 12));
+});
+
+it('shows the reset action to a board member and keeps it out of the markup for everyone else', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'einundzwanzig_pleb_id' => $submitter->id,
+        'nostr_group_h' => 'p'.str_repeat('a', 12),
+        'nostr_group_created_at' => now()->subDay(),
+    ]);
+
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    NostrAuth::login($board->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSee('Raumverweis zurücksetzen')
+        // Der Reparaturknopf darf den Alltagsweg nicht verdraengen.
+        ->assertSee('Chat öffnen');
+
+    // Der Einreicher sieht denselben Raum, aber nicht den Reparaturknopf.
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSee('Chat öffnen')
+        ->assertDontSee('Raumverweis zurücksetzen');
+
+    NostrAuth::logout();
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertDontSee('Raumverweis zurücksetzen');
+});

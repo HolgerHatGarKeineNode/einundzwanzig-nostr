@@ -62,6 +62,16 @@ trait NostrFetcherTrait
                 'npub' => $item,
             ]);
         }
+        $relayUrls = config('einundzwanzig.config.profile_relays', []);
+
+        // Leere Liste = bewusst kein Abruf. In Tests ist das der Normalfall:
+        // Ein Testlauf darf keine echten Verbindungen nach draussen aufbauen,
+        // und der Abruf laeuft SYNCHRON im Request — vier nicht antwortende
+        // Relays kosten gemessen 21 Sekunden, pro Aufruf, auch beim zweiten Mal.
+        if ($relayUrls === []) {
+            return;
+        }
+
         $subscription = new Subscription;
         $subscriptionId = $subscription->setId();
 
@@ -70,13 +80,6 @@ trait NostrFetcherTrait
         $filter1->setAuthors($hex->pluck('hex')->toArray()); // You can add multiple author ids
         $filters = [$filter1];
         $requestMessage = new RequestMessage($subscriptionId, $filters);
-
-        $relayUrls = [
-            'wss://purplepag.es',
-            'wss://nostr.wine',
-            'wss://relay.damus.io',
-            'wss://relay.primal.net',
-        ];
 
         // Collect all responses from all relays
         $allResponses = collect([]);

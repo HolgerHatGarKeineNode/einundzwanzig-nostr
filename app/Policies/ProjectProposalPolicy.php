@@ -131,6 +131,37 @@ class ProjectProposalPolicy
     }
 
     /**
+     * Determine whether the user can clear the stored chat room reference.
+     *
+     * Only board members. This is the repair for a room that was deleted on the
+     * relay (kind 9008): the association keeps its own `nostr_group_h`, and a
+     * dead reference otherwise locks the proposal for good — `createChatRoom`
+     * refuses while a room is on file, so the board could never get a fresh,
+     * correctly tagged room through the interface.
+     *
+     * A server-side reconciliation with the relay is not available: PHP cannot
+     * authenticate via NIP-42 here, so the truth about the room's existence
+     * only lives in the browser. Hence a deliberate board action instead of an
+     * automatic cleanup.
+     *
+     * Requires a room to actually be on file — with none there is nothing to
+     * reset, and offering the action would only invite a pointless click.
+     * Nothing is published to the relay; the room ID is derived from the
+     * proposal (see ProjectProposal::nostrGroupId()), so creating it again
+     * yields the very same ID.
+     */
+    public function resetChatRoom(NostrUser $user, ProjectProposal $projectProposal): bool
+    {
+        $pleb = $user->getPleb();
+
+        if (! $pleb || ! $pleb->isBoardMember()) {
+            return false;
+        }
+
+        return $projectProposal->hasNostrGroup();
+    }
+
+    /**
      * Determine whether the user can see and use the chat room of a proposal.
      *
      * The same circle that may see the submitter's contact details: board and

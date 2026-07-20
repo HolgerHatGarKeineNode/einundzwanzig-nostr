@@ -175,6 +175,16 @@ new class extends Component {
     }
 
     /**
+     * Darf der Betrachter den eingetragenen Raumverweis zurücksetzen? Nur
+     * Vorstand, und nur wenn überhaupt einer eingetragen ist.
+     */
+    #[Computed]
+    public function canResetChatRoom(): bool
+    {
+        return Gate::forUser(NostrAuth::user())->allows('resetChatRoom', $this->projectProposal);
+    }
+
+    /**
      * Darf der Betrachter den Chatraum sehen und nutzen? Vorstand und Einreicher.
      */
     #[Computed]
@@ -246,6 +256,38 @@ new class extends Component {
         unset($this->canCreateChatRoom, $this->canSeeChatRoom);
 
         Flux::toast('Chatraum angelegt.');
+    }
+
+    /**
+     * Löscht den Verweis auf den Chatraum am Antrag — und NUR den.
+     *
+     * Reparatur für den Fall, dass der Raum auf dem Relay gelöscht wurde
+     * (kind 9008): Der Verein weiß davon nichts, zeigt weiter „Chat öffnen" ins
+     * Leere und lässt „Chatraum anlegen" nicht zu, weil createChatRoom einen
+     * freien Antrag verlangt. Nach dem Zurücksetzen greift dieses Gate wieder.
+     *
+     * Auf dem Relay passiert hier nichts: Es wird kein Event publiziert. Die
+     * Raum-ID ist aus der Antrags-ID abgeleitet, ein erneutes Anlegen ergibt
+     * also dieselbe — existiert der Raum noch, wird er schlicht wieder
+     * verknüpft.
+     *
+     * Die Berechtigung wird hier geprüft, nicht nur an der Sichtbarkeit des
+     * Knopfes: Jede öffentliche Livewire-Methode ist direkt aufrufbar.
+     */
+    public function resetChatRoom(): void
+    {
+        Gate::forUser(NostrAuth::user())->authorize('resetChatRoom', $this->projectProposal);
+
+        // Direkte Zuweisung wie in storeChatRoom(): nostr_group_h ist bewusst
+        // nicht in $fillable.
+        $this->projectProposal->nostr_group_h = null;
+        $this->projectProposal->nostr_group_created_at = null;
+        $this->projectProposal->save();
+
+        unset($this->canCreateChatRoom, $this->canSeeChatRoom, $this->canResetChatRoom);
+
+        Flux::modals()->close();
+        Flux::toast('Raumverweis zurückgesetzt. „Chatraum anlegen" steht wieder bereit.');
     }
 
     /**
@@ -706,6 +748,37 @@ new class extends Component {
                                         ])
                                     </div>
                                 @endif
+
+                                {{-- Reparaturweg fuer den toten Verweis: Loescht ein
+                                     Admin den Raum auf dem Relay, bleibt
+                                     `nostr_group_h` stehen — „Chat oeffnen" zeigt
+                                     dann ins Leere und „Chatraum anlegen" erscheint
+                                     nicht, weil createChatRoom einen freien Antrag
+                                     verlangt. Der Antrag saesse sonst fest.
+
+                                     Bewusst leise: eine abgesetzte Fusszeile unter
+                                     dem Verlauf, `variant="subtle"` und kleiner
+                                     Text. „Chat oeffnen" oben bleibt der einzige
+                                     gefuellte Knopf der Karte — das hier ist eine
+                                     seltene Reparatur, kein Alltagswerkzeug. Volle
+                                     Breite wie die Nachbarknoepfe, weil daneben in
+                                     280px nichts mehr Platz hat.
+
+                                     Kein x-cloak und kein x-show: Das Markup haengt
+                                     allein am serverseitigen Gate. Wer nicht im
+                                     Vorstand ist, bekommt es gar nicht erst. --}}
+                                @if($this->canResetChatRoom)
+                                    <div class="mt-4 border-t border-border-subtle pt-3">
+                                        <flux:modal.trigger name="confirm-reset-chat-room">
+                                            <flux:button class="min-h-11 w-full"
+                                                         size="sm"
+                                                         variant="subtle"
+                                                         icon="arrow-path">
+                                                Raumverweis zurücksetzen
+                                            </flux:button>
+                                        </flux:modal.trigger>
+                                    </div>
+                                @endif
                             @elseif($this->canCreateChatRoom)
                                 {{-- projectChatRoom ist in app.js registriert, laeuft also
                                      vor Alpines Start. Das Chat-SDK laedt die Komponente
@@ -1071,6 +1144,41 @@ new class extends Component {
                             <flux:button variant="ghost">Abbrechen</flux:button>
                         </flux:modal.close>
                         <flux:button wire:click="recordPayout" variant="primary">Auszahlung erfassen</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
+        @endif
+
+        {{-- Raumverweis zuruecksetzen bestaetigen: Der Knopf sieht aus wie
+             „Chat weg", ist es aber nicht. Deshalb sagt der Text beide Haelften
+             ausdruecklich — was NICHT passiert (der Raum bleibt), und dass der
+             Weg zurueck offen ist. Ohne Fachjargon: der Vorstand liest das,
+             nicht ein Entwickler. --}}
+        @if($this->canResetChatRoom)
+            <flux:modal name="confirm-reset-chat-room" class="min-w-88">
+                <div class="space-y-6">
+                    <div>
+                        <flux:heading size="lg">Raumverweis zurücksetzen?</flux:heading>
+                        <flux:text class="mt-2">
+                            <p>Der Antrag zeigt danach auf keinen Chatraum mehr.</p>
+                            <p>
+                                Der Chatraum selbst wird <strong>nicht gelöscht</strong> — es wird
+                                nur die Verknüpfung hier im Verein entfernt.
+                            </p>
+                            <p>
+                                Du kannst ihn danach mit „Chatraum anlegen" sofort wieder
+                                verbinden: Es entsteht derselbe Raum wie vorher.
+                            </p>
+                        </flux:text>
+                    </div>
+                    <div class="flex gap-2">
+                        <flux:spacer/>
+                        <flux:modal.close>
+                            <flux:button variant="ghost">Abbrechen</flux:button>
+                        </flux:modal.close>
+                        <flux:button wire:click="resetChatRoom" variant="danger" icon="arrow-path">
+                            Zurücksetzen
+                        </flux:button>
                     </div>
                 </div>
             </flux:modal>
