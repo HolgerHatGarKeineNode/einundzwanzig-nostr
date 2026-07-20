@@ -58,6 +58,11 @@ export default defineConfig({
             '@einundzwanzig/group/auth-gate': packageEntry('js/auth-gate.ts'),
             // createRoom() und addRoomMember() fuer die Anlage des Antragsraums.
             '@einundzwanzig/group/groups': packageEntry('js/groups.ts'),
+            // projectSupportTags(): markiert den Antragsraum im 39000 mit
+            // ["t","project-support"] und ["i","proposal:<id>"]. Reines,
+            // welshman-freies Modul — es haengt hier trotzdem nur am
+            // dynamischen Import der Anlage, damit app.js schlank bleibt.
+            '@einundzwanzig/group/roomCategories': packageEntry('js/roomCategories.ts'),
             // toast(): Die eingebettete Raum-Ansicht sagt damit, wo eine im
             // Ausschnitt fehlende Funktion weitergeht (Bild anhaengen). Bewusst
             // die Package-Funktion statt eines nachgebauten Event-Dispatch —

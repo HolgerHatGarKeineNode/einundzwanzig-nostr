@@ -935,12 +935,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package.git",
-                "reference": "cdfc1fa65c098eb7c28969dbf6b82f318b0baacf"
+                "reference": "7e9a5fe0d2af937849474ac34a3af0094566fc8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/HolgerHatGarKeineNode/einundzwanzig-group-package/zipball/cdfc1fa65c098eb7c28969dbf6b82f318b0baacf",
-                "reference": "cdfc1fa65c098eb7c28969dbf6b82f318b0baacf",
+                "url": "https://api.github.com/repos/HolgerHatGarKeineNode/einundzwanzig-group-package/zipball/7e9a5fe0d2af937849474ac34a3af0094566fc8e",
+                "reference": "7e9a5fe0d2af937849474ac34a3af0094566fc8e",
                 "shasum": ""
             },
             "require": {
@@ -973,7 +973,7 @@
                 "source": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package/tree/master",
                 "issues": "https://github.com/HolgerHatGarKeineNode/einundzwanzig-group-package/issues"
             },
-            "time": "2026-07-19T21:46:08+00:00"
+            "time": "2026-07-20T14:36:22+00:00"
         },
         {
             "name": "evenement/evenement",

@@ -728,6 +728,21 @@ it('allows a board member to see the create-chat-room action when no room exists
         ->assertSee('Chatraum anlegen');
 });
 
+it('hands the database id of the proposal to the create-chat-room island', function () {
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    $project = ProjectProposal::factory()->create(['name' => 'Ein Antrag mit beweglichem Slug']);
+
+    NostrAuth::login($board->pubkey);
+
+    // Die Insel baut daraus das Bindungs-Tag ["i","proposal:<id>"] des 39000.
+    // Es muss die DATENBANK-ID sein, nicht der Slug: Der Slug hängt am Namen
+    // (HasSlug) und wandert bei einer Umbenennung mit — das Tag steht danach
+    // unwiderruflich im Nostr-Event und zeigte ins Leere.
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertSee('proposalId: '.$project->id, false)
+        ->assertDontSee('proposalId: "'.$project->slug.'"', false);
+});
+
 it('hides the create-chat-room action from the submitter', function () {
     $submitter = EinundzwanzigPleb::factory()->create();
     $project = ProjectProposal::factory()->create(['einundzwanzig_pleb_id' => $submitter->id]);

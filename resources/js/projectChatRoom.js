@@ -39,10 +39,15 @@ export default function projectChatRoom(config) {
                 window.__ezChatBootedWithoutSession = ! localStorage.getItem('pubkey')
 
                 // Erst hier faellt das SDK an — nicht beim Seitenaufbau.
-                const [{ createRoom, addRoomMember }, { loginWithExtension }, { isAuthed }] = await Promise.all([
+                // roomCategories.ts ist winzig und welshman-frei, wird hier aber
+                // bewusst ebenfalls dynamisch geholt: Ein statischer Import
+                // zoege das Modul in app.js, und app.js soll ausser der
+                // Alpine-Huelle nichts vom Chat kennen.
+                const [{ createRoom, addRoomMember }, { loginWithExtension }, { isAuthed }, { projectSupportTags }] = await Promise.all([
                     import('@einundzwanzig/group/groups'),
                     import('@einundzwanzig/group/session'),
                     import('@einundzwanzig/group/auth-gate'),
+                    import('@einundzwanzig/group/roomCategories'),
                 ])
 
                 await this.ensureSigner(loginWithExtension, isAuthed, config.currentPubkey)
@@ -61,6 +66,14 @@ export default function projectChatRoom(config) {
                     isClosed: true,
                     isHidden: true,
                     isRestricted: false,
+                    // Kategorie-Marker fuers 39000: ["t","project-support"] und
+                    // die Bindung ["i","proposal:<id>"]. Nur beim ANLEGEN — beim
+                    // Bearbeiten kopiert makeRoomEditEvent die vorhandenen Tags
+                    // ohnehin mit. Die Antrags-ID ist die Datenbank-ID (wie die
+                    // Raum-ID), nicht der Slug: Der Slug haengt am Namen und
+                    // wanderte bei einer Umbenennung mit, das Tag steht aber
+                    // unwiderruflich im Event.
+                    extraTags: projectSupportTags(config.proposalId),
                 })
 
                 if (err) {

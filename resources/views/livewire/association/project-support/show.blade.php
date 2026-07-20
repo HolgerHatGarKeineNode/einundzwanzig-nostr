@@ -568,6 +568,7 @@ new class extends Component {
                              x-data="projectChatRoom({
                             spaceUrl: @js(config('group.space_url')),
                             roomId: @js($projectProposal->nostrGroupId()),
+                            proposalId: @js($projectProposal->id),
                             roomName: @js($projectProposal->slug),
                             roomAbout: @js('Antragsraum'),
                             memberPubkeys: @js($this->chatRoomMemberPubkeys),
