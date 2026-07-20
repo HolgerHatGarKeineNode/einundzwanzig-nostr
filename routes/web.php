@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BtcPayWebhookController;
+use App\Http\Controllers\Nostr\GetProfiles;
 use App\Support\NostrAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,24 @@ Route::get('media/{media}', function (Media $media, Request $request) {
     ->middleware('signed');
 
 Route::post('webhooks/btcpay', BtcPayWebhookController::class)->name('webhooks.btcpay');
+
+// Profil-Seed der Chat-Insel: Pfad + Antwortform sind im Package fest verdrahtet
+// (`js/profiles.ts` → `GET <base>/nostr/profiles?pubkeys=a,b,c`, Web: base = ''),
+// deshalb hier und nicht in routes/api.php.
+//
+// Offen für alle, auch Gäste: kind-0 ist auf Nostr öffentlich. Die Drosselung ist
+// hier der eigentliche Schutz — sie begrenzt die serverseitige Relay-Arbeit, die
+// ein Aufruf auslöst. Für Angemeldete zählt sie pro Pubkey, sonst pro IP, damit
+// eine geteilte Adresse nicht alle gemeinsam ausbremst.
+//
+// ACHTUNG bei einer späteren Aktivierung des Package-eigenen GroupServiceProvider
+// (aktuell per extra.laravel.dont-discover abgeschaltet): Der belegt denselben
+// Namensraum mit /nostr/challenge|login|logout
+// (vendor/einundzwanzig/group/routes/group.php:17-19). /nostr/profiles kollidiert
+// heute mit keiner davon, das ist aber Zufall und keine Zusage.
+Route::get('nostr/profiles', GetProfiles::class)
+    ->middleware('throttle:nostr-profiles')
+    ->name('nostr.profiles');
 
 Route::post('logout', function () {
     NostrAuth::logout();

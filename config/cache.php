@@ -114,8 +114,35 @@ return [
     | the cache to help prevent PHP deserialization gadget chain attacks.
     | Set to false to allow no classes to be unserialized from cache.
     |
+    | `stdClass` ist bewusst erlaubt — und NUR die. Der Profil-Cache
+    | (Einundzwanzig\Group\Nostr\ProfileCache, gelesen von GET /nostr/profiles)
+    | legt rohe kind-0-Events als stdClass ab. Mit `false` kam beim Lesen aus dem
+    | Datenbank-Store ein __PHP_Incomplete_Class zurück: kein Cache-Miss, sondern
+    | ein Treffer voller Attrappen — die Events wären als `{}` beim Browser
+    | gelandet, dort an der Signaturprüfung gescheitert, und der Cache hätte den
+    | Schaden 24 Stunden lang festgehalten. In Tests fiel das nie auf, weil der
+    | Array-Store gar nicht serialisiert.
+    |
+    | Die Ausnahme ist eng: stdClass hat keine Magic-Methoden (__wakeup,
+    | __destruct, __toString) und taugt damit nicht als Glied einer
+    | Deserialisierungs-Gadget-Chain — genau davor schützt die Liste. Jede
+    | weitere Klasse hier gehört einzeln begründet.
+    |
+    | WICHTIG, damit hier niemand etwas Falsches annimmt: Die Einstellung gilt
+    | PROJEKTWEIT für jeden Cache-Store, nicht nur für den Profil-Cache und nicht
+    | nur für `nostr:profile:*`-Schlüssel. Illuminate\Cache\CacheManager::
+    | getSerializableClasses() liest ausschließlich diesen globalen Wert und
+    | ignoriert die Store-Konfiguration. Wer hier eine Klasse ergänzt, erlaubt
+    | sie überall.
+    |
+    | Der Umweg über die Konfiguration ist nötig, weil ProfileCache im
+    | Vendor-Package cached: Der stdClass-Typ entsteht dort vollständig
+    | (RelayResponseEvent), und es gibt keinen Haken, an dem wir vor dem
+    | Schreiben in ein Array umwandeln könnten. Sobald das Package die Events
+    | selbst als Array ablegt, kann dieser Eintrag wieder auf `false`.
+    |
     */
 
-    'serializable_classes' => false,
+    'serializable_classes' => [stdClass::class],
 
 ];
