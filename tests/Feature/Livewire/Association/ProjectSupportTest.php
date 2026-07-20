@@ -2,6 +2,7 @@
 
 use App\Enums\ProjectProposalStatus;
 use App\Models\EinundzwanzigPleb;
+use App\Models\Profile;
 use App\Models\ProjectProposal;
 use App\Models\Vote;
 use App\Support\NostrAuth;
@@ -1163,4 +1164,52 @@ it('shows the reset action to a board member and keeps it out of the markup for 
 
     Livewire::test('association.project-support.show', ['projectProposal' => $project])
         ->assertDontSee('Raumverweis zurücksetzen');
+});
+
+it('keeps voters anonymous and shows only the tally', function () {
+    $submitter = EinundzwanzigPleb::factory()->create();
+    $project = ProjectProposal::factory()->create([
+        'einundzwanzig_pleb_id' => $submitter->id,
+    ]);
+
+    // Ein Vorstandsmitglied (bindende Stimme) und ein Mitglied (Stimmungsbild),
+    // beide mit vollem Profil — nichts davon darf auf der Seite landen.
+    $board = EinundzwanzigPleb::query()->where('npub', config('einundzwanzig.config.current_board')[0])->firstOrFail();
+    Profile::factory()->create([
+        'pubkey' => $board->pubkey,
+        'name' => 'GeheimerVorstand',
+        'display_name' => 'Geheimer Vorstand',
+        'picture' => 'https://example.test/vorstand-avatar.jpg',
+    ]);
+    Vote::factory()->approve()->create([
+        'project_proposal_id' => $project->id,
+        'einundzwanzig_pleb_id' => $board->id,
+    ]);
+
+    $member = EinundzwanzigPleb::factory()->create();
+    Profile::factory()->create([
+        'pubkey' => $member->pubkey,
+        'name' => 'GeheimesMitglied',
+        'display_name' => 'Geheimes Mitglied',
+        'picture' => 'https://example.test/mitglied-avatar.jpg',
+    ]);
+    Vote::factory()->reject()->create([
+        'project_proposal_id' => $project->id,
+        'einundzwanzig_pleb_id' => $member->id,
+    ]);
+
+    NostrAuth::login($submitter->pubkey);
+
+    Livewire::test('association.project-support.show', ['projectProposal' => $project])
+        ->assertDontSee('GeheimerVorstand')
+        ->assertDontSee('Geheimer Vorstand')
+        ->assertDontSee('vorstand-avatar.jpg')
+        ->assertDontSee('GeheimesMitglied')
+        ->assertDontSee('Geheimes Mitglied')
+        ->assertDontSee('mitglied-avatar.jpg')
+        ->assertDontSee($board->npub)
+        ->assertDontSee($member->npub)
+        // Die Zahlen bleiben sichtbar.
+        ->assertSee('Zustimmung')
+        ->assertSee('Ablehnung');
 });

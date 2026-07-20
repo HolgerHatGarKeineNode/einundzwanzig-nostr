@@ -40,9 +40,9 @@ new class extends Component {
     }
 
     /**
-     * Alle Stimmen zum Antrag in EINER Abfrage, inklusive Profil des Stimmenden.
-     * Vorher liefen dafür zwei Abfragen mit whereHas/whereDoesntHave auf dieselbe
-     * Tabelle, und die Namen fehlten trotzdem.
+     * Alle Stimmen zum Antrag in EINER Abfrage. Bewusst OHNE Profile der
+     * Stimmenden: Wer wie abgestimmt hat, ist nicht öffentlich — die Seite
+     * zeigt nur Zahlen, also darf auch nichts Personenbezogenes ins HTML.
      */
     #[Computed]
     public function votes(): Collection
@@ -51,7 +51,6 @@ new class extends Component {
 
         return Vote::query()
             ->where('project_proposal_id', $this->projectProposal->id)
-            ->with('einundzwanzigPleb.profile')
             ->get()
             ->each(fn (Vote $vote) => $vote->setAttribute(
                 'is_board_vote',
