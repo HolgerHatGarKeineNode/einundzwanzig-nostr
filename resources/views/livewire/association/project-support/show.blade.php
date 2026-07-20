@@ -461,71 +461,78 @@ new class extends Component {
                      class="border-t border-border-subtle px-4 pb-4 md:px-5 md:pb-5">
 
                     @if($projectProposal->hasNostrGroup())
-                        {{-- Auf breiten Viewports laeuft der Verlauf NICHT ueber die
-                             volle Bandbreite: 68ch haelt die Zeilenlaenge lesbar.
-                             Rechts daneben stehen die Raum-Fakten und der Ausweg in
-                             den vollen Client — Information statt Leerraum. --}}
-                        <div class="grid gap-4 lg:grid-cols-[minmax(0,68ch)_minmax(0,1fr)] lg:gap-8">
-                            {{-- Eingebettete Raum-Ansicht — hinter demselben Gate wie
-                                 die Kontaktangabe. canCreateChatRoom allein reicht
-                                 NICHT: Es geht ums Mitlesen, nicht ums Anlegen. --}}
-                            <div class="min-w-0">
-                                @if($this->canSeeChatRoom)
-                                    @include('partials.project-chat-feed', [
-                                        'roomId' => $projectProposal->nostr_group_h,
-                                        'roomName' => $projectProposal->name,
-                                        'currentPubkey' => $currentPubkey,
-                                        'clientUrl' => $chatClientUrl,
-                                    ])
-                                @endif
-                            </div>
+                        {{-- Die Raum-Fakten stehen als EINE Zeile ueber dem Verlauf,
+                             nicht als Spalte daneben.
 
-                            <div class="min-w-0 pt-4">
-                                <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
-                                    Raum
+                             Grund: Solange niemand „Chat hier laden" geklickt hat, ist
+                             der Verlauf genau einen Knopf hoch. Eine Faktenspalte
+                             daneben hielt die Grid-Zeile auf IHRE Hoehe offen (~250px)
+                             — das Band war gross und leer, der Antragstitel begann erst
+                             bei ~480px. Prominenz durch Leerflaeche ist die schwaechste
+                             Prominenz.
+
+                             Jetzt nimmt das Band seine Hoehe aus dem Inhalt. Die feste,
+                             scrollende Hoehe (h-[28rem]) haengt weiterhin am GELADENEN
+                             Verlauf und steckt in partials/project-chat-feed.blade.php,
+                             innerhalb von <template x-if="ready"> — sie entsteht also
+                             erst beim tatsaechlichen Laden.
+
+                             Der Verlauf selbst bleibt auf 68ch begrenzt: ueber die volle
+                             Bandbreite waere die Zeilenlaenge nicht mehr lesbar. --}}
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pt-4">
+                            <dl class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <dt class="sr-only">Zugang</dt>
+                                    <flux:icon name="lock-closed" variant="micro"
+                                               class="shrink-0 text-text-tertiary" aria-hidden="true"/>
+                                    <dd class="text-text-secondary">Nur Vorstand und Einreicher</dd>
                                 </div>
-                                <dl class="mt-2 space-y-2 text-sm">
-                                    <div class="flex items-start gap-2">
-                                        <dt class="sr-only">Zugang</dt>
-                                        <flux:icon name="lock-closed" variant="micro"
-                                                   class="mt-0.5 shrink-0 text-text-tertiary" aria-hidden="true"/>
-                                        <dd class="text-text-secondary">Nur Vorstand und Einreicher</dd>
+                                @if($projectProposal->nostr_group_created_at)
+                                    <div class="flex items-center gap-2">
+                                        <dt class="sr-only">Angelegt am</dt>
+                                        <flux:icon name="calendar" variant="micro"
+                                                   class="shrink-0 text-text-tertiary" aria-hidden="true"/>
+                                        <dd class="text-text-secondary">
+                                            Angelegt am
+                                            {{ $projectProposal->nostr_group_created_at->translatedFormat('d.m.Y') }}
+                                        </dd>
                                     </div>
-                                    @if($projectProposal->nostr_group_created_at)
-                                        <div class="flex items-start gap-2">
-                                            <dt class="sr-only">Angelegt am</dt>
-                                            <flux:icon name="calendar" variant="micro"
-                                                       class="mt-0.5 shrink-0 text-text-tertiary" aria-hidden="true"/>
-                                            <dd class="text-text-secondary">
-                                                Angelegt am
-                                                {{ $projectProposal->nostr_group_created_at->translatedFormat('d.m.Y') }}
-                                            </dd>
-                                        </div>
-                                    @endif
-                                </dl>
+                                @endif
+                            </dl>
 
-                                {{-- Harter Full-Load statt wire:navigate: Die Chat-Seite
-                                     ist eine eigenstaendige Nostr-Insel; ein SPA-Wechsel
-                                     liefert dort einen toten JS-Kontext. Der Link bleibt
-                                     auch neben der eingebetteten Ansicht stehen: Die Insel
-                                     kann scheitern (SDK, Signer, Relay), und ein toter Chat
-                                     ohne Ausweichweg waere schlechter als einer mit. --}}
-                                <flux:button
-                                    class="mt-3 w-full"
-                                    size="sm"
-                                    variant="filled"
-                                    icon-trailing="arrow-top-right-on-square"
-                                    href="{{ $chatClientUrl }}/rooms/{{ $projectProposal->nostr_group_h }}"
-                                    target="_blank"
-                                >
-                                    Chat öffnen
-                                </flux:button>
-                                <p class="mt-2 text-sm text-text-tertiary">
-                                    Öffnet den vollen Chat-Client in einem neuen Tab — auch dann,
-                                    wenn die Ansicht hier nicht lädt.
-                                </p>
-                            </div>
+                            {{-- Harter Full-Load statt wire:navigate: Die Chat-Seite
+                                 ist eine eigenstaendige Nostr-Insel; ein SPA-Wechsel
+                                 liefert dort einen toten JS-Kontext. Der Link bleibt
+                                 auch neben der eingebetteten Ansicht stehen: Die Insel
+                                 kann scheitern (SDK, Signer, Relay), und ein toter Chat
+                                 ohne Ausweichweg waere schlechter als einer mit.
+                                 Der Knopf steht ausserhalb der <dl> — in einer
+                                 Definitionsliste sind nur dt/dd/div erlaubt. --}}
+                            <flux:button
+                                class="min-h-11 w-full sm:ms-auto sm:w-auto"
+                                size="sm"
+                                variant="filled"
+                                icon-trailing="arrow-top-right-on-square"
+                                href="{{ $chatClientUrl }}/rooms/{{ $projectProposal->nostr_group_h }}"
+                                target="_blank"
+                            >
+                                Chat öffnen
+                            </flux:button>
                         </div>
+
+                        {{-- Eingebettete Raum-Ansicht — hinter demselben Gate wie
+                             die Kontaktangabe. canCreateChatRoom allein reicht
+                             NICHT: Es geht ums Mitlesen, nicht ums Anlegen. --}}
+                        @if($this->canSeeChatRoom)
+                            <div class="min-w-0 max-w-[68ch]">
+                                @include('partials.project-chat-feed', [
+                                    'roomId' => $projectProposal->nostr_group_h,
+                                    'roomName' => $projectProposal->name,
+                                    'currentPubkey' => $currentPubkey,
+                                    'clientUrl' => $chatClientUrl,
+                                ])
+                            </div>
+                        @endif
                     @elseif($this->canCreateChatRoom)
                         {{-- projectChatRoom ist in app.js registriert, laeuft also
                              vor Alpines Start. Das Chat-SDK laedt die Komponente
@@ -578,9 +585,21 @@ new class extends Component {
             </div>
         @endif
 
+        {{-- Auf dem Telefon steht der ANTRAG vor der Abstimmung.
+
+             Vorher drehten `order-1`/`order-2` die Spalten um: Wer die Seite mobil
+             oeffnete, sah „Deine Stimme", „Vorstandsentscheidung" und
+             „Stimmungsbild" — aber nirgends, worueber abgestimmt wird. Eine
+             Abstimmung ohne ihren Gegenstand ist keine Verkuerzung, sondern eine
+             Aufforderung, uninformiert zu klicken.
+
+             Jetzt folgt die Stapelung der DOM-Reihenfolge (Hauptspalte, dann
+             Seitenspalte) — die order-Klassen sind ersatzlos weg. Damit stimmen
+             Lese-, Tab- und DOM-Reihenfolge auf dem Telefon wieder ueberein.
+             Der Zweispalter ab `lg` bleibt unveraendert. --}}
         <div class="flex flex-col lg:flex-row lg:gap-8 xl:gap-12">
             {{-- Hauptspalte --}}
-            <div class="flex-1 min-w-0 order-2 lg:order-1">
+            <div class="flex-1 min-w-0">
                 <span class="status-chip status-chip--{{ $this->status->value }}">
                     <flux:icon :name="$this->status->icon()" variant="micro" aria-hidden="true"/>
                     {{ $this->status->label() }}
@@ -633,8 +652,13 @@ new class extends Component {
                     </dl>
                 </div>
 
+                {{-- Auf dem Telefon kleiner: Das Bild sitzt jetzt zwischen Eckdaten
+                     und Beschreibung, also auf dem Weg zur Abstimmung. Mit
+                     `max-w-md` waere es dort 390px hoch (Quadrat auf voller
+                     Viewport-Breite) und schoebe die Kurzfassung um einen halben
+                     Bildschirm nach unten. Ab `sm` unveraendert. --}}
                 <figure class="mb-6">
-                    <img class="w-full max-w-md aspect-square rounded-lg bg-bg-elevated object-cover"
+                    <img class="w-full max-w-56 sm:max-w-md aspect-square rounded-lg bg-bg-elevated object-cover"
                          src="{{ $projectProposal->getSignedMediaUrl('main', 60, 'preview') }}"
                          alt="" width="448" height="448" loading="lazy" decoding="async">
                 </figure>
@@ -644,14 +668,27 @@ new class extends Component {
                 </div>
             </div>
 
-            {{-- Seitenspalte: Vorstand, Abstimmung, Kontakt --}}
-            <div class="lg:w-80 xl:w-96 shrink-0 order-1 lg:order-2 space-y-4 mb-6 lg:mb-0 lg:sticky lg:top-6 lg:self-start">
+            {{-- Seitenspalte: Vorstand, Abstimmung, Kontakt
+
+                 `flex flex-col gap-4` statt `space-y-4`: gleiche Abstaende, aber
+                 die Karten lassen sich per `order` stapeln. Auf `lg` laufen die
+                 order-Werte 1..5 in DOM-Reihenfolge — die Spalte sieht dort exakt
+                 aus wie vorher. Auf dem Telefon tauscht nur das Vorstands-Panel
+                 die Stelle mit den beiden Zaehlkarten (Begruendung dort).
+
+                 `mt-6 lg:mt-0` statt `mb-6 lg:mb-0`: Die Spalte steht mobil jetzt
+                 UNTER der Hauptspalte; der Abstand gehoert entsprechend nach oben,
+                 sonst haengt am Seitenende Leerraum. --}}
+            <div class="lg:w-80 xl:w-96 shrink-0 flex flex-col gap-4 mt-6 lg:mt-0 lg:sticky lg:top-6 lg:self-start">
 
                 {{-- Eigene Stimme: steht JEDEM stimmberechtigten Mitglied offen,
                      nicht nur dem Vorstand — deshalb ein neutrales Panel und
-                     nicht der orange Vorstands-Rahmen. --}}
+                     nicht der orange Vorstands-Rahmen.
+
+                     Erste Karte auf JEDEM Viewport: Sie ist der einzige Grund,
+                     warum ein Mitglied diese Seite ueberhaupt bedienen muss. --}}
                 @if($this->isVoter)
-                    <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                    <div class="order-1 rounded-xl border border-border-subtle bg-bg-surface p-5">
                         <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-1">
                             Deine Stimme
                         </div>
@@ -703,9 +740,16 @@ new class extends Component {
 
                 {{-- Vorstands-Panel: ausschliesslich fuer den Vorstand. Der orange
                      Rahmen bedeutet "hier gilt anderes Recht" und darf deshalb nicht
-                     ueber Aktionen stehen, die jedem Mitglied offenstehen. --}}
+                     ueber Aktionen stehen, die jedem Mitglied offenstehen.
+
+                     Auf dem Telefon (`order-4`) rutscht es HINTER die beiden
+                     Zaehlkarten: Es ist eine Handlungsflaeche fuer eine Handvoll
+                     Menschen, und die Handlung — Auszahlung erfassen — setzt genau
+                     das voraus, was die Zaehlkarten zeigen (Quorum erreicht?). Erst
+                     der Stand, dann der Griff zum Geld. Auf `lg` steht es wie bisher
+                     an zweiter Stelle; dort kostet die Reihenfolge keinen Scroll. --}}
                 @if($this->canManage)
-                    <div class="rounded-xl border border-orange-700 bg-bg-surface overflow-hidden">
+                    <div class="order-4 lg:order-2 rounded-xl border border-orange-700 bg-bg-surface overflow-hidden">
                         <div class="flex items-center gap-2 border-b border-orange-700 bg-orange-500/10 px-5 py-3">
                             <flux:icon name="shield-check" variant="micro" class="text-orange-500" aria-hidden="true"/>
                             <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-orange-500">Vorstand</span>
@@ -794,7 +838,7 @@ new class extends Component {
                 @endif
 
                 {{-- Vorstandsentscheidung: die Stimmen, die zur Mehrheit zählen --}}
-                <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                <div class="order-2 lg:order-3 rounded-xl border border-border-subtle bg-bg-surface p-5">
                     <div class="flex items-baseline justify-between gap-2 mb-3">
                         <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
                             Vorstandsentscheidung
@@ -814,7 +858,7 @@ new class extends Component {
                 {{-- Stimmungsbild: bewusst IMMER sichtbar, auch ohne Stimmen. Vorher
                      hing der Block an otherVotes->isNotEmpty() und verschwand
                      komplett — das las sich, als könnten Mitglieder nicht abstimmen. --}}
-                <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                <div class="order-3 lg:order-4 rounded-xl border border-border-subtle bg-bg-surface p-5">
                     <div class="flex items-baseline justify-between gap-2 mb-1">
                         <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary">
                             Stimmungsbild der Mitglieder
@@ -837,9 +881,10 @@ new class extends Component {
                     @endif
                 </div>
 
-                {{-- Kontakt: nur Vorstand und Einreicher --}}
+                {{-- Kontakt: nur Vorstand und Einreicher. Letzte Karte auf jedem
+                     Viewport — Nachschlagewerk, keine Handlung. --}}
                 @if($this->canSeeContact)
-                    <div class="rounded-xl border border-border-subtle bg-bg-surface p-5">
+                    <div class="order-5 rounded-xl border border-border-subtle bg-bg-surface p-5">
                         <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-tertiary mb-3">
                             Kontakt zum Einreicher
                         </div>
