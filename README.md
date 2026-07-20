@@ -49,3 +49,24 @@ Lokal wirkt sie sofort, im Deployment aber erst nach diesen Schritten:
 
 Beide Pins (`package.json` und `composer.lock`) müssen auf denselben Commit
 zeigen, sonst liefert das Deployment zwei verschiedene Stände aus.
+
+### `package-lock.json` fehlt bewusst
+
+Sie ist derzeit **nicht** im Repo. Die zuletzt eingecheckte Fassung zeigte auf
+das lokale Nachbarverzeichnis (`file:../einundzwanzig-group/…`, `"link": true`)
+— einen Pfad, den es auf keinem anderen Rechner gibt. Damit war sie nicht bloß
+veraltet, sondern irreführend: `npm ci` scheiterte daran mit einer Meldung, die
+nach einem Netzwerkproblem aussah, statt nach einer außer Takt geratenen
+Lockdatei.
+
+Sie ist **nicht** in `.gitignore`. Das nächste `npm install` legt sie sauber neu
+an und sie taucht sichtbar zum Committen auf — bitte dann mit einchecken, damit
+`npm ci` wieder greift und Deployments reproduzierbar werden.
+
+Bis dahin trägt das Forge-Kommando den Fall selbst:
+
+```
+(npm ci --include=dev || npm install) && npm run build
+```
+
+`npm ci` fällt aus, `npm install` löst aus `package.json` auf und holt den Pin.
