@@ -78,6 +78,42 @@ async function overflowHiddenAncestors(page, selector) {
     }, selector)
 }
 
+/**
+ * Wartet, bis das Layout steht — Voraussetzung fuer jede Positionsmessung.
+ *
+ * Bis zum Profil-Relay-Fix lagen zwischen Login und Messung ~21 Sekunden, weil
+ * `/api/nostr/profile/{pubkey}` synchron auf vier oeffentliche Relays wartete.
+ * Diese Wartezeit hat das Layout unbeabsichtigt „stabilisiert". Ohne sie messen
+ * die Positionstests, waehrend das Projektbild noch laedt und die Seitenspalte
+ * noch umbricht — mal trifft es den einen Test, mal den anderen.
+ *
+ * Bewusst KEIN `waitForTimeout`: Das waere dieselbe Zufaelligkeit mit kuerzerer
+ * Zahl. Gewartet wird auf die zwei Dinge, die die Hoehen tatsaechlich bewegen —
+ * fertig geladene Bilder und zwei aufeinanderfolgende gleiche Messungen.
+ */
+async function waitForStableLayout(page, locator) {
+    await page.evaluate(() => Promise.all(
+        Array.from(document.images)
+            .filter((img) => !img.complete)
+            .map((img) => new Promise((resolve) => {
+                img.addEventListener('load', resolve, { once: true })
+                img.addEventListener('error', resolve, { once: true })
+            })),
+    ))
+
+    let last = null
+    for (let i = 0; i < 20; i++) {
+        const box = await locator.boundingBox()
+        if (box && last !== null && Math.abs(box.y - last) < 1) {
+            return box
+        }
+        last = box?.y ?? null
+        await page.waitForTimeout(100)
+    }
+
+    return locator.boundingBox()
+}
+
 /** Dieselbe Menge Fremdanfragen wie in chat-feed-board.spec.js Test 2. */
 const CHAT_ASSET_PATTERN = /welshman|emojibase|\/assets\/js-|storage-|session-|groups-/
 
@@ -457,9 +493,21 @@ test.describe('Aenderung B: mobile Reihenfolge', () => {
         await page.getByRole('button', { name: 'Menü öffnen' }).click()
         await page.getByRole('button', { name: /Mit Nostr verbinden/i }).first().click()
 
+        // ZUERST auf ein Merkmal warten, das es nur ANGEMELDET gibt. Die
+        // Ueberschrift taugt dafuer nicht — die steht auch dem Gast da, und der
+        // Test mass dann eine Seite ohne Abstimmungskarte („element(s) not
+        // found"). Bis zum Profil-Relay-Fix verdeckten 21 Sekunden Wartezeit im
+        // Login diesen Fehler; schnell genug, faellt er auf.
+        await expect(page.getByText('Chat zum Antrag')).toBeVisible({ timeout: 60000 })
+
         const title = page.getByRole('heading', { level: 1 })
         await expect(title).toBeVisible({ timeout: 60000 })
-        const titleBox = await title.boundingBox()
+        // Die Seitenspalte wird weiter unten gemessen — sie muss da sein, BEVOR
+        // irgendeine Position genommen wird, sonst liefert boundingBox() null.
+        await expect(page.getByText('Deine Stimme', { exact: true })).toBeVisible({ timeout: 60000 })
+        await expect(page.locator('.prose')).toBeVisible()
+
+        const titleBox = await waitForStableLayout(page, title)
         const fundingBox = await page.getByText('500.000 Sats').boundingBox()
 
         console.log(`Titel y=${titleBox.y}px, Foerdersumme y=${fundingBox.y}px`)
@@ -619,6 +667,9 @@ test.describe('Regressionen laut Auftrag (Punkt 4)', () => {
         await loadButton.click()
         const composer = page.getByLabel('Nachricht schreiben')
         await expect(composer).toBeVisible({ timeout: 60000 })
+        // Der Verlauf waechst noch, waehrend Nachrichten und Avatare eintrudeln —
+        // erst messen, wenn die Composer-Zeile zweimal an derselben Stelle steht.
+        await waitForStableLayout(page, composer)
 
         // Frueher stand hier eine Obergrenze von 750px (der 68ch-Deckel). Die
         // ist gefallen: Zeilen und Eingabefeld des Packages bringen selbst keine
