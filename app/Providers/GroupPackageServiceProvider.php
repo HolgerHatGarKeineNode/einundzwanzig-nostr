@@ -32,6 +32,30 @@ class GroupPackageServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom($this->packagePath('/config/group.php'), 'group');
+
+        config(['group.space_url' => $this->normalizedSpaceUrl()]);
+    }
+
+    /**
+     * Space-Adresse mit abschließendem Schrägstrich.
+     *
+     * welshman normalisiert jede Relay-Adresse auf einen abschließenden
+     * Schrägstrich, und sämtliche Vorgaben des Packages tragen ihn. Unser
+     * Relay-Riegel (`window.__nostrRelays`, siehe projectChatFeed.js) wird
+     * hingegen ununtersucht übernommen — `core.ts` reicht ihn roh durch.
+     *
+     * Ohne diese Normalisierung stünden für denselben Relay zwei verschiedene
+     * Zeichenketten im Umlauf: `__nostrSpace` normalisiert, der Riegel nicht.
+     * Ein `NOSTR_SPACE_URL` ohne Schrägstrich — die naheliegende Schreibweise —
+     * ließe damit den Riegel ins Leere greifen.
+     *
+     * Lokal fiel das nie auf, weil die Testadresse den Schrägstrich schon trug.
+     */
+    protected function normalizedSpaceUrl(): string
+    {
+        $url = trim((string) config('group.space_url', ''));
+
+        return $url === '' ? '' : rtrim($url, '/').'/';
     }
 
     public function boot(): void
